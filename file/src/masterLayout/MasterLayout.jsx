@@ -94,8 +94,8 @@ const MasterLayout = ({ children }) => {
           sidebarActive
             ? "sidebar active "
             : mobileMenu
-            ? "sidebar sidebar-open"
-            : "sidebar"
+              ? "sidebar sidebar-open"
+              : "sidebar"
         }
       >
         <button
@@ -126,141 +126,19 @@ const MasterLayout = ({ children }) => {
         </div>
         <div className='sidebar-menu-area'>
           <ul className='sidebar-menu' id='sidebar-menu'>
-            <li className='dropdown'>
-              <Link to='#'>
+            <li className='drodown bg-primary rounded ' >
+              <NavLink to='/index-6'>
                 <Icon
                   icon='solar:home-smile-angle-outline'
-                  className='menu-icon'
+                  className='menu-icon text-white'
                 />
-                <span>Dashboard</span>
-              </Link>
-              <ul className='sidebar-submenu'>
-                <li>
-                  <NavLink
-                    to='/'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-primary-600 w-auto' />
-                    AI
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to='/index-2'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-warning-main w-auto' />{" "}
-                    CRM
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to='/index-3'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-info-main w-auto' />{" "}
-                    eCommerce
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to='/index-4'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-danger-main w-auto' />
-                    Cryptocurrency
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to='/index-5'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-success-main w-auto' />{" "}
-                    Investment
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to='/index-6'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-purple w-auto' />{" "}
-                    LMS
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to='/index-7'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-info-main w-auto' />{" "}
-                    NFT &amp; Gaming
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to='/index-8'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-info-main w-auto' />{" "}
-                    Medical
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to='/index-9'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-info-main w-auto' />{" "}
-                    Analytics
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to='/index-10'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-info-main w-auto' />{" "}
-                    POS & Inventory
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to='/index-11'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-info-main w-auto' />{" "}
-                    Finance & Banking
-                  </NavLink>
-                </li>
-              </ul>
+                <span className="text-white">Dashboard</span>
+              </NavLink>
+
             </li>
 
-            <li className='sidebar-menu-group-title'>Application</li>
-            <li>
+            <li className='sidebar-menu-group-title'>Website Manager</li>
+            {/* <li>
               <NavLink
                 to='/email'
                 className={(navData) => (navData.isActive ? "active-page" : "")}
@@ -268,8 +146,8 @@ const MasterLayout = ({ children }) => {
                 <Icon icon='mage:email' className='menu-icon' />
                 <span>Email</span>
               </NavLink>
-            </li>
-            <li>
+            </li> */}
+            {/* <li>
               <NavLink
                 to='/chat-message'
                 className={(navData) => (navData.isActive ? "active-page" : "")}
@@ -277,26 +155,30 @@ const MasterLayout = ({ children }) => {
                 <Icon icon='bi:chat-dots' className='menu-icon' />
                 <span>Chat</span>
               </NavLink>
-            </li>
+            </li> */}
+         
             <li>
               <NavLink
-                to='/calendar-main'
-                className={(navData) => (navData.isActive ? "active-page" : "")}
-              >
-                <Icon icon='solar:calendar-outline' className='menu-icon' />
-                <span>Calendar</span>
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to='/kanban'
+                to='/blogManager'
                 className={(navData) => (navData.isActive ? "active-page" : "")}
               >
                 <Icon
                   icon='material-symbols:map-outline'
                   className='menu-icon'
                 />
-                <span>Kanban</span>
+                <span>Blog Manager</span>
+              </NavLink>
+            </li>
+ <li>
+              <NavLink
+                to='/webinar-manager'
+                className={(navData) => (navData.isActive ? "active-page" : "")}
+              >
+                <Icon
+                  icon='material-symbols:map-outline'
+                  className='menu-icon'
+                />
+                <span>Webinar Management</span>
               </NavLink>
             </li>
 
@@ -355,7 +237,7 @@ const MasterLayout = ({ children }) => {
             </li>
 
             {/* Ai Application Dropdown */}
-            <li className='dropdown'>
+            {/* <li className='dropdown'>
               <Link to='#'>
                 <i className='ri-robot-2-line mr-10' />
 
@@ -418,10 +300,10 @@ const MasterLayout = ({ children }) => {
                   </NavLink>
                 </li>
               </ul>
-            </li>
+            </li> */}
 
             {/* Crypto Currency Dropdown */}
-            <li className='dropdown'>
+            {/* <li className='dropdown'>
               <Link to='#'>
                 <i className='ri-btc-line mr-10' />
                 <span>Crypto Currency</span>
@@ -472,7 +354,7 @@ const MasterLayout = ({ children }) => {
                   </NavLink>
                 </li>
               </ul>
-            </li>
+            </li> */}
 
             <li className='sidebar-menu-group-title'>UI Elements</li>
 

@@ -5,7 +5,7 @@ import "datatables.net-dt";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link } from "react-router-dom";
 
-const TableDataLayer = () => {
+const BlogManager = () => {
   useEffect(() => {
     const table = $("#dataTable").DataTable({
       pageLength: 10,
@@ -43,6 +43,8 @@ const TableDataLayer = () => {
               <th scope='col'>Action</th>
             </tr>
           </thead>
+
+          
           <tbody>
             <tr>
               <td>
@@ -1111,4 +1113,4 @@ const TableDataLayer = () => {
   );
 };
 
-export default TableDataLayer;
+export default BlogManager;

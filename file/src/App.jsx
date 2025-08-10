@@ -95,6 +95,8 @@ import ComingSoonPage from "./pages/ComingSoonPage";
 import AccessDeniedPage from "./pages/AccessDeniedPage";
 import MaintenancePage from "./pages/MaintenancePage";
 import BlankPagePage from "./pages/BlankPagePage";
+import BlogManager from "./pages/BlogManager";
+import WebinarManager from "./pages/WebinarManager";
 
 function App() {
   return (
@@ -102,19 +104,20 @@ function App() {
       <RouteScrollToTop />
       <Routes>
         <Route exact path='/' element={<HomePageOne />} />
+        {/* <Route exact path='/' element={<HomePageOne />} />
         <Route exact path='/index-2' element={<HomePageTwo />} />
         <Route exact path='/index-3' element={<HomePageThree />} />
         <Route exact path='/index-4' element={<HomePageFour />} />
-        <Route exact path='/index-5' element={<HomePageFive />} />
-        <Route exact path='/index-6' element={<HomePageSix />} />
-        <Route exact path='/index-7' element={<HomePageSeven />} />
+        <Route exact path='/index-5' element={<HomePageFive />} /> */}
+        <Route exact path='/dasboard1' element={<HomePageSix />} />
+        {/* <Route exact path='/index-7' element={<HomePageSeven />} />
         <Route exact path='/index-8' element={<HomePageEight />} />
         <Route exact path='/index-9' element={<HomePageNine />} />
         <Route exact path='/index-10' element={<HomePageTen />} />
-        <Route exact path='/index-11' element={<HomePageEleven />} />
+        <Route exact path='/index-11' element={<HomePageEleven />} /> */}
 
         {/* SL */}
-        <Route exact path='/add-user' element={<AddUserPage />} />
+        {/* <Route exact path='/add-user' element={<AddUserPage />} />
         <Route exact path='/alert' element={<AlertPage />} />
         <Route exact path='/assign-role' element={<AssignRolePage />} />
         <Route exact path='/avatar' element={<AvatarPage />} />
@@ -123,7 +126,7 @@ function App() {
         <Route exact path='/calendar-main' element={<CalendarMainPage />} />
         <Route exact path='/calendar' element={<CalendarMainPage />} />
         <Route exact path='/card' element={<CardPage />} />
-        <Route exact path='/carousel' element={<CarouselPage />} />
+        <Route exact path='/carousel' element={<CarouselPage />} /> */}
 
         <Route exact path='/chat-message' element={<ChatMessagePage />} />
         <Route exact path='/chat-profile' element={<ChatProfilePage />} />
@@ -220,6 +223,17 @@ function App() {
         <Route exact path='/widgets' element={<WidgetsPage />} />
         <Route exact path='/wizard' element={<WizardPage />} />
 
+
+
+
+
+
+
+
+
+
+        <Route exact path='/blogManager' element={<BlogManager />} />
+        <Route exact path='/webinar-manager' element={<WebinarManager />} />
         <Route exact path='*' element={<ErrorPage />} />
       </Routes>
     </BrowserRouter>

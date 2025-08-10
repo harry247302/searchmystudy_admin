@@ -1,6 +1,6 @@
 import MasterLayout from "../masterLayout/MasterLayout";
 import Breadcrumb from "../components/Breadcrumb";
-import TableDataLayer from "../components/TableDataLayer";
+import TableDataLayer from "../components/BlogManager";
 
 const TableDataPage = () => {
   return (
