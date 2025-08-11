@@ -1,6 +1,7 @@
 import MasterLayout from "../masterLayout/MasterLayout";
 import Breadcrumb from "../components/Breadcrumb";
-import png from "../assets/SearchMyStudy.png";
+import png1 from "../assets/profile.png";
+import png from "../assets/website-icon.jpg";
 import bgImage from "../assets/bg.jpg"; // your background image
 
 const HomePageOne = () => {
@@ -43,7 +44,7 @@ const HomePageOne = () => {
       flexDirection: "column",
       justifyContent: "center",
       alignItems: "center",
-      background: "rgba(255, 255, 255, 0.85)",
+      background: "rgba(255, 255, 255, 1)",
       borderRadius: "15px",
       padding: "30px 50px",
       boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",
@@ -52,11 +53,11 @@ const HomePageOne = () => {
       transition: "transform 0.25s ease, box-shadow 0.25s ease",
     },
     image: {
-      width: "900px",
-      height: "100px",
+      width: "600px",
+      height: "400px",
       objectFit: "cover",
       marginBottom: "15px",
-      border: "4px solid #eee",
+      // border: "4px solid #eee",
     },
     name: {
       fontSize: "1.5rem",
@@ -89,7 +90,7 @@ const HomePageOne = () => {
       <div style={styles.overlay}></div>
 
       {/* Left Card */}
-     <a href="/dasboard1">
+     <a href="/sign-in">
        <div
         style={styles.centerCard}
         onMouseEnter={handleMouseEnter}
@@ -106,7 +107,7 @@ const HomePageOne = () => {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <img src={png} alt="Profile" style={styles.image} />
+        <img src={png1} alt="Profile" style={styles.image} />
         <h4 style={styles.name}>Frenchise Admin</h4>
       </div>
     </div>

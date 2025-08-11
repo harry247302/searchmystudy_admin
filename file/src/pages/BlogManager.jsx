@@ -5,21 +5,51 @@ import "datatables.net-dt";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { fetchBlog } from "../slice/blogSlice";
+import { deleteBlog, fetchBlog } from "../slice/blogSlice";
 
 const BlogManager = () => {
   const dispatch = useDispatch();
   const [blog, setBlog] = useState([]);
+ const [selectedIds, setSelectedIds] = useState([]);
 
-  useEffect(() => {
-    const loadBlogs = async () => {
+const loadBlogs = async () => {
       const res = await dispatch(fetchBlog());
       if (res?.meta?.requestStatus === "fulfilled") {
         setBlog(res.payload);
       }
     };
+
+  useEffect(() => {   
     loadBlogs();
   }, [dispatch]);
+
+ const handleCheckboxChange = (id) => {
+    setSelectedIds((prevSelected) => {
+      if (prevSelected.includes(id)) {
+        // Remove if already selected
+        return prevSelected.filter((item) => item !== id);
+      } else {
+        // Add if not selected
+        return [...prevSelected, id];
+      }
+    });
+  };
+
+    const handleDelete = async (id) => {
+    try {
+      
+      const res = await dispatch(deleteBlog(selectedIds));
+      console.log(res);
+      loadBlogs();
+      // toast.success("Blog Deleted successfully")
+    } catch (error) {
+      console.log(error);
+
+      // toast.error('Error deleting testimonial');
+    }
+  };
+
+
 
   useEffect(() => {
     if (blog.length > 0) {
@@ -85,8 +115,12 @@ const BlogManager = () => {
                 <tr key={ele._id || ind}>
                   <td>
                     <div className="form-check style-check d-flex align-items-center">
-                      <input className="form-check-input" type="checkbox" />
-                      <label className="form-check-label">{ind + 1}</label>
+ <input
+                      type="checkbox"
+                      className="form-check-input"
+                      checked={selectedIds.includes(ele._id)}
+                      onChange={() => handleCheckboxChange(ele._id)}
+                    />                        <label className="form-check-label">{ind + 1}</label>
                     </div>
                   </td>
                   <td>
@@ -134,6 +168,7 @@ const BlogManager = () => {
                       <Icon icon="lucide:edit" />
                     </Link>
                     <Link
+                    onClick={handleDelete}
                       to="#"
                       className="w-32-px h-32-px me-8 bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center"
                     >

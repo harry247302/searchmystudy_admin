@@ -16,6 +16,24 @@ export const fetchBlog = createAsyncThunk(
   }
 );
 
+export const deleteBlog = createAsyncThunk(
+  'blogs/deleteBlog',
+  async (ids, { rejectWithValue }) => {
+    if (!ids || ids.length === 0) {
+      return rejectWithValue({ message: "No blog IDs provided" });
+    }
+    try {
+      const response = await axios.delete("https://searchmystudy.com/api/admin/blogs", {
+        data: { ids },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+
 const blogSlice = createSlice({
   name: 'blog',
   initialState: {
