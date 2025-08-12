@@ -127,7 +127,7 @@ const MasterLayout = ({ children }) => {
         <div className='sidebar-menu-area'>
           <ul className='sidebar-menu' id='sidebar-menu'>
             <li className='drodown bg-primary rounded ' >
-              <NavLink to='/index-6'>
+              <NavLink to='/dasboard1'>
                 <Icon
                   icon='solar:home-smile-angle-outline'
                   className='menu-icon text-white'
@@ -159,7 +159,7 @@ const MasterLayout = ({ children }) => {
          
             <li>
               <NavLink
-                to='/blogManager'
+                to='/blog-manager'
                 className={(navData) => (navData.isActive ? "active-page" : "")}
               >
                 <Icon

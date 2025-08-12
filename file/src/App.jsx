@@ -95,7 +95,6 @@ import ComingSoonPage from "./pages/ComingSoonPage";
 import AccessDeniedPage from "./pages/AccessDeniedPage";
 import MaintenancePage from "./pages/MaintenancePage";
 import BlankPagePage from "./pages/BlankPagePage";
-import BlogManager from "./pages/BlogManager";
 import WebinarManager from "./pages/WebinarManager";
 
 function App() {
@@ -117,7 +116,7 @@ function App() {
         <Route exact path='/index-11' element={<HomePageEleven />} /> */}
 
         {/* SL */}
-        {/* <Route exact path='/add-user' element={<AddUserPage />} />
+        <Route exact path='/add-user' element={<AddUserPage />} />
         <Route exact path='/alert' element={<AlertPage />} />
         <Route exact path='/assign-role' element={<AssignRolePage />} />
         <Route exact path='/avatar' element={<AvatarPage />} />
@@ -126,7 +125,7 @@ function App() {
         <Route exact path='/calendar-main' element={<CalendarMainPage />} />
         <Route exact path='/calendar' element={<CalendarMainPage />} />
         <Route exact path='/card' element={<CardPage />} />
-        <Route exact path='/carousel' element={<CarouselPage />} /> */}
+        <Route exact path='/carousel' element={<CarouselPage />} />
 
         <Route exact path='/chat-message' element={<ChatMessagePage />} />
         <Route exact path='/chat-profile' element={<ChatProfilePage />} />
@@ -155,7 +154,6 @@ function App() {
 
         <Route exact path='/blog' element={<BlogPage />} />
         <Route exact path='/blog-details' element={<BlogDetailsPage />} />
-        <Route exact path='/add-blog' element={<AddBlogPage />} />
 
         <Route exact path='/testimonials' element={<TestimonialsPage />} />
         <Route exact path='/coming-soon' element={<ComingSoonPage />} />
@@ -230,9 +228,7 @@ function App() {
 
 
 
-
-
-        <Route exact path='/blogManager' element={<BlogManager />} />
+        <Route exact path='/blog-manager' element={<AddBlogPage />} />
         <Route exact path='/webinar-manager' element={<WebinarManager />} />
         <Route exact path='*' element={<ErrorPage />} />
       </Routes>

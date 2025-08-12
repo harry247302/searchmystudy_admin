@@ -1,6 +1,7 @@
 import MasterLayout from "../masterLayout/MasterLayout";
 import Breadcrumb from "../components/Breadcrumb";
 import AddBlogLayer from "../components/AddBlogLayer";
+import BlogManager from "../components/BlogManager";
 
 const AddBlogPage = () => {
   return (
@@ -11,7 +12,7 @@ const AddBlogPage = () => {
         <Breadcrumb title='Blog Details' />
 
         {/* AddBlogLayer */}
-        <AddBlogLayer />
+        <BlogManager/>
       </MasterLayout>
     </>
   );

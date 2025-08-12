@@ -33,6 +33,40 @@ export const deleteBlog = createAsyncThunk(
   }
 );
 
+export const createBlogThunk = createAsyncThunk(
+  'blogs/createBlog',
+  async (blogData, thunkAPI) => {
+    try {
+      console.log("Sending blog data:", blogData);
+
+      const response = await fetch("https://searchmystudy.com/api/admin/Blog", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(blogData),
+      });
+
+      console.log("Response status:", response.status);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error response data:", errorData);
+        return thunkAPI.rejectWithValue(errorData);
+      }
+
+      const data = await response.json();
+      console.log("Success response data:", data);
+      return data;
+
+    } catch (error) {
+      console.error("Fetch error:", error);
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+
 
 const blogSlice = createSlice({
   name: 'blog',
@@ -55,7 +89,22 @@ const blogSlice = createSlice({
       .addCase(fetchBlog.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+
+
+       .addCase(createBlogThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createBlogThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.blogs = action.payload;
+      })
+      .addCase(createBlogThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      
   },
 });
 
