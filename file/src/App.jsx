@@ -95,7 +95,7 @@ import ComingSoonPage from "./pages/ComingSoonPage";
 import AccessDeniedPage from "./pages/AccessDeniedPage";
 import MaintenancePage from "./pages/MaintenancePage";
 import BlankPagePage from "./pages/BlankPagePage";
-import WebinarManager from "./pages/WebinarManager";
+import WebinarPage from "./pages/WebinarPage";
 
 function App() {
   return (
@@ -229,7 +229,7 @@ function App() {
 
 
         <Route exact path='/blog-manager' element={<AddBlogPage />} />
-        <Route exact path='/webinar-manager' element={<WebinarManager />} />
+        <Route exact path='/webinar-manager' element={<WebinarPage />} />
         <Route exact path='*' element={<ErrorPage />} />
       </Routes>
     </BrowserRouter>

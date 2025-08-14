@@ -1,6 +1,42 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+
+// Create Webinar
+export const createWebinar = createAsyncThunk(
+  'blogs/createBlog',
+  async (blogData, thunkAPI) => {
+    try {
+      console.log("Sending Webinar data:", blogData);
+
+      const response = await fetch("https://searchmystudy.com/api/admin/webinar", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(blogData),
+      });
+
+      console.log("Response status:", response.status);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error response data:", errorData);
+        return thunkAPI.rejectWithValue(errorData);
+      }
+
+      const data = await response.json();
+      console.log("Success response data:", data);
+      return data;
+
+    } catch (error) {
+      console.error("Fetch error:", error);
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+// Fetch Webinar
 export const fetchWebinar = createAsyncThunk(
   'webinar/fetchWebinar',
   async (_, { rejectWithValue }) => {
@@ -11,6 +47,24 @@ export const fetchWebinar = createAsyncThunk(
       return rejectWithValue(
         error.response?.data?.message || 'Something went wrong'
       );
+    }
+  }
+);
+
+// DeleteWebinar
+export const deleteWebinar = createAsyncThunk(
+  'blogs/deleteWebinar',
+  async (ids, { rejectWithValue }) => {
+    if (!ids || ids.length === 0) {
+      return rejectWithValue({ message: "No Webinar IDs provided" });
+    }
+    try {
+      const response = await axios.delete("https://searchmystudy.com/api/admin/webinar", {
+        data: { ids },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
