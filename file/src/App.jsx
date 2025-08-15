@@ -96,6 +96,7 @@ import AccessDeniedPage from "./pages/AccessDeniedPage";
 import MaintenancePage from "./pages/MaintenancePage";
 import BlankPagePage from "./pages/BlankPagePage";
 import WebinarPage from "./pages/WebinarPage";
+import ServicePage from "./pages/ServicePage";
 
 function App() {
   return (
@@ -108,7 +109,7 @@ function App() {
         <Route exact path='/index-3' element={<HomePageThree />} />
         <Route exact path='/index-4' element={<HomePageFour />} />
         <Route exact path='/index-5' element={<HomePageFive />} /> */}
-        <Route exact path='/dasboard1' element={<HomePageSix />} />
+        <Route exact path='/dasboard' element={<HomePageSix />} />
         {/* <Route exact path='/index-7' element={<HomePageSeven />} />
         <Route exact path='/index-8' element={<HomePageEight />} />
         <Route exact path='/index-9' element={<HomePageNine />} />
@@ -230,6 +231,7 @@ function App() {
 
         <Route exact path='/blog-manager' element={<AddBlogPage />} />
         <Route exact path='/webinar-manager' element={<WebinarPage />} />
+        <Route exact path='/service-manager' element={<ServicePage />} />
         <Route exact path='*' element={<ErrorPage />} />
       </Routes>
     </BrowserRouter>

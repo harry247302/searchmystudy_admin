@@ -50,7 +50,7 @@ const formik = useFormik({
   useEffect(() => {
     if (userInfo) {
       toast.success('Login Successful');
-      navigate('/dasboard1');
+      navigate('/dasboard');
     }
     if (error) {
       toast.error(error);

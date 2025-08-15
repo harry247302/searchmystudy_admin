@@ -169,7 +169,7 @@ const MasterLayout = ({ children }) => {
                 <span>Blog Manager</span>
               </NavLink>
             </li>
- <li>
+            <li>
               <NavLink
                 to='/webinar-manager'
                 className={(navData) => (navData.isActive ? "active-page" : "")}
@@ -179,6 +179,18 @@ const MasterLayout = ({ children }) => {
                   className='menu-icon'
                 />
                 <span>Webinar Management</span>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to='/service-manager'
+                className={(navData) => (navData.isActive ? "active-page" : "")}
+              >
+                <Icon
+                  icon='material-symbols:map-outline'
+                  className='menu-icon'
+                />
+                <span>Service Management</span>
               </NavLink>
             </li>
 
@@ -1838,7 +1850,7 @@ const MasterLayout = ({ children }) => {
         <div className='dashboard-main-body'>{children}</div>
 
         {/* Footer section */}
-        <footer className='d-footer'>
+        {/* <footer className='d-footer'>
           <div className='row align-items-center justify-content-between'>
             <div className='col-auto'>
               <p className='mb-0'>© 2025 WowDash. All Rights Reserved.</p>
@@ -1849,7 +1861,7 @@ const MasterLayout = ({ children }) => {
               </p>
             </div>
           </div>
-        </footer>
+        </footer> */}
       </main>
     </section>
   );
