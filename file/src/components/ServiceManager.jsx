@@ -28,7 +28,7 @@ const ServiceManager = () => {
 
       const res = await dispatch(deleteService(id));
       console.log(res);
-      loadWebinars();
+      loadServices();
       // toast.success("Blog Deleted successfully")
     } catch (error) {
       console.log(error);
