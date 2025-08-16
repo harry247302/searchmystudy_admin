@@ -193,6 +193,18 @@ const MasterLayout = ({ children }) => {
                 <span>Service Management</span>
               </NavLink>
             </li>
+            <li>
+              <NavLink
+                to='/counsellor-manager'
+                className={(navData) => (navData.isActive ? "active-page" : "")}
+              >
+                <Icon
+                  icon='material-symbols:map-outline'
+                  className='menu-icon'
+                />
+                <span>Counsellor Management</span>
+              </NavLink>
+            </li>
 
             {/* Invoice Dropdown */}
             <li className='dropdown'>

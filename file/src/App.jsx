@@ -97,6 +97,7 @@ import MaintenancePage from "./pages/MaintenancePage";
 import BlankPagePage from "./pages/BlankPagePage";
 import WebinarPage from "./pages/WebinarPage";
 import ServicePage from "./pages/ServicePage";
+import CounsellorPage from "./pages/CounsellorPage";
 
 function App() {
   return (
@@ -232,6 +233,7 @@ function App() {
         <Route exact path='/blog-manager' element={<AddBlogPage />} />
         <Route exact path='/webinar-manager' element={<WebinarPage />} />
         <Route exact path='/service-manager' element={<ServicePage />} />
+        <Route exact path='/counsellor-manager' element={<CounsellorPage />} />
         <Route exact path='*' element={<ErrorPage />} />
       </Routes>
     </BrowserRouter>
