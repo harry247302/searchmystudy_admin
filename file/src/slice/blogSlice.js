@@ -66,6 +66,38 @@ export const createBlogThunk = createAsyncThunk(
   }
 );
 
+// Thunk for fetching one blog
+export const GetOneBlog = createAsyncThunk(
+  'blog/getOne',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`https://searchmystudy.com/api/admin/Blog/${id}`);
+      return response.data;
+    } catch (error) {
+      // return error message
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+
+
+export const updateBlog = createAsyncThunk(
+  'blog/updateBlog',
+  async ({ form, id }, { rejectWithValue }) => {
+    try {
+      // PUT request to update the blog
+      const response = await axios.put(
+        `https://searchmystudy.com/api/admin/Blog/${id}`,
+        form
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
 
 
 const blogSlice = createSlice({
@@ -101,6 +133,20 @@ const blogSlice = createSlice({
         state.blogs = action.payload;
       })
       .addCase(createBlogThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+
+        .addCase(GetOneBlog.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(GetOneBlog.fulfilled, (state, action) => {
+        state.loading = false;
+        state.blogs = action.payload;
+      })
+      .addCase(GetOneBlog.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

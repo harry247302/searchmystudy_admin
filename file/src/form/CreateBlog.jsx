@@ -5,13 +5,13 @@ import { useDispatch } from "react-redux";
 
 import { ref, uploadBytes, getDownloadURL, getStorage } from "firebase/storage";
 // import { storage } from "../firebase"; // adjust path
-import { toast, ToastContainer } from "react-toastify";
+import {  toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { app } from "../firebase";
 // import { getStorage, uploadBytes, getDownloadURL } from 'firebase/storage';
 const storage = getStorage(app);
 
-export default function CreateBlog({ handleClose }) {
+export default function CreateBlog({ handleClose ,loadBlogs}) {
   const dispatch = useDispatch();
 
   const [form, setForm] = useState({
@@ -91,27 +91,32 @@ export default function CreateBlog({ handleClose }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async () => {
-    if (!validateForm()) {
-      toast.error("Please fill in all required fields.");
-      return;
-    }
+const handleSubmit = async () => {
+  if (!validateForm()) {
+    toast.error("Please fill in all required fields.");
+    return;
+  }
+  try {
+    const res = await dispatch(createBlogThunk(form));
+    console.log(res, "<<< Blog creation response >>>");
 
-    try {
-      const res = await dispatch(createBlogThunk(form));
-
-      if (createBlogThunk.fulfilled.match(res)) {
-        toast.success("Blog created successfully!");
-        handleClose();
-      } else if (createBlogThunk.rejected.match(res)) {
-        toast.error(
-          "Failed to create blog: " + (res.payload?.message || res.error.message || "Unknown error")
-        );
-      }
-    } catch (error) {
-      toast.error("Unexpected error: " + error.message);
+    if (createBlogThunk.fulfilled.match(res)) {
+      alert("✅ Blog created successfully!")
+      toast.success("✅ Blog created successfully!");
+      handleClose(); 
+      loadBlogs()
+    } else if (createBlogThunk.rejected.match(res)) {
+      // Failure case with detailed error
+      const errorMsg =
+        res.payload?.message || res.error?.message || "Unknown error occurred.";
+      toast.error("❌ Failed to create blog: " + errorMsg);
     }
-  };
+  } catch (error) {
+    // Unexpected runtime errors
+    toast.error("⚠️ Unexpected error: " + (error.message || "Something went wrong"));
+  }
+};
+
 
   return (
     <>

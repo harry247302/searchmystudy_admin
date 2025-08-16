@@ -4,7 +4,7 @@ import { Editor } from "@tinymce/tinymce-react";
 export default function TextEditor({content,setContent}) {
 
  
-console.log(content);
+// console.log(content);
 
   return (
     <div>

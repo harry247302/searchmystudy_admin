@@ -35,7 +35,8 @@ const formik = useFormik({
 
     if (loginUser.fulfilled.match(res)) {
       if (!res.payload.isVarified) {
-        toast.warning('Your account is not verified yet.');
+        console.log("your account is not verified!!!")
+        // toast.warning('Your account is not verified yet.');
         return;
       }
       toast.success('Login Successful');
