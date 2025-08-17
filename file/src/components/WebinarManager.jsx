@@ -17,12 +17,13 @@ const WebinarManager = () => {
 
   const loadWebinars = async () => {
     const res = await dispatch(fetchWebinar());
+    console.log(res,"-------------------------------------");
     
     if (res?.meta?.requestStatus === "fulfilled") {
       setWebinar(res.payload);
     }
   };
-  console.log(webinar, "------------------------");
+  // console.log(webinar, "------------------------");
 
   useEffect(() => {
     loadWebinars();

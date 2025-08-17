@@ -119,7 +119,7 @@ const CounsellorManager = () => {
                 {ele?.experience}
                 </td>
                 <td>
-                  <a href={ele?.imageURL} target="_blank" rel="noopener noreferrer">
+                  <a href={ele?.imageURL} target="_blank" >
                     Click to View
                   </a>
                 </td>

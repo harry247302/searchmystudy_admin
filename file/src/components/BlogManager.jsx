@@ -7,8 +7,9 @@ import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { deleteBlog, fetchBlog, GetOneBlog } from "../slice/blogSlice";
 import CreateBlog from "../form/CreateBlog";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 import UpdateBlog from "../form/UpdateBlog";
+import { toast } from "react-toastify";
 
 const BlogManager = () => {
   const dispatch = useDispatch();
@@ -33,6 +34,8 @@ const BlogManager = () => {
 
   useEffect(() => {
     loadBlogs();
+        // toast.success("✅ Blog deleted successfully!");
+    // alert("sadfg")
   }, [dispatch]);
 
   // Handle checkbox (select blogs)
@@ -102,7 +105,7 @@ const BlogManager = () => {
   const editHandler = async (id) => {
     try {
       const res = await dispatch(GetOneBlog(id))
-      // console.log(res, ":::::::::::::::::::::::::::::::::::::");
+      console.log(res, ":::::::}}}}}}}}}}}}}}}}}}}}}}}}}");
       if (res?.meta?.requestStatus === "fulfilled") {
         setUpdateBlog(res?.payload)
         setEditModal(true)
@@ -112,7 +115,7 @@ const BlogManager = () => {
     }
   }
   
-// console.log(updateBlog);
+console.log(updateBlog,":::::::::::::::::::::::::::::::::::::::");
 
   return (
     <div className="card basic-data-table">
@@ -197,6 +200,8 @@ const BlogManager = () => {
                     </div>
                   </th>
                   <th scope="col">Image</th>
+                  <th scope="col">Title</th>
+                
                   <th scope="col">Content</th>
                   <th scope="col">Thumbnail</th>
                   <th scope="col" className="dt-orderable-asc dt-orderable-desc">
@@ -228,6 +233,9 @@ const BlogManager = () => {
                       >
                         Click to view
                       </a>
+                    </td>
+                    <td>
+                     {ele?.title}
                     </td>
                     <td>
                       <div

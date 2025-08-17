@@ -82,13 +82,15 @@ export const GetOneBlog = createAsyncThunk(
 
 
 
-export const updateBlog = createAsyncThunk(
+export const blogUpdate = createAsyncThunk(
   'blog/updateBlog',
   async ({ form, id }, { rejectWithValue }) => {
     try {
+      console.log(id);
+      
       // PUT request to update the blog
       const response = await axios.put(
-        `https://searchmystudy.com/api/admin/Blog/${id}`,
+        ` https://searchmystudy.com/api/admin/Blog/${id}`,
         form
       );
       return response.data;

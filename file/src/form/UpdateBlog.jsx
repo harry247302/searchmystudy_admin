@@ -1,19 +1,21 @@
 import { useState } from "react";
 import TextEditor from "./TextEditor";
-import { createBlogThunk } from "../slice/blogSlice";
+import { blogUpdate, createBlogThunk } from "../slice/blogSlice";
 import { useDispatch } from "react-redux";
 
 import { ref, uploadBytes, getDownloadURL, getStorage } from "firebase/storage";
 // import { storage } from "../firebase"; // adjust path
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+// import { toast, ToastContainer } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
 import { app } from "../firebase";
+import { toast } from "react-toastify";
 // import { getStorage, uploadBytes, getDownloadURL } from 'firebase/storage';
 const storage = getStorage(app);
 
 export default function UpdateBlog({ handleClose, loadBlogs, updateBlog }) {
     const dispatch = useDispatch();
-
+    console.log(updateBlog);
+    
     const [form, setForm] = useState({
         title: updateBlog?.title || "",
         bannerURL: updateBlog?.bannerURL || "",
@@ -92,36 +94,39 @@ console.log(form);
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = async () => {
-        if (!validateForm()) {
-            toast.error("Please fill in all required fields.");
-            return;
-        }
-        try {
-            const res = await dispatch(createBlogThunk(form,updateBlog?._id));
-            console.log(form,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+        toast.error("Please fill in all required fields.");
+        return;
+    }
 
-            if (createBlogThunk.fulfilled.match(res)) {
-                alert("✅ Blog created successfully!")
-                toast.success("✅ Blog created successfully!");
-                handleClose();
-                loadBlogs()
-            } else if (createBlogThunk.rejected.match(res)) {
-                // Failure case with detailed error
-                const errorMsg =
-                    res.payload?.message || res.error?.message || "Unknown error occurred.";
-                toast.error("❌ Failed to create blog: " + errorMsg);
-            }
-        } catch (error) {
-            // Unexpected runtime errors
-            toast.error("⚠️ Unexpected error: " + (error.message || "Something went wrong"));
+    try {
+            const res = await dispatch(
+                blogUpdate({ form, id: updateBlog?._id })
+            );
+
+        console.log(res, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+
+        if (blogUpdate.fulfilled.match(res)) {
+            toast.success("✅ Blog updated successfully!");
+            handleClose();
+            loadBlogs();
+        } else if (blogUpdate.rejected.match(res)) {
+            const errorMsg =
+                res.payload?.message || res.error?.message || "Unknown error occurred.";
+            toast.error("❌ Failed to update blog: " + errorMsg);
         }
-    };
+    } catch (error) {
+        console.error(error);
+        toast.error("⚠️ Unexpected error: " + (error.message || "Something went wrong"));
+    }
+};
+
 
 
     return (
         <>
-            <ToastContainer />
+            {/* <ToastContainer /> */}
             <div className="modal d-block" style={{ background: "rgba(0,0,0,0.5)" }}>
                 <div className="modal-dialog" style={{ maxWidth: "800px" }}>
                     <div className="modal-content">
