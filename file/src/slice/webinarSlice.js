@@ -72,14 +72,16 @@ export const deleteWebinar = createAsyncThunk(
 // updateWebinar
 export const updateWebinar = createAsyncThunk(
   'blogs/updateWebinar',
-  async (id, data, { rejectWithValue }) => {
+  async ({id, data}, { rejectWithValue }) => {
     if (!id) {
       return rejectWithValue({ message: "No Webinar ID provided" });
     }
     try {
-      const response = await axios.delete(`https://searchmystudy.com/api/admin/webinar/${id}`,data);
+      const response = await axios.put(`https://searchmystudy.com/api/admin/webinar/${id}`,data);
       fetchWebinar();
-      return;
+      console.log("Update response:", response.data);
+      
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }

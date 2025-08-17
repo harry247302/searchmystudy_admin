@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { createWebinar } from "../slice/webinarSlice";
+import { createWebinar, updateWebinar } from "../slice/webinarSlice";
 import { app } from "../firebase";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { toast, ToastContainer } from "react-toastify";
@@ -8,18 +8,18 @@ import "react-toastify/dist/ReactToastify.css";
 
 const storage = getStorage(app);
 
-const CreateWebinar = ({ handleClose }) => {
+const CreateWebinar = ({  ele ,handleClose }) => {
   const dispatch = useDispatch();
 
   const [form, setForm] = useState({
-    trainer_name: "",
-    trainer_profession: "",
-    title: "",
-    weekday: "",
-    date: "",
-    timeStart: "",
-    timeEnd: "",
-    imageURL: "",
+    trainer_name: ele?.trainer_name || "",
+    trainer_profession: ele?.trainer_profession || '',
+    title: ele?.title || '',
+    weekday: ele?.weekday || '',
+    date: ele?.date || '',
+    timeStart:ele?.timeStart || "",
+    timeEnd:ele?.timeEnd ||  "",
+    imageURL:ele?.imageURL||''
   });
 
   const [uploads, setUploads] = useState({
@@ -85,11 +85,19 @@ const CreateWebinar = ({ handleClose }) => {
       toast.error("Please fill in all required fields.");
       return;
     }
-    try {
-      const res = await dispatch(createWebinar(form));
-      if (createWebinar.fulfilled.match(res)) {
-        toast.success("Webinar created successfully!");
-        handleClose();
+      try {
+      console.log("Form Data:", form);
+      
+      if (ele && ele._id) {
+        // Update existing webinar
+        const res = await dispatch(updateWebinar({id:ele._id,data: form}));
+        
+        if (updateWebinar.fulfilled.match(res)) {
+          alert("Webinar updated successfully!");
+          handleClose();
+        } else if (updateWebinar.rejected.match(res)) {
+          alert("Failed to update Webinar: " + (res.payload?.message || res.error.message || "Unknown error"));
+        }
       } else {
         const msg = res.payload?.message || res.error?.message || "Unknown error";
         toast.error("Failed to create Webinar: " + msg);
@@ -222,7 +230,7 @@ const CreateWebinar = ({ handleClose }) => {
                 Close
               </button>
               <button type="button" className="btn btn-primary" onClick={handleSubmit}>
-                Create Webinar
+                {ele && ele._id ?"Update webinar":"Create Webinar"}
               </button>
             </div>
           </div>

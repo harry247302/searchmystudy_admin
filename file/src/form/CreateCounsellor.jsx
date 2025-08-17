@@ -1,22 +1,22 @@
 import React, { useState } from "react";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useDispatch } from "react-redux";
-import { createCounsellor, updateCounsellor } from "../slice/counsellorSlice";
+import { createCounsellor, fetchCounsellor, updateCounsellor } from "../slice/counsellorSlice";
 import { app } from "../firebase";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const storage = getStorage(app);
 
-const CreateCounsellor = ({ handleClose, loadCounsellors }) => {
+const CreateCounsellor = ({ ele ,handleClose, loadCounsellors }) => {
   const dispatch = useDispatch();
 
   const [form, setForm] = useState({
-    name: "",
-    course: "",
-    experience: "",
+    name: ele?.name || "",
+    course:ele?.course || "",
+    experience:ele?.experience || "",
+    imageURL:ele?.imageURL || "",
     imageFile: null, // File object
-    imageURL: "", // Firebase URL
   });
 
   const [uploads, setUploads] = useState({
@@ -78,10 +78,10 @@ const CreateCounsellor = ({ handleClose, loadCounsellors }) => {
 
 const uploadImage = async (file) => {
   return new Promise((resolve, reject) => {
-    const storageRef = ref(storage, `counsellors/${file.name}`);
+    const storageRef = ref(storage, `counsellors/${file?.name}`);
 
     const metadata = {
-      contentType: file.type,          // sets correct MIME type
+      contentType: file?.type,          // sets correct MIME type
       contentDisposition: "inline",    // ensures browser opens in new tab
     };
 
@@ -109,40 +109,109 @@ const uploadImage = async (file) => {
 };
 
 
-  const handleSubmit = async () => {
-    if (!validateForm()) {
-      toast.error("Please fill in all required fields with valid image.");
-      return;
-    }
+//   const handleSubmit = async () => {
+//     console.log("Form Data:", form);
+//     console.log(form.imageURL);
+//     let formData = {}
+//     console.log(ele);
+    
+//     try {
+// if(form.imageURL){
+//             const imageUrl = await uploadImage(form.imageFile);
+//             formData = {
+//               name: form.name,
+//               course: form.course,
+//               experience: form.experience,
+//               imageURL: imageUrl,
+//             }
+//         } else{
+//             alert("Please upload an image")
+//         }
+        
+//          if (ele && ele._id) {
+//               console.log("FORM DATA", formData);
+              
+//               // Update existing webinar
+//               const res = await dispatch(updateCounsellor({id:ele._id,data:formData}));
+//               console.log(res);
+              
+              
+//               if (updateCounsellor.fulfilled.match(res)) {
+//                 alert("Counsellor updated successfully!");
+//                 handleClose();
+//               } else if (updateCounsellor.rejected.match(res)) {
+//                 alert("Failed to update Counsellor: " + (res.payload?.message || res.error.message || "Unknown error"));
+//               }
+//             } else {
+//                if (!validateForm()) {
+//       toast.error("Please fill in all required fields with valid image.");
+//       return;
+//     }
+//               // Create new counsellor
+//               const res = await dispatch(createCounsellor(formData));
+//             handleClose();
+              
+//               if (createCounsellor.fulfilled.match(res)) {
+//                 alert("Counsellor created successfully!");
+//                 handleClose();
+//               } else if (createCounsellor.rejected.match(res)) {
+//                 alert("Failed to create Counsellor: " + (res.payload?.message || res.error.message || "Unknown error"));
+//               }
+//             }
+//     }
+//      catch (error) {
+//       toast.error("Unexpected error: " + error.message);
+//     }
+//   };
+
+
+const handleSubmit = async () =>{
+  let formData = {};
+  if(form?.imageURL){
+    const imageUrl = await uploadImage(form.imageFile);
+    formData = {
+      name: form?.name,
+      course: form?.course,
+      experience: form?.experience,
+      imageURL: imageUrl,
+    };
+    
 
     try {
-      let imageUrl = form.imageURL;
-      if (form.imageFile) {
-        imageUrl = await uploadImage(form.imageFile);
-      }
-
-      const formData = {
-        name: form.name,
-        course: form.course,
-        experience: form.experience,
-        imageURL: imageUrl,
-      };
-
-      const res = await dispatch(createCounsellor(formData));
-
-      if (createCounsellor.fulfilled.match(res)) {
-        toast.success("Counsellor created successfully!");
-        handleClose();
-        loadCounsellors && loadCounsellors();
-      } else {
-        const msg = res.payload?.message || res.error?.message || "Unknown error";
-        toast.error("Failed to create counsellor: " + msg);
+      if(ele && ele._id){
+        // update existing counsellor
+        const res = await dispatch(updateCounsellor({id: ele._id, data: formData}));
+        if (updateCounsellor.fulfilled.match(res)) {  
+          toast.success("Counsellor updated successfully!");
+          dispatch(fetchCounsellor());
+          handleClose();
+        }else if (updateCounsellor.rejected.match(res)) {
+          toast.error("Failed to update Counsellor: " + (res.payload?.message || res.error.message || "Unknown error"));
+        } else{
+          toast.error("Failed to update Counsellor: " + (res.payload?.message || res.error.message || "Unknown error"));
+        }
+      }else{
+        // create new counsellor
+        if (!validateForm()) {
+          toast.error("Please fill in all required fields with valid image.");
+          return;
+        }
+        const res = await dispatch(createCounsellor(formData));
+        if (createCounsellor.fulfilled.match(res)) {
+          toast.success("Counsellor created successfully!");
+          dispatch(fetchCounsellor());
+          handleClose();
+        } else if (createCounsellor.rejected.match(res)) {
+          toast.error("Failed to create Counsellor: " + (res.payload?.message || res.error.message || "Unknown error"));
+        } else{
+          toast.error("Failed to create Counsellor: " + (res.payload?.message || res.error.message || "Unknown error"));
+        }
       }
     } catch (error) {
       toast.error("Unexpected error: " + error.message);
     }
-  };
-
+  }
+}
   return (
     <>
       <ToastContainer />
@@ -215,7 +284,7 @@ const uploadImage = async (file) => {
                 Close
               </button>
               <button className="btn btn-primary" onClick={handleSubmit}>
-                Create Counsellor
+                {ele && ele._id? "Update Counsellor" :"Create counsellor"}
               </button>
             </div>
           </div>
