@@ -39,6 +39,21 @@ export const deleteCounsellor = createAsyncThunk(
     async(id,{ rejectWithValue })=>{
         try {
             const response = await axios.delete(`https://searchmystudy.com/api/admin/DeleteCounsellors/${id}`)
+            fetchCounsellor();
+            return response?.data;
+        } catch (error) {
+            return rejectWithValue(error?.response?.data || error.message)
+        }
+    }
+);
+// update Counsellor
+export const updateCounsellor = createAsyncThunk(
+    'counsellor/updateCounsellor',
+    async({id,data},{ rejectWithValue })=>{
+        try {
+            const response = await axios.delete(`https://searchmystudy.com/api/admin/UpdateCounsellors/${id}`,data)
+            fetchCounsellor()
+            return response?.data;
         } catch (error) {
             return rejectWithValue(error?.response?.data || error.message)
         }

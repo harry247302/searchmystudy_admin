@@ -4,29 +4,23 @@ import "datatables.net-dt";
 
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link } from "react-router-dom";
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { deleteCounsellor, fetchCounsellor } from "../slice/counsellorSlice";
 import CreateService from "../form/CreateService";
 import CreateCounsellor from "../form/CreateCounsellor";
 
 const CounsellorManager = () => {
   const dispatch = useDispatch();
-  const [counsellor, setCounsellor] = useState([]);
+  const {counsellors} = useSelector((state)=>state.counsellor);
   const [showModal, setShowModal] = useState(false);
+  const [editingCounsellor, setEditingCounsellor] = useState(null);
 
-  const loadCounsellors = async()=>{
-    const res = await dispatch(fetchCounsellor());
-    if(res?.meta?.requestStatus === "fulfilled"){
-      setCounsellor(res.payload);
-    }
-  };
-  console.log(counsellor, "-----------------------------------");
 
   const handleDelete = async (id) => {
     try {
       const res = await dispatch(deleteCounsellor(id));
       console.log(res);
-      loadCounsellors();
+      dispatch(fetchCounsellor())
       // toast.success("Blog Deleted successfully")
     } catch (error) {
       console.log(error);
@@ -36,11 +30,11 @@ const CounsellorManager = () => {
   };
 
   useEffect(() => {
-    loadCounsellors();
+    dispatch(fetchCounsellor())
   }, [dispatch]);
 
   useEffect(() => {
-    if (counsellor.length > 0) {
+    if (counsellors.length > 0) {
       const table = $("#dataTable").DataTable({
         pageLength: 10,
       });
@@ -48,7 +42,7 @@ const CounsellorManager = () => {
         table.destroy(true);
       };
     }
-  }, [counsellor]);
+  }, [counsellors]);
   
   return (
     <div className="card basic-data-table">
@@ -63,7 +57,10 @@ const CounsellorManager = () => {
       Add Counsellors
     </button>
 
-    {showModal && <CreateCounsellor handleClose={() => setShowModal(false)} />}
+    {showModal && <CreateCounsellor ele={editingCounsellor} handleClose={() => {
+        setShowModal(false);
+        setEditingCounsellor(null);
+        }} />}
   </div>
     </div>
     <div className="card-body overflow-x-auto">
@@ -104,7 +101,7 @@ const CounsellorManager = () => {
             </tr>
           </thead>
           <tbody>
-            {counsellor.map((ele, ind) => (
+            {counsellors?.map((ele, ind) => (
               <tr key={ele._id || ind}>
                 <td>
                   {ind+1}

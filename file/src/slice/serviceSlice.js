@@ -13,6 +13,7 @@ export const createService = createAsyncThunk(
         serviceData
       );
       console.log("Response status:", response.status);
+      fetchServices();
       return response.data;
     } catch (error) {
       console.error("Fetch error:", error);
@@ -42,6 +43,24 @@ export const deleteService = createAsyncThunk(
     async (id, { rejectWithValue }) => {
       try {
         const response = await axios.delete(`https://searchmystudy.com/api/admin/DeleteService/${id}`);
+        fetchServices()
+        return response.data;
+      } catch (error) {
+        return rejectWithValue(error.response?.data || error.message);
+      }
+    }
+  );
+// update Services
+export const updateService = createAsyncThunk(
+    'services/updateServices',
+    async ({id, data}, { rejectWithValue }) => {
+      try {
+        console.log(id);
+        console.log(data);
+        
+        const response = await axios.put(`https://searchmystudy.com/api/admin/UpdateServices/${id}`,data);
+        console.log("response"+response.data);
+        fetchServices()
         return response.data;
       } catch (error) {
         return rejectWithValue(error.response?.data || error.message);

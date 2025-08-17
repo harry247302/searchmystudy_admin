@@ -1,16 +1,20 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { createWebinar } from "../slice/webinarSlice";
+import { updateWebinar } from "../slice/webinarSlice"; // Added updateWebinar import
 
-const CreateWebinar = ({ handleClose }) => {
+const CreateWebinar = ({ ele, handleClose }) => {  
   const [form, setForm] = useState({
-    trainer_name: "",
-    trainer_profession:'',
-    title:'',
-    weekday:'',
-    date:'',
+    trainer_name: ele?.trainer_name || "",
+    trainer_profession: ele?.trainer_profession || '',
+    title: ele?.title || '',
+    weekday: ele?.weekday || '',
+    date: ele?.date || '',
     imageURL:''
   });
+
+  console.log(form,")))))))))))))))000");
+  
   const [errors, setErrors] = useState({});     // To store validation errors
 
   const dispatch = useDispatch();
@@ -58,13 +62,27 @@ const CreateWebinar = ({ handleClose }) => {
 
     try {
       console.log("Form Data:", form);
-      const res = await dispatch(createWebinar(form));
-
-      if (createWebinar.fulfilled.match(res)) {
-        alert("Webinar created successfully!");
-        // Optionally reset form or close modal here
-      } else if (createWebinar.rejected.match(res)) {
-        alert("Failed to create Webinar: " + (res.payload?.message || res.error.message || "Unknown error"));
+      
+      if (ele && ele._id) {
+        // Update existing webinar
+        const res = await dispatch(updateWebinar(ele._id, form));
+        
+        if (updateWebinar.fulfilled.match(res)) {
+          alert("Webinar updated successfully!");
+          handleClose();
+        } else if (updateWebinar.rejected.match(res)) {
+          alert("Failed to update Webinar: " + (res.payload?.message || res.error.message || "Unknown error"));
+        }
+      } else {
+        // Create new webinar
+        const res = await dispatch(createWebinar(form));
+        
+        if (createWebinar.fulfilled.match(res)) {
+          alert("Webinar created successfully!");
+          handleClose();
+        } else if (createWebinar.rejected.match(res)) {
+          alert("Failed to create Webinar: " + (res.payload?.message || res.error.message || "Unknown error"));
+        }
       }
     } catch (error) {
       alert("Unexpected error: " + error.message);
@@ -180,7 +198,7 @@ const CreateWebinar = ({ handleClose }) => {
             Close
           </button>
           <button type="button" className="btn btn-primary" onClick={handleSubmit}>
-            Create Webinar
+           { ele && ele._id ? "Update Webinar" : "Create Webinar"}
           </button>
         </div>
       </div>
