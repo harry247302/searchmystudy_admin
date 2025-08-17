@@ -125,6 +125,10 @@ const CounsellorManager = () => {
                 </td>
                 <td>
                   <Link
+                  onClick={() => {
+                    setEditingCounsellor(ele);
+                    setShowModal(true);
+                  }}
                     to="#"
                     className="w-32-px h-32-px me-8 bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center"
                   >
