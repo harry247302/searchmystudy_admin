@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useDispatch } from "react-redux";
-import { createCounsellor } from "../slice/counsellorSlice";
+import { createCounsellor, updateCounsellor } from "../slice/counsellorSlice";
 import { app } from "../firebase";
 
 const storage = getStorage(app)
 
-const CreateCounsellor = ({ handleClose }) => {
+const CreateCounsellor = ({ ele ,handleClose }) => {
   const [form, setForm] = useState({
-    name: "",
-    course: "",
-    experience: "",
-    imageURL: "",
+    name: ele?.name || "",
+    course:ele?.course || "",
+    experience:ele?.experience || "",
+    imageURL:ele?.imageURL || "",
   });
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
@@ -72,8 +72,32 @@ const CreateCounsellor = ({ handleClose }) => {
                 experience: form.experience,
                 imageURL:imageUrl,  
             }
-            const res = await dispatch(createCounsellor(formData));
+            if (ele && ele._id) {
+              console.log("Hello");
+              
+              // Update existing webinar
+              const res = await dispatch(updateCounsellor({id:ele._id,data:form}));
+              console.log(res);
+              
+              
+              if (updateCounsellor.fulfilled.match(res)) {
+                alert("Counsellor updated successfully!");
+                handleClose();
+              } else if (updateCounsellor.rejected.match(res)) {
+                alert("Failed to update Counsellor: " + (res.payload?.message || res.error.message || "Unknown error"));
+              }
+            } else {
+              // Create new counsellor
+              const res = await dispatch(createCounsellor(formData));
             handleClose();
+              
+              if (createCounsellor.fulfilled.match(res)) {
+                alert("Counsellor created successfully!");
+                handleClose();
+              } else if (createCounsellor.rejected.match(res)) {
+                alert("Failed to create Counsellor: " + (res.payload?.message || res.error.message || "Unknown error"));
+              }
+            }
         } else{
             alert("Please upload an image")
         }
@@ -160,7 +184,7 @@ const CreateCounsellor = ({ handleClose }) => {
             Close
           </button>
           <button type="button" className="btn btn-primary" onClick={handleSubmit}>
-            Create counsellor
+            {ele && ele._id? "Update Counsellor" :"Create counsellor"}
           </button>
         </div>
       </div>
