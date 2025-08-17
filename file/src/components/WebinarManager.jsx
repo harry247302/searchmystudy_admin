@@ -11,19 +11,10 @@ import CreateWebinar from "../form/CreateWebinar";
 const WebinarManager = () => {
   const dispatch = useDispatch();
   const {webinars} = useSelector((state)=>state.webinar)
-  const [webinar, setWebinar] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
   const [editingWebinar, setEditingWebinar] = useState(null);
 
-  console.log(webinars,"++++++++++++++++++");
-  
-
-
-  // const loadWebinars = async () => {
-  //   const res = await dispatch(fetchWebinar());
-  // };
   useEffect(() => {
     dispatch(fetchWebinar());
   }, [dispatch]);
@@ -44,6 +35,7 @@ const WebinarManager = () => {
     try {
 
       const res = await dispatch(deleteBlog(selectedIds));
+      dispatch(fetchWebinar());
       console.log(res);
       // toast.success("Blog Deleted successfully")
     } catch (error) {

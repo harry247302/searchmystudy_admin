@@ -1,5 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HomePageOne from "./pages/HomePageOne";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // 👈 import styles
+
 import HomePageTwo from "./pages/HomePageTwo";
 import HomePageThree from "./pages/HomePageThree";
 import HomePageFour from "./pages/HomePageFour";
@@ -103,6 +106,19 @@ function App() {
   return (
     <BrowserRouter>
       <RouteScrollToTop />
+          <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored" // options: "light", "dark", "colored"
+      />
+
       <Routes>
         <Route exact path='/' element={<HomePageOne />} />
         {/* <Route exact path='/' element={<HomePageOne />} />

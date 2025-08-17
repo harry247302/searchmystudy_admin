@@ -51,7 +51,7 @@ export const updateCounsellor = createAsyncThunk(
     'counsellor/updateCounsellor',
     async({id,data},{ rejectWithValue })=>{
         try {
-            const response = await axios.delete(`https://searchmystudy.com/api/admin/UpdateCounsellors/${id}`,data)
+            const response = await axios.put(`https://searchmystudy.com/api/admin/UpdateCounsellors/${id}`,data)
             fetchCounsellor()
             return response?.data;
         } catch (error) {
