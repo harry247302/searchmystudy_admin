@@ -1,42 +1,42 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { createService } from "../slice/serviceSlice";
+import { createService, updateService } from "../slice/serviceSlice";
 
-const CreateService = ({ handleClose }) => {
+const CreateService = ({ ele, handleClose }) => {
   const [form, setForm] = useState({
-    title: '',
-    banner: '',
-    heading: '',
+    title: ele?.title || '',
+    banner: ele?.banner || '',
+    heading: ele?.heading || '',
     card: {
-      title: '',
-      cardImage: '',
-      shortDescription: ''
+      title: ele?.card?.title || '',
+      cardImage: ele?.card?.cardImage ||  '',
+      shortDescription: ele?.card?.shortDescription || '',
     },
     cardExpanded: false, // New state for card expansion
     sectionOne: {
-      heroOne: '',
-      content: ''
+      heroOne: ele?.sectionOne?.heroOne || '',
+      content: ele?.sectionOne?.content || '',
     },
     sectionOneExpanded: false, // New state for section one expansion
     sectionTwo: {
-      heroTwo: '',
-      content: ''
+      heroTwo: ele?.sectionTwo?.heroTwo || '',
+      content: ele?.sectionTwo?.content || ''
     },
     sectionTwoExpanded: false, // New state for section two expansion
     sectionThree: {
-      heroThree: '',
-      content: ''
+      heroThree: ele?.sectionThree?.heroThree || '',
+      content: ele?.sectionThree?.content || ''
     },
     sectionThreeExpanded: false, // New state for section three expansion
     elegiblity: {
-      title: '',
-      pointerOne: '',
-      pointerTwo: '',
-      pointerThree: '',
-      pointerFour: '',
-      pointerFive: '',
-      pointerSix: '',
-      pointerSeven: ''
+      title: ele?.elegiblity?.title || '',
+      pointerOne: ele?.elegiblity?.pointerOne || '',
+      pointerTwo: ele?.elegiblity?.pointerTwo || '',
+      pointerThree: ele?.elegiblity?.pointerThree || '',
+      pointerFour: ele?.elegiblity?.pointerFour || '',
+      pointerFive: ele?.elegiblity?.pointerFive || '',
+      pointerSix: ele?.elegiblity?.pointerSix || '',
+      pointerSeven: ele?.elegiblity?.pointerSeven || ''
     },
     elegiblityExpanded: false // New state for Elegibility expansion
   });
@@ -86,15 +86,42 @@ const CreateService = ({ handleClose }) => {
     }
 
     try {
-      console.log("Form Data:", form);
-      const res = await dispatch(createService(form));
 
-      if (createService.fulfilled.match(res)) {
-        alert("Service created successfully!");
-        // Optionally reset form or close modal here
-      } else if (createService.rejected.match(res)) {
-        alert("Failed to create Service: " + (res.payload?.message || res.error.message || "Unknown error"));
+      if (ele && ele._id) {
+        console.log("Hello");
+        
+        // Update existing webinar
+        const res = await dispatch(updateService({id:ele._id,data:form}));
+        console.log(res);
+        
+        
+        if (updateService.fulfilled.match(res)) {
+          alert("Service updated successfully!");
+          handleClose();
+        } else if (updateService.rejected.match(res)) {
+          alert("Failed to update Service: " + (res.payload?.message || res.error.message || "Unknown error"));
+        }
+      } else {
+        // Create new webinar
+        const res = await dispatch(createService(form));
+        
+        if (createService.fulfilled.match(res)) {
+          alert("Service created successfully!");
+          handleClose();
+        } else if (createService.rejected.match(res)) {
+          alert("Failed to create Service: " + (res.payload?.message || res.error.message || "Unknown error"));
+        }
       }
+
+      // console.log("Form Data:", form);
+      // const res = await dispatch(createService(form));
+
+      // if (createService.fulfilled.match(res)) {
+      //   alert("Service created successfully!");
+      //   // Optionally reset form or close modal here
+      // } else if (createService.rejected.match(res)) {
+      //   alert("Failed to create Service: " + (res.payload?.message || res.error.message || "Unknown error"));
+      // }
     } catch (error) {
       alert("Unexpected error: " + error.message);
     }
@@ -654,7 +681,7 @@ const CreateService = ({ handleClose }) => {
             Close
           </button>
           <button type="button" className="btn btn-primary" onClick={handleSubmit}>
-            Create Service
+          { ele && ele._id ? "Update Service" : "Create Service"}
           </button>
         </div>
       </div>

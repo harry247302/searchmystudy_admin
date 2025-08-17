@@ -4,45 +4,39 @@ import "datatables.net-dt";
 
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { deleteService, fetchServices } from "../slice/serviceSlice";
 import CreateService from "../form/CreateService";
 
 
 const ServiceManager = () => {
   const dispatch = useDispatch();
-  const [service, setService] = useState([]);
+  const {services} = useSelector((state)=>state.service);
   const [showModal, setShowModal] = useState(false);
+  const [editingService, setEditingService] = useState(null);
 
-  const loadServices = async () => {
-    const res = await dispatch(fetchServices());
-
-    if (res?.meta?.requestStatus === "fulfilled") {
-      setService(res.payload);
-    }
-  };
-  console.log(service, "------------------------");
 
   const handleDelete = async (id) => {
     try {
 
       const res = await dispatch(deleteService(id));
       console.log(res);
-      loadServices();
       // toast.success("Blog Deleted successfully")
     } catch (error) {
       console.log(error);
-
       // toast.error('Error deleting testimonial');
     }
   };
 
+  console.log(services);
+  
+
   useEffect(() => {
-    loadServices();
+    dispatch(fetchServices())
   }, [dispatch]);
 
   useEffect(() => {
-    if (service.length > 0) {
+    if (services?.length > 0) {
       const table = $("#dataTable").DataTable({
         pageLength: 10,
       });
@@ -50,7 +44,7 @@ const ServiceManager = () => {
         table.destroy(true);
       };
     }
-  }, [service]);
+  }, [services]);
   return(
     <div className="card basic-data-table">
     <div className="card-header" style={{ display: "flex", justifyContent: "space-between" }}>
@@ -64,7 +58,10 @@ const ServiceManager = () => {
       Add Services
     </button>
 
-    {showModal && <CreateService handleClose={() => setShowModal(false)} />}
+    {showModal && <CreateService ele={editingService} handleClose={() => {
+        setShowModal(false);
+        setEditingService(null);
+        }} />}
   </div>
     </div>
     <div className="card-body overflow-x-auto">
@@ -104,7 +101,7 @@ const ServiceManager = () => {
             </tr>
           </thead>
           <tbody>
-            {service.map((ele, ind) => (
+            {services?.map((ele, ind) => (
               <tr key={ele._id || ind}>
                 <td>
                   {ind+1}
@@ -138,6 +135,10 @@ const ServiceManager = () => {
                 </td>
                 <td>
                   <Link
+                  onClick={() => {
+                    setEditingService(ele);
+                    setShowModal(true);
+                  }}
                     to="#"
                     className="w-32-px h-32-px me-8 bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center"
                   >

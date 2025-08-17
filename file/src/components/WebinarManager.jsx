@@ -4,12 +4,13 @@ import "datatables.net-dt";
 
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link } from "react-router-dom";
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { fetchWebinar } from '../slice/webinarSlice';
 import CreateWebinar from "../form/CreateWebinar";
 
 const WebinarManager = () => {
   const dispatch = useDispatch();
+  const {webinars} = useSelector((state)=>state.webinar)
   const [webinar, setWebinar] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -26,7 +27,7 @@ const WebinarManager = () => {
   // console.log(webinar, "------------------------");
 
   useEffect(() => {
-    loadWebinars();
+    dispatch(fetchWebinar());
   }, [dispatch]);
 
   const handleCheckboxChange = (id) => {
@@ -46,7 +47,6 @@ const WebinarManager = () => {
 
       const res = await dispatch(deleteBlog(selectedIds));
       console.log(res);
-      loadWebinars();
       // toast.success("Blog Deleted successfully")
     } catch (error) {
       console.log(error);
@@ -55,7 +55,7 @@ const WebinarManager = () => {
     }
   };
   useEffect(() => {
-    if (webinar.length > 0) {
+    if (webinars?.length > 0) {
       const table = $("#dataTable").DataTable({
         pageLength: 10,
       });
@@ -63,7 +63,7 @@ const WebinarManager = () => {
         table.destroy(true);
       };
     }
-  }, [webinar]);
+  }, [webinars]);
   return (
     <div className="card basic-data-table">
       <div className="card-header" style={{ display: "flex", justifyContent: "space-between" }}>
@@ -77,7 +77,10 @@ const WebinarManager = () => {
         Add Webinar
       </button>
 
-      {showModal && <CreateWebinar handleClose={() => setShowModal(false)} />}
+      {showModal && <CreateWebinar ele={editingWebinar} handleClose={() => {
+        setShowModal(false);
+        setEditingWebinar(null);
+      }} />}
     </div>
       </div>
       <div className="card-body overflow-x-auto">
@@ -126,7 +129,7 @@ const WebinarManager = () => {
               </tr>
             </thead>
             <tbody>
-              {webinar.map((ele, ind) => (
+              {webinars?.map((ele, ind) => (
                 <tr key={ele._id || ind}>
                   <td>
                     <div className="form-check style-check d-flex align-items-center">
@@ -166,6 +169,10 @@ const WebinarManager = () => {
                   </td>
                   <td>
                     <Link
+                      onClick={() => {
+                        setEditingWebinar(ele);
+                        setShowModal(true);
+                      }}
                       to="#"
                       className="w-32-px h-32-px me-8 bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center"
                     >

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useDispatch } from "react-redux";
-import { createCounsellor } from "../slice/counsellorSlice";
+import { createCounsellor, updateCounsellor } from "../slice/counsellorSlice";
 import { app } from "../firebase";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -76,31 +76,38 @@ const CreateCounsellor = ({ handleClose, loadCounsellors }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const uploadImage = async (file) => {
-    return new Promise((resolve, reject) => {
-      const storageRef = ref(storage, `counsellors/${file.name}`);
-      const uploadTask = uploadBytesResumable(storageRef, file);
+const uploadImage = async (file) => {
+  return new Promise((resolve, reject) => {
+    const storageRef = ref(storage, `counsellors/${file.name}`);
 
-      setUploads((prev) => ({ ...prev, image: { ...prev.image, loading: true } }));
+    const metadata = {
+      contentType: file.type,          // sets correct MIME type
+      contentDisposition: "inline",    // ensures browser opens in new tab
+    };
 
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setUploads((prev) => ({ ...prev, image: { ...prev.image, progress } }));
-        },
-        (error) => {
-          setUploads((prev) => ({ ...prev, image: { ...prev.image, loading: false, progress: 0 } }));
-          reject(error);
-        },
-        async () => {
-          const url = await getDownloadURL(uploadTask.snapshot.ref);
-          setUploads((prev) => ({ ...prev, image: { ...prev.image, loading: false, progress: 100 } }));
-          resolve(url);
-        }
-      );
-    });
-  };
+    const uploadTask = uploadBytesResumable(storageRef, file, metadata);
+
+    setUploads((prev) => ({ ...prev, image: { ...prev.image, loading: true } }));
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setUploads((prev) => ({ ...prev, image: { ...prev.image, progress } }));
+      },
+      (error) => {
+        setUploads((prev) => ({ ...prev, image: { ...prev.image, loading: false, progress: 0 } }));
+        reject(error);
+      },
+      async () => {
+        const url = await getDownloadURL(uploadTask.snapshot.ref);
+        setUploads((prev) => ({ ...prev, image: { ...prev.image, loading: false, progress: 100 } }));
+        resolve(url);
+      }
+    );
+  });
+};
+
 
   const handleSubmit = async () => {
     if (!validateForm()) {

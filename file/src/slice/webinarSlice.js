@@ -27,6 +27,7 @@ export const createWebinar = createAsyncThunk(
 
       const data = await response.json();
       console.log("Success response data:", data);
+      fetchWebinar();
       return data;
 
     } catch (error) {
@@ -63,6 +64,22 @@ export const deleteWebinar = createAsyncThunk(
         data: { ids },
       });
       return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+// updateWebinar
+export const updateWebinar = createAsyncThunk(
+  'blogs/updateWebinar',
+  async (id, data, { rejectWithValue }) => {
+    if (!id) {
+      return rejectWithValue({ message: "No Webinar ID provided" });
+    }
+    try {
+      const response = await axios.delete(`https://searchmystudy.com/api/admin/webinar/${id}`,data);
+      fetchWebinar();
+      return;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }
