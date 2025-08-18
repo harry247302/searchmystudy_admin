@@ -56,6 +56,8 @@ export const fetchWebinar = createAsyncThunk(
 export const deleteWebinar = createAsyncThunk(
   'blogs/deleteWebinar',
   async (ids, { rejectWithValue }) => {
+    console.log(ids);
+    
     if (!ids || ids.length === 0) {
       return rejectWithValue({ message: "No Webinar IDs provided" });
     }

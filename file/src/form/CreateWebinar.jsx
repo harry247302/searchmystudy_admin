@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const storage = getStorage(app);
 
-const CreateWebinar = ({  ele ,handleClose }) => {
+const CreateWebinar = ({ ele, handleClose }) => {
   const dispatch = useDispatch();
 
   const [form, setForm] = useState({
@@ -17,9 +17,9 @@ const CreateWebinar = ({  ele ,handleClose }) => {
     title: ele?.title || '',
     weekday: ele?.weekday || '',
     date: ele?.date || '',
-    timeStart:ele?.timeStart || "",
-    timeEnd:ele?.timeEnd ||  "",
-    imageURL:ele?.imageURL||''
+    timeStart: ele?.timeStart || "",
+    timeEnd: ele?.timeEnd || "",
+    imageURL: ele?.imageURL || ''
   });
 
   const [uploads, setUploads] = useState({
@@ -85,13 +85,13 @@ const CreateWebinar = ({  ele ,handleClose }) => {
       toast.error("Please fill in all required fields.");
       return;
     }
-      try {
+    try {
       console.log("Form Data:", form);
-      
+
       if (ele && ele._id) {
         // Update existing webinar
-        const res = await dispatch(updateWebinar({id:ele._id,data: form}));
-        
+        const res = await dispatch(updateWebinar({ id: ele._id, data: form }));
+
         if (updateWebinar.fulfilled.match(res)) {
           alert("Webinar updated successfully!");
           handleClose();
@@ -99,8 +99,15 @@ const CreateWebinar = ({  ele ,handleClose }) => {
           alert("Failed to update Webinar: " + (res.payload?.message || res.error.message || "Unknown error"));
         }
       } else {
-        const msg = res.payload?.message || res.error?.message || "Unknown error";
-        toast.error("Failed to create Webinar: " + msg);
+        const res = await dispatch(createWebinar(form))
+        if (res.type === "blogs/createBlog/fulfilled") {
+          toast.success("✅ Webinar created:", res.payload);
+          handleClose()
+          // show success toast / redirect
+        } else if (res.type === "blogs/createBlog/rejected") {
+          toast.error("❌ Webinar creation failed:", res.error?.message || "Unknown error");
+          // show error toast
+        }
       }
     } catch (error) {
       toast.error("Unexpected error: " + error.message);
@@ -230,7 +237,7 @@ const CreateWebinar = ({  ele ,handleClose }) => {
                 Close
               </button>
               <button type="button" className="btn btn-primary" onClick={handleSubmit}>
-                {ele && ele._id ?"Update webinar":"Create Webinar"}
+                {ele && ele._id ? "Update webinar" : "Create Webinar"}
               </button>
             </div>
           </div>

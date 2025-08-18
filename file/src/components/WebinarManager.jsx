@@ -1,16 +1,16 @@
-import  React,{ useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import $ from "jquery";
 import "datatables.net-dt";
 
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchWebinar } from '../slice/webinarSlice';
+import { deleteWebinar, fetchWebinar } from '../slice/webinarSlice';
 import CreateWebinar from "../form/CreateWebinar";
 
 const WebinarManager = () => {
   const dispatch = useDispatch();
-  const {webinars} = useSelector((state)=>state.webinar)
+  const { webinars } = useSelector((state) => state.webinar)
   const [selectedIds, setSelectedIds] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingWebinar, setEditingWebinar] = useState(null);
@@ -33,9 +33,9 @@ const WebinarManager = () => {
 
   const handleDelete = async (id) => {
     try {
+      console.log(selectedIds, "|||||");
 
-      const res = await dispatch(deleteBlog(selectedIds));
-      dispatch(fetchWebinar());
+      const res = await dispatch(deleteWebinar(selectedIds));
       console.log(res);
       // toast.success("Blog Deleted successfully")
     } catch (error) {
@@ -58,20 +58,20 @@ const WebinarManager = () => {
     <div className="card basic-data-table">
       <div className="card-header" style={{ display: "flex", justifyContent: "space-between" }}>
         <h5 className="card-title mb-0">Webinar Table</h5>
-          <div>
-      <button
-        type="button"
-        className="btn rounded-pill text-primary radius-8 px-4 py-2"
-        onClick={() => setShowModal(true)}
-      >
-        Add Webinar
-      </button>
+        <div>
+          <button
+            type="button"
+            className="btn rounded-pill text-primary radius-8 px-4 py-2"
+            onClick={() => setShowModal(true)}
+          >
+            Add Webinar
+          </button>
 
-      {showModal && <CreateWebinar ele={editingWebinar} handleClose={() => {
-        setShowModal(false);
-        setEditingWebinar(null);
-      }} />}
-    </div>
+          {showModal && <CreateWebinar ele={editingWebinar} handleClose={() => {
+            setShowModal(false);
+            setEditingWebinar(null);
+          }} />}
+        </div>
       </div>
       <div className="card-body overflow-x-auto">
         <>
@@ -97,7 +97,7 @@ const WebinarManager = () => {
             id="dataTable"
             className="table bordered-table mb-0"
             data-page-length={10}
-            // style={{overflowX:"auto"}}
+          // style={{overflowX:"auto"}}
           >
             <thead>
               <tr>
@@ -133,7 +133,7 @@ const WebinarManager = () => {
                     </div>
                   </td>
                   <td>
-                  {ele?.title}
+                    {ele?.title}
                   </td>
                   <td>
                     {ele?.trainer_name}
