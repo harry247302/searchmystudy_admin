@@ -8,7 +8,8 @@ export const createCounsellor = createAsyncThunk(
         try {
             console.log("Sending Counsellor data", data);
             const response = await axios.post("https://searchmystudy.com/api/admin/CreateCounsellor",data);
-
+                console.log(response,"++++++++++++++");
+                
             return response.data;
             
         } catch (error) {
