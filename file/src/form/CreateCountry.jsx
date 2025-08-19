@@ -1,26 +1,32 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from "firebase/storage";
+  Modal,
+  Button,
+  Form,
+  Accordion,
+  Card,
+  Row,
+  Col
+} from 'react-bootstrap';
 import { app } from "../firebase";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { createAbroadStudyThunk, updateAbroadStudy } from "../slice/AbroadSlice";
+import TextEditor from "./TextEditor";
 
 const storage = getStorage(app);
 
 const CreateCountry = ({ ele, handleClose }) => {
   const [sectionPreviews, setSectionPreviews] = useState([]);
   const dispatch = useDispatch();
+  
 
   const [form, setForm] = useState({
     name: ele?.name || "",
     bannerURL:ele?.bannerURL || "",
-    bullet: ele?.bullet || "",
+    bullet:ele.bullet || "",
     mbbsAbroad: ele?.mbbsAbroad || false,
     flagURL: ele?.flagURL || "",
     description:ele?.description || "",
@@ -29,6 +35,8 @@ const CreateCountry = ({ ele, handleClose }) => {
     eligiblity:ele?.eligibility || ["", "", "", "", "", "", ""],
     faq: ele?.faq || [{ question: "", answer: "" }],
   });
+  const [bannerPreview, setBannerPreview] = useState(null);
+  const [flagPreview, setFlagPreview] = useState(null);
 
     const [uploads, setUploads] = useState({
     banner: { progress: 0, preview: null, name: "", loading: false },
@@ -36,6 +44,60 @@ const CreateCountry = ({ ele, handleClose }) => {
   });
 
   const [errors, setErrors] = useState({});
+
+  const handleChange = async (event) => {
+    const { name, value, type, files } = event.target;
+
+    if (type === 'file') {
+      const file = files[0];
+      if (file) {
+        if (name.includes('sections') && name.includes('url')) {
+          // Handling the file for `url` field in sections
+          const isValid = await validateImage(file, 300, 300); // Example image size for section URL image
+          if (!isValid) {
+            setErrors((prev) => ({
+              ...prev,
+              [name]: `Image must be at least 300px x 300px`,
+            }));
+          } else {
+            setErrors((prev) => ({ ...prev, [name]: '' }));
+            const imageURL = await uploadImage(file);
+            const index = parseInt(name.split('.')[1]);
+            const updatedSections = [...formValues.sections];
+            updatedSections[index].url = imageURL;
+
+            setForm({ ...formValues, sections: updatedSections });
+
+            // Set image preview
+            const updatedPreviews = [...sectionPreviews];
+            updatedPreviews[index] = URL.createObjectURL(file);
+            setSectionPreviews(updatedPreviews);
+          }
+        } else {
+          // Handling other file inputs (like banner and flag)
+          const imageURL = await uploadImage(file);
+          if (name === 'bannerURL') {
+            setBannerPreview(URL.createObjectURL(file));
+            setForm((prevValues) => ({ ...prevValues, [name]: imageURL }));
+          } else if (name === 'flagURL') {
+            setFlagPreview(URL.createObjectURL(file));
+            setForm((prevValues) => ({ ...prevValues, [name]: imageURL }));
+          }
+        }
+      }
+    } else if (name.includes('sections') || name.includes('faq')) {
+      const [sectionOrFaq, index, field] = name.split('.');
+      const updatedArray = [...formValues[sectionOrFaq]];
+      updatedArray[index][field] = value;
+      setForm({ ...formValues, [sectionOrFaq]: updatedArray });
+    } else {
+      setForm((prevValues) => ({
+        ...prevValues,
+        [name]: value,
+      }));
+    }
+    validateForm();
+  };
 
     const handleFileChange = async (event, type) => {
       const file = event.target.files[0];
@@ -60,7 +122,7 @@ const CreateCountry = ({ ele, handleClose }) => {
         }, 200);
   
         const storageRef = ref(storage, `${type}/${file.name}`);
-        await uploadBytes(storageRef, file);
+        await uploadBytesResumable(storageRef, file);
         const url = await getDownloadURL(storageRef);
   
         clearInterval(progressInterval);
@@ -99,10 +161,42 @@ const CreateCountry = ({ ele, handleClose }) => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const addSection = () => {
+    setForm((prevValues) => ({
+      ...prevValues,
+      sections: [...prevValues.sections, { title: '', description: '', url: '' }],
+    }));
+    setSectionPreviews([...sectionPreviews, '']);
+  };
+
+  const removeSection = (index) => {
+    setForm((prevValues) => ({
+      ...prevValues,
+      sections: prevValues.sections.filter((_, i) => i !== index),
+    }));
+    setSectionPreviews(sectionPreviews.filter((_, i) => i !== index));
+  };
+
+  const addFaq = () => {
+    setForm((prevValues) => ({
+      ...prevValues,
+      faq: [...prevValues.faq, { question: '', answer: '' }],
+    }));
+  };
+
+  const removeFaq = (index) => {
+    setForm((prevValues) => ({
+      ...prevValues,
+      faq: prevValues.faq.filter((_, i) => i !== index),
+    }));
+  };
+
   const handleSubmit = async () => {
     try {
         if(ele && ele._id) {
             // Update existing country
+            console.log("form",form);
+            
             const res = await dispatch(updateAbroadStudy({ id: ele._id, data: form }));
             if (updateAbroadStudy.fulfilled.match(res)) {
                 toast.success("✅ Country updated successfully!");
@@ -116,6 +210,8 @@ const CreateCountry = ({ ele, handleClose }) => {
                 }
         }else{
             // Create new country
+            console.log(form,"+++++++++++++++++++++");
+            
             const res = await dispatch(createAbroadStudyThunk(form));
             if (createAbroadStudyThunk.fulfilled.match(res)) {
                 toast.success("✅ Country created successfully!");
@@ -133,160 +229,154 @@ const CreateCountry = ({ ele, handleClose }) => {
     }
   }
   return(
-     <>
-     <div className="modal d-block" style={{ background: "rgba(0,0,0,0.5)" }}>
-    <div className="modal-dialog" style={{ maxWidth: "800px" }}>
-      <div className="modal-content">
-        <div className="modal-header">
-          <h5 className="modal-title">Add Country</h5>
-          <button type="button" className="btn-close" onClick={handleClose}></button>
-        </div>
-
-        <div className="p-12">
-          <div className="col-12">
-            <label className="form-label">Name</label>
-            <input
-              onChange={(e) => {
-                setForm((prev) => ({ ...prev, name: e.target.value }));
-                setErrors((prev) => ({ ...prev, name: "" }));
-              }}
+    <Modal show={open} onHide={handleClose} size="lg" centered scrollable>
+      <Modal.Header closeButton className="text-black">
+        <Modal.Title>Add Country</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form>
+          <Form.Group>
+            <Form.Label>Name</Form.Label>
+            <Form.Control
               type="text"
               name="name"
-              className={`form-control ${errors.name ? "is-invalid" : ""}`}
-              placeholder="Enter title here"
               value={form.name}
+              onChange={handleChange}
+              isInvalid={!!errors.name}
             />
-            {errors.name && <div className="invalid-feedback">{errors.name}</div>}
-          </div>
+            <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
+          </Form.Group>
 
-          <div className="col-12 mt-20">
-            <label className="form-label">Upload banner</label>
-            <input
-              className={`form-control form-control-lg ${errors.bannerURL ? "is-invalid" : ""}`}
+          <Form.Group className="mt-3">
+            <Form.Label>Banner Image (1500x500)</Form.Label>
+            <Form.Control
+              type="file"
               name="bannerURL"
-              type="file"
-              accept="image/*"
-              onChange={(e) => handleFileChange(e, "banner")}
-            />
-            <p style={{ color: "red" }}>Banner Size should be 1200x600 px</p>
-            {form.bannerURL && <p>Selected file: {form.bannerURL}</p>}
-            {errors.bannerURL && <div className="invalid-feedback">{errors.bannerURL}</div>}
-          </div>
-
-          <div className="col-12">
-            <label className="form-label">Bullet</label>
-            <input
-              onChange={(e) => {
-                setForm((prev) => ({ ...prev, bullet: e.target.value }));
-                setErrors((prev) => ({ ...prev, bullet: "" }));
+              onChange={(e)=>{
+                handleFileChange(e,"banner")
               }}
-              type="text"
-              name="bullet"
-              className={`form-control ${errors.bullet ? "is-invalid" : ""}`}
-              placeholder="Enter Bullet here"
-              value={form.bullet}
+              isInvalid={!!errors.bannerURL}
             />
-            {errors.bullet && <div className="invalid-feedback">{errors.bullet}</div>}
-          </div>
+            {bannerPreview && <img src={bannerPreview} alt="Banner" className="mt-2 img-fluid rounded" />}
+          </Form.Group>
 
-          <div className="col-12 mt-20">
-            <label className="form-label">Upload Flag</label>
-            <input
-              className={`form-control form-control-lg ${errors.flagURL ? "is-invalid" : ""}`}
-              name="flagURL"
+          <Form.Group className="mt-3">
+            <Form.Label>Flag Image (200x200)</Form.Label>
+            <Form.Control
               type="file"
-              accept="image/*"
-              onChange={(e) => handleFileChange(e, "flag")}
+              name="flagURL"
+              onChange={(e)=>{
+                handleFileChange(e,"flag")
+              }}
+              isInvalid={!!errors.flagURL}
             />
-            <p style={{ color: "red" }}>Banner Size should be 1200x600 px</p>
-            {form.flagURL && <p>Selected file: {form.flagURL}</p>}
-            {errors.flagURL && <div className="invalid-feedback">{errors.flagURL}</div>}
-          </div>
+            {flagPreview && <img src={flagPreview} alt="Flag" className="mt-2 rounded-circle" width="100" />}
+          </Form.Group>
 
-          {/* Card Section */}
-          
-            { form.sectionExpanded && (
-                <div className="card-body">
-                  <div className="row">
-                    <div className="col-12 mb-3">
-                      <label className="form-label">Card Title</label>
-                      <input
-                        onChange={(e) => {
-                    const newSections = [...form.sections];
-                    newSections[index].title = e.target.value;
-                    setForm((prev) => ({ ...prev, sections: newSections }));
-                    setErrors((prev) => ({ ...prev, sections: "" }));
-                    }}
-                        type="text"
-                        name="cardTitle"
-                        className={`form-control ${errors.sections?.title ? "is-invalid" : ""}`}
-                        placeholder="Enter card title here"
-                        value={form.card.title}
-                      />
-                      {errors.card?.title && <div className="invalid-feedback">{errors.card.title}</div>}
-                    </div>
+          <Form.Group className="mt-3">
+            <Form.Label>Bullet Point</Form.Label>
+            <Form.Control type="text" name="bullet" value={form.bullet} onChange={handleChange} />
+          </Form.Group>
 
-                    <div className="col-12 mb-3">
-                      <label className="form-label">Card Image</label>
-                      <input
-                        className={`form-control form-control-lg ${errors.card?.cardImage ? "is-invalid" : ""}`}
-                        name="cardImage"
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files[0];
-                          if (!file) return;
-                          
-                          setForm((prev) => ({
-                            ...prev,
-                            card: { ...prev.card, cardImage: file.name }
-                          }));
-                          setErrors((prev) => ({ 
-                            ...prev, 
-                            card: { ...prev.card, cardImage: "" }
-                          }));
-                        }}
-                      />
-                      <p style={{ color: "red" }}>Card Image Size should be 400x300 px</p>
-                      {form.card.cardImage && <p>Selected file: {form.card.cardImage}</p>}
-                      {errors.card?.cardImage && <div className="invalid-feedback">{errors.card.cardImage}</div>}
-                    </div>
+          <Form.Group className="mt-3">
+            <Form.Label>Description</Form.Label>
+            <TextEditor name="description" value={form.description} onChange={handleChange} />
+          </Form.Group>
 
-                    <div className="col-12 mb-3">
-                      <label className="form-label">Card Short Description</label>
-                      <textarea
-                        onChange={(e) => {
-                    const newSections = [...form.sections];
-                    newSections[index].description = e.target.value;
-                    setForm((prev) => ({ ...prev, sections: newSections }));
-                    setErrors((prev) => ({ ...prev, sections: "" }));
-                    }}
-                        name="description"
-                        className={`form-control ${errors.sections?.description ? "is-invalid" : ""}`}
-                        placeholder="Enter section short description here"
-                        value={form.sections.description}
-                        rows="3"
-                      />
-                      {errors.sections?.description && <div className="invalid-feedback">{errors.sections.description}</div>}
-                    </div>
-                  </div>
-                </div>
-            )}  
-        </div>
+          {/* Sections */}
+          <Accordion className="mt-4">
+            {form.sections.map((section, index) => (
+              <Accordion.Item eventKey={index.toString()} key={index}>
+                <Accordion.Header>Section {index + 1}</Accordion.Header>
+                <Accordion.Body>
+                  <Form.Group>
+                    <Form.Label>Title</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name={`sections.${index}.title`}
+                      value={section.title}
+                      onChange={handleChange}
+                    />
+                  </Form.Group>
 
-        <div className="modal-footer">
-          <button type="button" className="btn btn-secondary" onClick={handleClose}>
-            Close
-          </button>
-          <button type="button" className="btn btn-primary" onClick={handleSubmit}>
-          { ele && ele._id ? "Update Service" : "Create Service"}
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-     </>
-    );
+                  <Form.Group className="mt-2">
+                    <Form.Label>Description (max 100 words)</Form.Label>
+                    <TextEditor
+                      name={`sections.${index}.description`}
+                      value={section.description}
+                      onChange={handleChange}
+                    />
+                  </Form.Group>
+
+                  <Form.Group className="mt-2">
+                    <Form.Label>Section Image (300x300)</Form.Label>
+                    <Form.Control
+                      type="file"
+                      name={`sections.${index}.url`}
+                      onChange={handleFileChange}
+                    />
+                    {sectionPreviews[index] && (
+                      <img src={sectionPreviews[index]} alt="Preview" className="mt-2 img-fluid rounded" />
+                    )}
+                  </Form.Group>
+
+                  <Button variant="danger" className="mt-3" onClick={() => removeSection(index)}>
+                    Remove Section
+                  </Button>
+                </Accordion.Body>
+              </Accordion.Item>
+            ))}
+          </Accordion>
+          <Button className="mt-3" variant="outline-primary" onClick={addSection}>
+            Add Section
+          </Button>
+
+          {/* FAQ */}
+          <Accordion className="mt-4">
+            {form.faq.map((faq, index) => (
+              <Accordion.Item eventKey={`faq-${index}`} key={index}>
+                <Accordion.Header>FAQ {index + 1}</Accordion.Header>
+                <Accordion.Body>
+                  <Form.Group>
+                    <Form.Label>Question</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name={`faq.${index}.question`}
+                      value={faq.question}
+                      onChange={handleChange}
+                    />
+                  </Form.Group>
+
+                  <Form.Group className="mt-2">
+                    <Form.Label>Answer</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name={`faq.${index}.answer`}
+                      value={faq.answer}
+                      onChange={handleChange}
+                    />
+                  </Form.Group>
+
+                  <Button variant="danger" className="mt-3" onClick={() => removeFaq(index)}>
+                    Remove FAQ
+                  </Button>
+                </Accordion.Body>
+              </Accordion.Item>
+            ))}
+          </Accordion>
+          <Button className="mt-3" variant="outline-primary" onClick={addFaq}>
+            Add FAQ
+          </Button>
+        </Form>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleClose}>Cancel</Button>
+        <Button variant="primary" onClick={handleSubmit}>
+          {ele && ele._id ? "Update" : "Submit"}
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
 };
 
 export default CreateCountry;

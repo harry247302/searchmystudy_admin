@@ -45,16 +45,6 @@ const WebinarManager = () => {
       // toast.error('Error deleting testimonial');
     }
   };
-  useEffect(() => {
-    if (webinars?.length > 0) {
-      const table = $("#dataTable").DataTable({
-        pageLength: 10,
-      });
-      return () => {
-        table.destroy(true);
-      };
-    }
-  }, [webinars]);
   return (
     <div className="card basic-data-table">
       <div className="card-header" style={{ display: "flex", justifyContent: "space-between" }}>

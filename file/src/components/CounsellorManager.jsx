@@ -75,17 +75,6 @@ const CounsellorManager = () => {
     loadCounsellors();
   }, [dispatch]);
 
-  useEffect(() => {
-    if (counsellor.length > 0) {
-      const table = $("#dataTable").DataTable({
-        pageLength: 10,
-      });
-      return () => {
-        table.destroy(true);
-      };
-    }
-  }, [counsellor]);
-
   return (
     <div className="card basic-data-table">
       <div className="card-header" style={{ display: "flex", justifyContent: "space-between" }}>

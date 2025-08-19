@@ -83,16 +83,7 @@ const ServiceManager = () => {
     loadServices();
   }, [dispatch]);
 
-  useEffect(() => {
-    if (service?.length > 0) {
-      const table = $("#dataTable").DataTable({
-        pageLength: 10,
-      });
-      return () => {
-        table.destroy(true);
-      };
-    }
-  }, [service]);
+
   return (
     <div className="card basic-data-table">
       <div

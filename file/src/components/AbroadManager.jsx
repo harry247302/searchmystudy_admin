@@ -6,6 +6,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link } from "react-router-dom";
 import { deleteAbroadStudy, fetchAbroadStudy } from "../slice/AbroadSlice";
 import CreateCountry from "../form/CreateCountry";
+import { toast } from "react-toastify";
 
 const AbroadManager = () => {
   const dispatch = useDispatch();
@@ -31,8 +32,6 @@ const AbroadManager = () => {
     useEffect(() => {
      loadAbroadStudy();
     }, [dispatch]);
-
-    console.log(studyAbroad, "studyAbroad");
     
 
     const handleCheckboxChange = (id) => {
@@ -82,16 +81,6 @@ const AbroadManager = () => {
         }
       };
 
-  useEffect(() => {
-    if (studyAbroad?.length > 0) {
-      const table = $("#dataTable").DataTable({
-        pageLength: 10,
-      });
-      return () => {
-        table.destroy(true);
-      };
-    }
-  }, [studyAbroad]);
   return (
     <div className="card basic-data-table">
       <div
@@ -107,6 +96,15 @@ const AbroadManager = () => {
           >
             Add Country
           </button>
+
+          {selectedIds.length > 0 && (
+            <button
+              className="btn rounded-pill text-danger radius-8 px-4 py-2"
+              onClick={() => handleDelete()}
+            >
+              Delete Selected ({selectedIds.length})
+            </button>
+          )}
 
           {showModal && (
             <CreateCountry
@@ -164,7 +162,6 @@ const AbroadManager = () => {
             </thead>
             <tbody>
               {studyAbroad?.map((ele,ind) => {
-                console.log(ind);
                 return(
                   <tr key={ele._id}>
                 <td>

@@ -7,7 +7,11 @@ export const fetchAbroadStudy = createAsyncThunk(
     async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get("https://searchmystudy.com/api/admin/countries");
-      return response.data; // returned data will be available in fulfilled reducer
+      console.log(response?.data,"++++++++++++==");
+      
+      return Array.isArray(response.data)
+        ? response.data.filter(item => item?.mbbsAbroad === false)
+        : [];   // returned data will be available in fulfilled reducer
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || 'Something went wrong'
@@ -23,7 +27,8 @@ export const deleteAbroadStudy = createAsyncThunk(
         return rejectWithValue({ message: "No abroad study IDs provided" });
         }
         try {
-        const response = await axios.delete(`https://searchmystudy.com/api/admin/countries/${ids}`, {
+        const response = await axios.delete(`https://searchmystudy.com/api/admin/countries`, {
+          data:{ids}
         });
         return response.data;
         } catch (error) {
