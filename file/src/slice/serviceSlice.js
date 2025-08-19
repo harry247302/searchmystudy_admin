@@ -40,10 +40,15 @@ export const fetchServices = createAsyncThunk(
 // Delete Services
 export const deleteService = createAsyncThunk(
     'services/deleteServices',
-    async (id, { rejectWithValue }) => {
+    async (ids, { rejectWithValue }) => {
+      if (!ids || ids.length === 0) {
+        return rejectWithValue({ message: "No blog IDs provided" });
+      }
       try {
-        const response = await axios.delete(`https://searchmystudy.com/api/admin/DeleteService/${id}`);
-        fetchServices()
+        const response = await axios.delete(`https://searchmystudy.com/api/admin/DeleteService`,{
+          data: { ids },
+        });
+        
         return response.data;
       } catch (error) {
         return rejectWithValue(error.response?.data || error.message);

@@ -11,10 +11,12 @@ import CreateCounsellor from "../form/CreateCounsellor";
 const CounsellorManager = () => {
   const dispatch = useDispatch();
   const [counsellor, setCounsellor] = useState([]);
+  const [selectedIds, setSelectedIds] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [editingCounsellor, setEditingCounsellor] = useState(null);
 
-
+  // Fetch Counsellor
   const loadCounsellors = async () => {
     const res = await dispatch(fetchCounsellor());
     if (res?.meta?.requestStatus === "fulfilled") {
@@ -23,16 +25,49 @@ const CounsellorManager = () => {
   };
   console.log(counsellor, "-----------------------------------");
 
-  const handleDelete = async (id) => {
-    try {
-      const res = await dispatch(deleteCounsellor(id));
-      console.log(res);
-      loadCounsellors();
-      // toast.success("Blog Deleted successfully")
-    } catch (error) {
-      console.log(error);
+    // Handle checkbox (select blogs)
+    const handleCheckboxChange = (id) => {
+      setSelectedIds((prevSelected) => {
+        if (prevSelected.includes(id)) {
+          return prevSelected.filter((item) => item !== id);
+        } else {
+          return [...prevSelected, id];
+        }
+      });
+    };
 
-      // toast.error('Error deleting testimonial');
+  // Delete single OR multiple blogs
+  const handleDelete = async (id) => {
+    const idsToDelete = id ? [id] : selectedIds;
+    if (idsToDelete.length === 0) {
+      toast.warn("⚠️ No blogs selected for deletion.");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      idsToDelete.length > 1
+        ? `Are you sure you want to delete ${idsToDelete.length} blogs?`
+        : "Are you sure you want to delete this blog?"
+    );
+    if (!confirmed) return;
+
+    try {
+      const res = await dispatch(deleteCounsellor(idsToDelete));
+      console.log(res);
+
+      if (deleteCounsellor.fulfilled.match(res)) {
+        toast.success("✅ Counsellor deleted successfully!");
+        setSelectedIds([]); // clear selection
+        loadCounsellors();
+      } else if (deleteCounsellor.rejected.match(res)) {
+        toast.error(
+          "❌ Failed to delete Counsellor: " +
+          (res.payload?.message || res.error?.message || "Unknown error")
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("⚠️ Unexpected error: " + (error.message || "Something went wrong"));
     }
   };
 
@@ -63,6 +98,15 @@ const CounsellorManager = () => {
           >
             Add Counsellors
           </button>
+
+          {selectedIds.length > 0 && (
+            <button
+              className="btn rounded-pill text-danger radius-8 px-4 py-2"
+              onClick={() => handleDelete()}
+            >
+              Delete Selected ({selectedIds.length})
+            </button>
+          )}
 
           {showModal && <CreateCounsellor ele={editingCounsellor} handleClose={() => {
             setShowModal(false);
@@ -98,7 +142,11 @@ const CounsellorManager = () => {
           >
             <thead>
               <tr>
-                <th scope="col">S.L</th>
+                <th scope="col"><div className="form-check style-check d-flex align-items-center">
+                      <input className="form-check-input" type="checkbox" />
+                      <label className="form-check-label">S.L</label>
+                    </div>
+                </th>
                 <th scope="col">Name</th>
                 <th scope="col">Course</th>
                 <th scope="col">Experience</th>
@@ -111,7 +159,15 @@ const CounsellorManager = () => {
               {counsellor.map((ele, ind) => (
                 <tr key={ele._id || ind}>
                   <td>
-                    {ind + 1}
+                  <div className="form-check style-check d-flex align-items-center">
+                        <input
+                          type="checkbox"
+                          className="form-check-input"
+                          checked={selectedIds.includes(ele._id)}
+                          onChange={() => handleCheckboxChange(ele._id)}
+                        />
+                        <label className="form-check-label">{ind + 1}</label>
+                      </div>
                   </td>
                   <td>
                     {ele?.name}

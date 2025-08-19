@@ -31,6 +31,7 @@ const WebinarManager = () => {
     });
   };
 
+
   const handleDelete = async (id) => {
     try {
       console.log(selectedIds, "|||||");

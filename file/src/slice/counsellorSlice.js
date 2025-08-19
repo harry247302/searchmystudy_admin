@@ -37,10 +37,14 @@ export const fetchCounsellor = createAsyncThunk(
 // Delete Counsellor
 export const deleteCounsellor = createAsyncThunk(
     'counsellor/deleteCounsellor',
-    async(id,{ rejectWithValue })=>{
+    async(ids,{ rejectWithValue })=>{
+        if (!ids || ids.length === 0) {
+            return rejectWithValue({ message: "No blog IDs provided" });
+          }
         try {
-            const response = await axios.delete(`https://searchmystudy.com/api/admin/DeleteCounsellors/${id}`)
-            fetchCounsellor();
+            const response = await axios.delete(`https://searchmystudy.com/api/admin/DeleteCounsellors`,{
+                data: { ids },
+            })
             return response?.data;
         } catch (error) {
             return rejectWithValue(error?.response?.data || error.message)
@@ -53,7 +57,6 @@ export const updateCounsellor = createAsyncThunk(
     async({id,data},{ rejectWithValue })=>{
         try {
             const response = await axios.put(`https://searchmystudy.com/api/admin/UpdateCounsellors/${id}`,data)
-            fetchCounsellor()
             return response?.data;
         } catch (error) {
             return rejectWithValue(error?.response?.data || error.message)
