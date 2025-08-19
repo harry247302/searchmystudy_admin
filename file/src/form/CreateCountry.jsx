@@ -18,7 +18,7 @@ import TextEditor from "./TextEditor";
 
 const storage = getStorage(app);
 
-const CreateCountry = ({ ele, handleClose }) => {
+const CreateCountry = ({loadAbroadStudy, ele, handleClose }) => {
   const [sectionPreviews, setSectionPreviews] = useState([]);
   const dispatch = useDispatch();
   
@@ -215,6 +215,7 @@ const CreateCountry = ({ ele, handleClose }) => {
             const res = await dispatch(createAbroadStudyThunk(form));
             if (createAbroadStudyThunk.fulfilled.match(res)) {
                 toast.success("✅ Country created successfully!");
+                loadAbroadStudy()
                 handleClose();
             } else if (createAbroadStudyThunk.rejected.match(res)) {
                 // Failure case with detailed error

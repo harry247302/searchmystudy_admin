@@ -58,8 +58,8 @@ const ServiceManager = () => {
     if (!confirmed) return;
 
     try {
+      // console.log(idsToDelete);
       const res = await dispatch(deleteService(idsToDelete));
-      console.log(res);
 
       if (deleteService.fulfilled.match(res)) {
         toast.success("✅ Service deleted successfully!");
@@ -213,7 +213,7 @@ const ServiceManager = () => {
                     >
                       <Icon icon="lucide:edit" />
                     </Link>
-                    <Link
+                    {/* <Link
                       onClick={() => {
                         handleDelete(ele?._id);
                       }}
@@ -221,7 +221,7 @@ const ServiceManager = () => {
                       className="w-32-px h-32-px me-8 bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center"
                     >
                       <Icon icon="mingcute:delete-2-line" />
-                    </Link>
+                    </Link> */}
                   </td>
                 </tr>
               ))}

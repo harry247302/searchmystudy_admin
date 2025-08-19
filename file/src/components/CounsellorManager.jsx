@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { useDispatch } from 'react-redux';
 import { deleteCounsellor, fetchCounsellor } from "../slice/counsellorSlice";
 import CreateCounsellor from "../form/CreateCounsellor";
+import { toast } from "react-toastify";
 
 const CounsellorManager = () => {
   const dispatch = useDispatch();
@@ -23,7 +24,7 @@ const CounsellorManager = () => {
       setCounsellor(res.payload);
     }
   };
-  console.log(counsellor, "-----------------------------------");
+  // console.log(counsellor, "-----------------------------------");
 
     // Handle checkbox (select blogs)
     const handleCheckboxChange = (id) => {
@@ -78,14 +79,14 @@ const CounsellorManager = () => {
   return (
     <div className="card basic-data-table">
       <div className="card-header" style={{ display: "flex", justifyContent: "space-between" }}>
-        <h5 className="card-title mb-0">Counsellor Table</h5>
+        <h5 className="card-title mb-0">Testemonial Table</h5>
         <div>
           <button
             type="button"
             className="btn rounded-pill text-primary radius-8 px-4 py-2"
             onClick={() => setShowModal(true)}
           >
-            Add Counsellors
+            Add Testemonial
           </button>
 
           {selectedIds.length > 0 && (
@@ -186,13 +187,13 @@ const CounsellorManager = () => {
                     >
                       <Icon icon="lucide:edit" />
                     </Link>
-                    <Link
+                    {/* <Link
                       onClick={() => { handleDelete(ele?._id) }}
                       to="#"
                       className="w-32-px h-32-px me-8 bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center"
                     >
                       <Icon icon="mingcute:delete-2-line" />
-                    </Link>
+                    </Link> */}
                   </td>
                 </tr>
               ))}

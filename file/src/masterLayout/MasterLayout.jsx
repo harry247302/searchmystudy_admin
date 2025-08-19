@@ -202,7 +202,7 @@ const MasterLayout = ({ children }) => {
                   icon='material-symbols:map-outline'
                   className='menu-icon'
                 />
-                <span>Counsellor Management</span>
+                <span>Testemonial Management</span>
               </NavLink>
             </li>
             {/* <li>

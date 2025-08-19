@@ -3,7 +3,7 @@ import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/
 import { useDispatch } from "react-redux";
 import { createCounsellor, fetchCounsellor, updateCounsellor } from "../slice/counsellorSlice";
 import { app } from "../firebase";
-import { toast, ToastContainer } from "react-toastify";
+import {  ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const storage = getStorage(app);
@@ -229,7 +229,7 @@ const CreateCounsellor = ({ ele, handleClose, loadCounsellors }) => {
         <div className="modal-dialog" style={{ maxWidth: "800px" }}>
           <div className="modal-content p-4">
             <div className="modal-header">
-              <h5 className="modal-title">Add Counsellor</h5>
+              <h5 className="modal-title">Add Testemonial</h5>
               <button type="button" className="btn-close" onClick={handleClose}></button>
             </div>
 

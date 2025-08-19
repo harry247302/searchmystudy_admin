@@ -108,6 +108,7 @@ const AbroadManager = () => {
 
           {showModal && (
             <CreateCountry
+            loadAbroadStudy={loadAbroadStudy}
               ele={editingCountry}
               handleClose={() => {
                 setShowModal(false);

@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteWebinar, fetchWebinar } from '../slice/webinarSlice';
 import CreateWebinar from "../form/CreateWebinar";
+import { toast } from "react-toastify";
 
 const WebinarManager = () => {
   const dispatch = useDispatch();
@@ -34,15 +35,14 @@ const WebinarManager = () => {
 
   const handleDelete = async (id) => {
     try {
-      console.log(selectedIds, "|||||");
+      // console.log(selectedIds, "|||||");
 
       const res = await dispatch(deleteWebinar(selectedIds));
-      console.log(res);
-      // toast.success("Blog Deleted successfully")
+      dispatch(fetchWebinar());
+      toast.success("Blog Deleted successfully")
     } catch (error) {
       console.log(error);
-
-      // toast.error('Error deleting testimonial');
+      toast.error('Error deleting testimonial');
     }
   };
   return (
@@ -52,11 +52,13 @@ const WebinarManager = () => {
         <div>
           <button
             type="button"
-            className="btn rounded-pill text-primary radius-8 px-4 py-2"
+            className="mx-4 btn rounded-pill text-primary radius-8 px-4 py-2"
             onClick={() => setShowModal(true)}
           >
             Add Webinar
           </button>
+
+            <button   className="mx-4 btn rounded-pill text-danger radius-8 px-4 py-2" onClick={handleDelete}>Delete</button>
 
           {showModal && <CreateWebinar ele={editingWebinar} handleClose={() => {
             setShowModal(false);
@@ -159,13 +161,13 @@ const WebinarManager = () => {
                     >
                       <Icon icon="lucide:edit" />
                     </Link>
-                    <Link
+                    {/* <Link
                       onClick={handleDelete}
                       to="#"
                       className="w-32-px h-32-px me-8 bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center"
                     >
                       <Icon icon="mingcute:delete-2-line" />
-                    </Link>
+                    </Link> */}
                   </td>
                 </tr>
               ))}
