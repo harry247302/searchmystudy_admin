@@ -6,7 +6,6 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link } from "react-router-dom";
 import { useDispatch } from 'react-redux';
 import { deleteCounsellor, fetchCounsellor } from "../slice/counsellorSlice";
-import CreateService from "../form/CreateService";
 import CreateCounsellor from "../form/CreateCounsellor";
 
 const CounsellorManager = () => {
