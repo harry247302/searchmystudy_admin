@@ -205,7 +205,7 @@ const MasterLayout = ({ children }) => {
                 <span>Counsellor Management</span>
               </NavLink>
             </li>
-            <li>
+            {/* <li>
               <NavLink
                 to='/abroad-study-manager'
                 className={(navData) => (navData.isActive ? "active-page" : "")}
@@ -216,35 +216,35 @@ const MasterLayout = ({ children }) => {
                 />
                 <span>Abroad Study</span>
               </NavLink>
-            </li>
+            </li> */}
 
-            {/* Invoice Dropdown */}
+            {/* Abroad Study Dropdown */}
             <li className='dropdown'>
               <Link to='#'>
                 <Icon icon='hugeicons:invoice-03' className='menu-icon' />
-                <span>Invoice</span>
+                <span>Abroad Study</span>
               </Link>
               <ul className='sidebar-submenu'>
                 <li>
                   <NavLink
-                    to='/invoice-list'
+                    to='/abroad-country'
                     className={(navData) =>
                       navData.isActive ? "active-page" : ""
                     }
                   >
                     <i className='ri-circle-fill circle-icon text-primary-600 w-auto' />{" "}
-                    List
+                    Country
                   </NavLink>
                 </li>
                 <li>
                   <NavLink
-                    to='/invoice-preview'
+                    to='/abroad-province'
                     className={(navData) =>
                       navData.isActive ? "active-page" : ""
                     }
                   >
                     <i className='ri-circle-fill circle-icon text-warning-main w-auto' />
-                    Preview
+                    Province
                   </NavLink>
                 </li>
                 <li>
@@ -255,7 +255,7 @@ const MasterLayout = ({ children }) => {
                     }
                   >
                     <i className='ri-circle-fill circle-icon text-info-main w-auto' />{" "}
-                    Add new
+                    University
                   </NavLink>
                 </li>
                 <li>
@@ -266,7 +266,7 @@ const MasterLayout = ({ children }) => {
                     }
                   >
                     <i className='ri-circle-fill circle-icon text-danger-main w-auto' />{" "}
-                    Edit
+                    Course
                   </NavLink>
                 </li>
               </ul>

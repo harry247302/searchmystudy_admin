@@ -135,3 +135,5 @@ export const abroadSlice = createSlice({
             });
         }
 });
+
+export default abroadSlice.reducer;

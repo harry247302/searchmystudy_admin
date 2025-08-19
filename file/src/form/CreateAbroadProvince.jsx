@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Modal,
   Button,
@@ -13,28 +13,30 @@ import { app } from "../firebase";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { createAbroadStudyThunk, updateAbroadStudy } from "../slice/AbroadSlice";
+import { createAbroadProvince, updateAbroadProvince } from "../slice/AbroadProvinceSlice.js";
 import TextEditor from "./TextEditor";
 
 const storage = getStorage(app);
 
-const CreateCountry = ({ ele, handleClose }) => {
+const CreateAbroadProvince = ({ ele, handleClose }) => {
   const [sectionPreviews, setSectionPreviews] = useState([]);
   const dispatch = useDispatch();
+  const {studyAbroad } = useSelector((state)=>state.abroadStudy)
+  console.log(studyAbroad,"))))))))))))))))");
+  
   
 
   const [form, setForm] = useState({
-    name: ele?.name || "",
-    bannerURL:ele?.bannerURL || "",
-    bullet:ele?.bullet || "",
-    mbbsAbroad: ele?.mbbsAbroad || false,
-    flagURL: ele?.flagURL || "",
-    description:ele?.description || "",
-    sectionExpanded: true ,
-    sections: ele?.sections || [{ title: "", description: "", url: "", }],
-    eligiblity:ele?.eligibility || ["", "", "", "", "", "", ""],
-    faq: ele?.faq || [{ question: "", answer: "" }],
+    name: ele?.name || '',
+    bannerURL: ele?.bannerURL || '',
+    heroURL: ele?.heroURL || '',
+    description: ele?.description || '',
+    sections: ele?.sections || [{ title: '', description: '', url: '' }],
+    Country: ele?.Country || '',
   });
+
+  console.log(form,"Y^^^^^^^^");
+  
   const [bannerPreview, setBannerPreview] = useState(null);
   const [flagPreview, setFlagPreview] = useState(null);
 
@@ -51,98 +53,102 @@ const CreateCountry = ({ ele, handleClose }) => {
     if (type === 'file') {
       const file = files[0];
       if (file) {
-        if (name.includes('sections') && name.includes('url')) {
-          // Handling the file for `url` field in sections
-          const isValid = await validateImage(file, 300, 300); // Example image size for section URL image
-          if (!isValid) {
-            setErrors((prev) => ({
-              ...prev,
-              [name]: `Image must be at least 300px x 300px`,
-            }));
-          } else {
-            setErrors((prev) => ({ ...prev, [name]: '' }));
-            const imageURL = await uploadImage(file);
-            const index = parseInt(name.split('.')[1]);
-            const updatedSections = [...form.sections];
-            updatedSections[index].url = imageURL;
-
-            setForm({ ...formValues, sections: updatedSections });
-
-            // Set image preview
-            const updatedPreviews = [...sectionPreviews];
-            updatedPreviews[index] = URL.createObjectURL(file);
-            setSectionPreviews(updatedPreviews);
-          }
-        } else {
-          // Handling other file inputs (like banner and flag)
-          const imageURL = await uploadImage(file);
+        try {
           if (name === 'bannerURL') {
-            setBannerPreview(URL.createObjectURL(file));
-            setForm((prevValues) => ({ ...prevValues, [name]: imageURL }));
-          } else if (name === 'flagURL') {
-            setFlagPreview(URL.createObjectURL(file));
-            setForm((prevValues) => ({ ...prevValues, [name]: imageURL }));
+            await validateImageDimensions(file, { width: 1500, height: 500 });
+            const previewURL = URL.createObjectURL(file);
+            setBannerPreview(previewURL);
+            const imageURL = await uploadImage(file);
+            setForm(prev => ({ ...prev, bannerURL: imageURL }));
+          } 
+          else if (name === 'heroURL') {
+            await validateImageDimensions(file, { width: 350, height: 400 });
+            const previewURL = URL.createObjectURL(file);
+            setHeroPreview(previewURL);
+            const imageURL = await uploadImage(file);
+            setForm(prev => ({ ...prev, heroURL: imageURL }));
           }
+          else if (name.startsWith('sectionImage')) {
+            const sectionIndex = parseInt(name.split('-')[1]);
+            const previewURL = URL.createObjectURL(file);
+            setSectionPreviews(prev => {
+              const newPreviews = [...prev];
+              newPreviews[sectionIndex] = previewURL;
+              return newPreviews;
+            });
+            const imageURL = await uploadImage(file);
+            setForm(prev => {
+              const newSections = [...prev.sections];
+              newSections[sectionIndex] = {
+                ...newSections[sectionIndex],
+                url: imageURL
+              };
+              return { ...prev, sections: newSections };
+            });
+          }
+        } catch (error) {
+          toast.error(error.message);
         }
       }
-    } else if (name.includes('sections') || name.includes('faq')) {
-      const [sectionOrFaq, index, field] = name.split('.');
-      const updatedArray = [...formValues[sectionOrFaq]];
-      updatedArray[index][field] = value;
-      setForm({ ...formValues, [sectionOrFaq]: updatedArray });
+    } else if (name.startsWith('section-')) {
+      const [, index, field] = name.split('-');
+      setForm(prev => {
+        const newSections = [...prev.sections];
+        newSections[parseInt(index)] = {
+          ...newSections[parseInt(index)],
+          [field]: value
+        };
+        return { ...prev, sections: newSections };
+      });
     } else {
-      setForm((prevValues) => ({
-        ...prevValues,
-        [name]: value,
-      }));
+      setForm(prev => ({ ...prev, [name]: value }));
     }
-    validateForm();
   };
 
-    const handleFileChange = async (event, type) => {
-      const file = event.target.files[0];
-      if (!file) return;
+    // const handleFileChange = async (event, type) => {
+    //   const file = event.target.files[0];
+    //   if (!file) return;
   
-      setUploads((prev) => ({
-        ...prev,
-        [type]: { ...prev[type], loading: true, name: file.name },
-      }));
+    //   setUploads((prev) => ({
+    //     ...prev,
+    //     [type]: { ...prev[type], loading: true, name: file.name },
+    //   }));
   
-      try {
-        const previewURL = URL.createObjectURL(file);
+    //   try {
+    //     const previewURL = URL.createObjectURL(file);
   
-        const progressInterval = setInterval(() => {
-          setUploads((prev) => ({
-            ...prev,
-            [type]: {
-              ...prev[type],
-              progress: Math.min(prev[type].progress + 10, 90),
-            },
-          }));
-        }, 200);
+    //     const progressInterval = setInterval(() => {
+    //       setUploads((prev) => ({
+    //         ...prev,
+    //         [type]: {
+    //           ...prev[type],
+    //           progress: Math.min(prev[type].progress + 10, 90),
+    //         },
+    //       }));
+    //     }, 200);
   
-        const storageRef = ref(storage, `${type}/${file.name}`);
-        await uploadBytesResumable(storageRef, file);
-        const url = await getDownloadURL(storageRef);
+    //     const storageRef = ref(storage, `${type}/${file.name}`);
+    //     await uploadBytesResumable(storageRef, file);
+    //     const url = await getDownloadURL(storageRef);
   
-        clearInterval(progressInterval);
+    //     clearInterval(progressInterval);
   
-        setForm((prev) => ({ ...prev, [`${type}URL`]: url }));
-        setUploads((prev) => ({
-          ...prev,
-          [type]: { progress: 100, preview: previewURL, name: file.name, loading: false },
-        }));
+    //     setForm((prev) => ({ ...prev, [`${type}URL`]: url }));
+    //     setUploads((prev) => ({
+    //       ...prev,
+    //       [type]: { progress: 100, preview: previewURL, name: file.name, loading: false },
+    //     }));
   
-        toast.success(`${type} uploaded successfully!`);
-      } catch (error) {
-        console.error(`Failed to upload ${type}:`, error);
-        setUploads((prev) => ({
-          ...prev,
-          [type]: { progress: 0, preview: null, name: "", loading: false },
-        }));
-        toast.error(`Failed to upload ${type}`);
-      }
-    };
+    //     toast.success(`${type} uploaded successfully!`);
+    //   } catch (error) {
+    //     console.error(`Failed to upload ${type}:`, error);
+    //     setUploads((prev) => ({
+    //       ...prev,
+    //       [type]: { progress: 0, preview: null, name: "", loading: false },
+    //     }));
+    //     toast.error(`Failed to upload ${type}`);
+    //   }
+    // };
 
     const handleContentChange = (value) => {
     setForm((prev) => ({ ...prev, content: value }));
@@ -177,19 +183,6 @@ const CreateCountry = ({ ele, handleClose }) => {
     setSectionPreviews(sectionPreviews.filter((_, i) => i !== index));
   };
 
-  const addFaq = () => {
-    setForm((prevValues) => ({
-      ...prevValues,
-      faq: [...prevValues.faq, { question: '', answer: '' }],
-    }));
-  };
-
-  const removeFaq = (index) => {
-    setForm((prevValues) => ({
-      ...prevValues,
-      faq: prevValues.faq.filter((_, i) => i !== index),
-    }));
-  };
 
   const handleSubmit = async () => {
     try {
@@ -197,35 +190,35 @@ const CreateCountry = ({ ele, handleClose }) => {
             // Update existing country
             console.log("form",form);
             
-            const res = await dispatch(updateAbroadStudy({ id: ele._id, data: form }));
-            if (updateAbroadStudy.fulfilled.match(res)) {
-                toast.success("✅ Country updated successfully!");
+            const res = await dispatch(updateAbroadProvince({ id: ele._id, data: form }));
+            if (updateAbroadProvince.fulfilled.match(res)) {
+                toast.success("✅ Province updated successfully!");
                 handleClose();
             }
-            else if (updateAbroadStudy.rejected.match(res)) {
+            else if (updateAbroadProvince.rejected.match(res)) {
                   // Failure case with detailed error
                   const errorMsg =
                     res.payload?.message || res.error?.message || "Unknown error occurred.";
-                  toast.error("❌ Failed to update country: " + errorMsg);
+                  toast.error("❌ Failed to update Province: " + errorMsg);
                 }
         }else{
             // Create new country
             console.log(form,"+++++++++++++++++++++");
             
-            const res = await dispatch(createAbroadStudyThunk(form));
-            if (createAbroadStudyThunk.fulfilled.match(res)) {
-                toast.success("✅ Country created successfully!");
+            const res = await dispatch(createAbroadProvince(form));
+            if (CreateAbroadProvince.fulfilled.match(res)) {
+                toast.success("✅ Province created successfully!");
                 handleClose();
-            } else if (createAbroadStudyThunk.rejected.match(res)) {
+            } else if (CreateAbroadProvince.rejected.match(res)) {
                 // Failure case with detailed error
                 const errorMsg =
                     res.payload?.message || res.error?.message || "Unknown error occurred.";
-                toast.error("❌ Failed to create country: " + errorMsg);
+                toast.error("❌ Failed to create Province: " + errorMsg);
             }
         }
     } catch (error) {
-        console.error("Failed to create country:", error);
-        toast.error("Failed to create country");
+        console.error("Failed to create Province:", error);
+        toast.error("Failed to create Province");
     }
   }
   return(
@@ -253,7 +246,7 @@ const CreateCountry = ({ ele, handleClose }) => {
               type="file"
               name="bannerURL"
               onChange={(e)=>{
-                handleFileChange(e,"banner")
+                handleChange(e,"banner")
               }}
               isInvalid={!!errors.bannerURL}
             />
@@ -261,23 +254,17 @@ const CreateCountry = ({ ele, handleClose }) => {
           </Form.Group>
 
           <Form.Group className="mt-3">
-            <Form.Label>Flag Image (200x200)</Form.Label>
+            <Form.Label> Image (200x200)</Form.Label>
             <Form.Control
               type="file"
-              name="flagURL"
+              name="heroURL"
               onChange={(e)=>{
-                handleFileChange(e,"flag")
+                handleChange(e,"image")
               }}
-              isInvalid={!!errors.flagURL}
+              isInvalid={!!errors.heroURL}
             />
             {flagPreview && <img src={flagPreview} alt="Flag" className="mt-2 rounded-circle" width="100" />}
           </Form.Group>
-
-          <Form.Group className="mt-3">
-            <Form.Label>Bullet Point</Form.Label>
-            <Form.Control type="text" name="bullet" value={form.bullet} onChange={handleChange} />
-          </Form.Group>
-
           <Form.Group className="mt-3">
             <Form.Label>Description</Form.Label>
             <TextEditor name="description" value={form.description} onChange={handleChange} />
@@ -313,7 +300,7 @@ const CreateCountry = ({ ele, handleClose }) => {
                     <Form.Control
                       type="file"
                       name={`sections.${index}.url`}
-                      onChange={handleFileChange}
+                      onChange={handleChange}
                     />
                     {sectionPreviews[index] && (
                       <img src={sectionPreviews[index]} alt="Preview" className="mt-2 img-fluid rounded" />
@@ -330,43 +317,17 @@ const CreateCountry = ({ ele, handleClose }) => {
           <Button className="mt-3" variant="outline-primary" onClick={addSection}>
             Add Section
           </Button>
-
-          {/* FAQ */}
-          <Accordion className="mt-4">
-            {form.faq.map((faq, index) => (
-              <Accordion.Item eventKey={`faq-${index}`} key={index}>
-                <Accordion.Header>FAQ {index + 1}</Accordion.Header>
-                <Accordion.Body>
-                  <Form.Group>
-                    <Form.Label>Question</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name={`faq.${index}.question`}
-                      value={faq.question}
-                      onChange={handleChange}
-                    />
-                  </Form.Group>
-
-                  <Form.Group className="mt-2">
-                    <Form.Label>Answer</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name={`faq.${index}.answer`}
-                      value={faq.answer}
-                      onChange={handleChange}
-                    />
-                  </Form.Group>
-
-                  <Button variant="danger" className="mt-3" onClick={() => removeFaq(index)}>
-                    Remove FAQ
-                  </Button>
-                </Accordion.Body>
-              </Accordion.Item>
-            ))}
-          </Accordion>
-          <Button className="mt-3" variant="outline-primary" onClick={addFaq}>
-            Add FAQ
-          </Button>
+            <Form.Group className="mt-3">
+            <Form.Label>Country</Form.Label>
+            <select name="Country" value={form?.Country?.name} onChange={handleChange} id="">
+              <option value="Select" defaultValue='Select' disabled>Select</option>
+              {studyAbroad?.map((country)=>(
+                <option key={country._id} value={country._id}>
+                  {country?.name}
+                </option>
+              ))}
+            </select>
+          </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>
@@ -379,4 +340,4 @@ const CreateCountry = ({ ele, handleClose }) => {
   );
 };
 
-export default CreateCountry;
+export default CreateAbroadProvince;

@@ -102,6 +102,7 @@ import WebinarPage from "./pages/WebinarPage";
 import ServicePage from "./pages/ServicePage";
 import CounsellorPage from "./pages/CounsellorPage";
 import AbroadStudyPage from "./pages/AbroadStudyPage";
+import AbroadProvincePage from "./pages/AbroadProvincePage";
 
 function App() {
   return (
@@ -251,7 +252,8 @@ function App() {
         <Route exact path='/webinar-manager' element={<WebinarPage />} />
         <Route exact path='/service-manager' element={<ServicePage />} />
         <Route exact path='/counsellor-manager' element={<CounsellorPage />} />
-        <Route exact path='/abroad-study-manager' element={<AbroadStudyPage />} />
+        <Route exact path='/abroad-country' element={<AbroadStudyPage />} />
+        <Route exact path='/abroad-province' element={<AbroadProvincePage />} />
         <Route exact path='*' element={<ErrorPage />} />
       </Routes>
     </BrowserRouter>
