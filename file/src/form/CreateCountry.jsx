@@ -26,7 +26,7 @@ const CreateCountry = ({ ele, handleClose }) => {
   const [form, setForm] = useState({
     name: ele?.name || "",
     bannerURL:ele?.bannerURL || "",
-    bullet:ele.bullet || "",
+    bullet:ele?.bullet || "",
     mbbsAbroad: ele?.mbbsAbroad || false,
     flagURL: ele?.flagURL || "",
     description:ele?.description || "",
