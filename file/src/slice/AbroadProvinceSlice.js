@@ -7,7 +7,9 @@ export const fetchAbroadProvince = createAsyncThunk(
     async(__,{rejectWithValue})=>{
         try {
             const response = await axios.get("https://searchmystudy.com/api/admin/province");
-      return response?.data
+            return Array.isArray(response.data)
+            ? response.data.filter(item => item?.Country?.mbbsAbroad === false)
+            : []; 
         } catch (error) {
             return rejectWithValue(
         error.response?.data?.message || 'Something went wrong'
@@ -83,7 +85,7 @@ export const updateAbroadProvince = createAsyncThunk(
     }
 );
 
-export const abroadProvinceSlice = createSlice({
+ const abroadProvinceSlice = createSlice({
     name:'abroadProvince',
     initialState:{
         abroadProvince:[],
@@ -106,3 +108,4 @@ export const abroadProvinceSlice = createSlice({
         })
     }
 })
+export default abroadProvinceSlice.reducer;
