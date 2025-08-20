@@ -271,6 +271,48 @@ const MasterLayout = ({ children }) => {
                 </li>
               </ul>
             </li>
+             <li className='dropdown'>
+              <Link to='#'>
+                <Icon icon='hugeicons:invoice-03' className='menu-icon' />
+                <span>MBBS Study</span>
+              </Link>
+              <ul className='sidebar-submenu'>
+                <li>
+                  <NavLink
+                    to='/mbss-country'
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className='ri-circle-fill circle-icon text-primary-600 w-auto' />{" "}
+                    Country
+                  </NavLink>
+                </li>
+                
+                <li>
+                  <NavLink
+                    to='/invoice-add'
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className='ri-circle-fill circle-icon text-info-main w-auto' />{" "}
+                    University
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to='/invoice-edit'
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className='ri-circle-fill circle-icon text-danger-main w-auto' />{" "}
+                    Course
+                  </NavLink>
+                </li>
+              </ul>
+            </li>
 
             {/* Ai Application Dropdown */}
             {/* <li className='dropdown'>

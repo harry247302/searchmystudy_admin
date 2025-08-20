@@ -2,15 +2,15 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { createSlice } from '@reduxjs/toolkit';
 
-export const fetchAbroadStudy = createAsyncThunk(
-  'abroad/fetchAbroadStudy',
+export const fetchMbbsStudy = createAsyncThunk(
+  'mbbs/fetchMbbsStudy',
     async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get("https://searchmystudy.com/api/admin/countries");
-      // console.log(response?.data,"++++++++++++==");
+    //   console.log(response?.data,"++++++++++++==");
       
       return Array.isArray(response.data)
-        ? response.data.filter(item => item?.mbbsAbroad === false)
+        ? response.data.filter(item => item?.mbbsAbroad === true)
         : [];   // returned data will be available in fulfilled reducer
     } catch (error) {
       return rejectWithValue(
@@ -20,8 +20,8 @@ export const fetchAbroadStudy = createAsyncThunk(
     }
 );
 
-export const deleteAbroadStudy = createAsyncThunk(
-  'abroad/deleteAbroadStudy',
+export const deleteMbbsStudy = createAsyncThunk(
+  'abroad/deleteMbbsStudy',
     async (ids, { rejectWithValue }) => {
         if (!ids || ids.length === 0) {
         return rejectWithValue({ message: "No abroad study IDs provided" });
@@ -37,8 +37,8 @@ export const deleteAbroadStudy = createAsyncThunk(
     }
 );
 
-export const createAbroadStudyThunk = createAsyncThunk(
-  'abroad/createAbroadStudy',
+export const createMbbstudyThunk = createAsyncThunk(
+  'abroad/createMbbstudyThunk',
   async (abroadData, thunkAPI) => {
     try {
       const response = await fetch("https://searchmystudy.com/api/admin/countries", {
@@ -62,8 +62,8 @@ export const createAbroadStudyThunk = createAsyncThunk(
   }
 );
 
-export const updateAbroadStudy = createAsyncThunk(
-  'abroad/updateAbroadStudy',  
+export const updateMbbsStudy = createAsyncThunk(
+  'abroad/updateMbbsStudy',  
     async ({ id, data }, thunkAPI) => {
         try {
         const response = await fetch(`https://searchmystudy.com/api/admin/countries/${id}`, {
@@ -87,53 +87,53 @@ export const updateAbroadStudy = createAsyncThunk(
     }
 );
 
-export const abroadSlice = createSlice({
-  name: 'abroad',
+export const MbbsSlice = createSlice({
+  name: 'mbbs_study',
     initialState: {
-        studyAbroad: [],
+        studyMbbs: [],
         loading: false,
         error: null,
     },
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(fetchAbroadStudy.pending, (state) => {
+            .addCase(fetchMbbsStudy.pending, (state) => {
             state.loading = true;
             state.error = null;
             })
-            .addCase(fetchAbroadStudy.fulfilled, (state, action) => {
-            state.studyAbroad = action.payload;
+            .addCase(fetchMbbsStudy.fulfilled, (state, action) => {
+            state.studyMbbs = action.payload;
             state.loading = false;
             })
-            .addCase(fetchAbroadStudy.rejected, (state, action) => {
+            .addCase(fetchMbbsStudy.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload || 'Failed to fetch abroad study data';
             })
-            .addCase(deleteAbroadStudy.pending, (state) => {
+            .addCase(deleteMbbsStudy.pending, (state) => {
             state.loading = true;
             state.error = null;
             })
-            .addCase(deleteAbroadStudy.fulfilled, (state, action) => {
-            state.studyAbroad = state.studyAbroad.filter(item => !action.payload.ids.includes(item._id));
+            .addCase(deleteMbbsStudy.fulfilled, (state, action) => {
+            state.studyMbbs = state.studyAbroad.filter(item => !action.payload.ids.includes(item._id));
             state.loading = false;
             })
-            .addCase(deleteAbroadStudy.rejected, (state, action) => {
+            .addCase(deleteMbbsStudy.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload || 'Failed to delete abroad study data';
             })
-            .addCase(createAbroadStudyThunk.pending, (state) => {
+            .addCase(createMbbstudyThunk.pending, (state) => {
             state.loading = true;
             state.error = null;
             })
-            .addCase(createAbroadStudyThunk.fulfilled, (state, action) => {
-            state.studyAbroad.push(action.payload);
+            .addCase(createMbbstudyThunk.fulfilled, (state, action) => {
+            state.studyMbbs.push(action.payload);
             state.loading = false;
             })
-            .addCase(createAbroadStudyThunk.rejected, (state, action) => {
+            .addCase(createMbbstudyThunk.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload || 'Failed to create abroad study data';
             });
         }
 });
 
-export default abroadSlice.reducer;
+export default MbbsSlice.reducer;
