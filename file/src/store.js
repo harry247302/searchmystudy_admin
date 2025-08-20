@@ -5,6 +5,8 @@ import authReducer from './slice/authSlice';
 import serviceReducer from './slice/serviceSlice';
 import counsellorReducer from './slice/counsellorSlice'
 import abroadReducer from './slice/AbroadSlice'
+import AbroadProvinceReducer from './slice/AbroadProvinceSlice'
+import AbroadUniversityReducer from './slice/AbroadUniversitySlice'
 const store = configureStore({
   reducer: {
       blog: blogReducer,
@@ -12,7 +14,9 @@ const store = configureStore({
       auth:authReducer,
       service:serviceReducer,
       counsellor:counsellorReducer,
-      abroadStudy:abroadReducer
+      abroadStudy:abroadReducer,
+      abroadProvince:AbroadProvinceReducer,
+      abroadUniversity:AbroadUniversityReducer
   },
  
 });

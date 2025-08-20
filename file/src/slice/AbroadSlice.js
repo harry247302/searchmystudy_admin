@@ -7,7 +7,7 @@ export const fetchAbroadStudy = createAsyncThunk(
     async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get("https://searchmystudy.com/api/admin/countries");
-      console.log(response?.data,"++++++++++++==");
+      // console.log(response?.data,"++++++++++++==");
       
       return Array.isArray(response.data)
         ? response.data.filter(item => item?.mbbsAbroad === false)

@@ -13,12 +13,12 @@ import { app } from "../firebase";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { createAbroadProvince, updateAbroadProvince } from "../slice/AbroadProvinceSlice.js";
 import TextEditor from "./TextEditor";
+import { createAbroadProvince, updateAbroadProvince } from "../slice/AbroadProvinceSlice.js";
 
-const storage = getStorage(app);
 
 const CreateAbroadProvince = ({ ele, handleClose }) => {
+  const storage = getStorage(app);
   const [sectionPreviews, setSectionPreviews] = useState([]);
   const dispatch = useDispatch();
   const {studyAbroad } = useSelector((state)=>state.abroadStudy)
@@ -38,6 +38,7 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
   console.log(form,"Y^^^^^^^^");
   
   const [bannerPreview, setBannerPreview] = useState(null);
+  const [heroPreview, setHeroPreview] = useState(null);
   const [flagPreview, setFlagPreview] = useState(null);
 
     const [uploads, setUploads] = useState({
@@ -47,6 +48,13 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
 
   const [errors, setErrors] = useState({});
 
+  const uploadImage = async (file) => {
+    const storageRef = ref(storage, `provinces/${Date.now()}-${file.name}`);
+    await uploadBytesResumable(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+    return url;
+  };
+
   const handleChange = async (event) => {
     const { name, value, type, files } = event.target;
 
@@ -55,14 +63,14 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
       if (file) {
         try {
           if (name === 'bannerURL') {
-            await validateImageDimensions(file, { width: 1500, height: 500 });
+            // await validateImageDimensions(file, { width: 1500, height: 500 });
             const previewURL = URL.createObjectURL(file);
             setBannerPreview(previewURL);
             const imageURL = await uploadImage(file);
             setForm(prev => ({ ...prev, bannerURL: imageURL }));
           } 
           else if (name === 'heroURL') {
-            await validateImageDimensions(file, { width: 350, height: 400 });
+            // await validateImageDimensions(file, { width: 350, height: 400 });
             const previewURL = URL.createObjectURL(file);
             setHeroPreview(previewURL);
             const imageURL = await uploadImage(file);
@@ -206,10 +214,10 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
             console.log(form,"+++++++++++++++++++++");
             
             const res = await dispatch(createAbroadProvince(form));
-            if (CreateAbroadProvince.fulfilled.match(res)) {
+            if (createAbroadProvince.fulfilled.match(res)) {
                 toast.success("✅ Province created successfully!");
                 handleClose();
-            } else if (CreateAbroadProvince.rejected.match(res)) {
+            } else if (createAbroadProvince.rejected.match(res)) {
                 // Failure case with detailed error
                 const errorMsg =
                     res.payload?.message || res.error?.message || "Unknown error occurred.";
@@ -224,7 +232,7 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
   return(
     <Modal show={open} onHide={handleClose} size="lg" centered scrollable>
       <Modal.Header closeButton className="text-black">
-        <Modal.Title>Add Country</Modal.Title>
+        <Modal.Title>Add Province</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
@@ -263,7 +271,7 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
               }}
               isInvalid={!!errors.heroURL}
             />
-            {flagPreview && <img src={flagPreview} alt="Flag" className="mt-2 rounded-circle" width="100" />}
+            {heroPreview && <img src={heroPreview} alt="Hero Image" className="mt-2 rounded-circle" width="100" />}
           </Form.Group>
           <Form.Group className="mt-3">
             <Form.Label>Description</Form.Label>
@@ -318,16 +326,28 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
             Add Section
           </Button>
             <Form.Group className="mt-3">
-            <Form.Label>Country</Form.Label>
-            <select name="Country" value={form?.Country?.name} onChange={handleChange} id="">
-              <option value="Select" defaultValue='Select' disabled>Select</option>
-              {studyAbroad?.map((country)=>(
-                <option key={country._id} value={country._id}>
-                  {country?.name}
+              <Form.Label>Country</Form.Label>
+              <Form.Select 
+                name="Country" 
+                value={ele?.Country?._id || form?.Country?._id || ""} 
+                onChange={handleChange}
+                isInvalid={!!errors.Country}
+              >
+                <option value="" disabled>
+                  {ele?.Country?.name || "Select"}
                 </option>
-              ))}
-            </select>
-          </Form.Group>
+                {studyAbroad?.map((country) => (
+                  <option key={country._id} value={country._id}>
+                    {country?.name}
+                  </option>
+                ))}
+              </Form.Select>
+              {errors.Country && (
+                <Form.Control.Feedback type="invalid">
+                  {errors.Country}
+                </Form.Control.Feedback>
+              )}
+            </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>
