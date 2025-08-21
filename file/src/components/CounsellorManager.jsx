@@ -5,9 +5,10 @@ import "datatables.net-dt";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link } from "react-router-dom";
 import { useDispatch } from 'react-redux';
-import { deleteCounsellor, fetchCounsellor } from "../slice/counsellorSlice";
-import CreateCounsellor from "../form/CreateCounsellor";
+import { deleteTestemonial, fetchTestemonial } from "../slice/counsellorSlice";
+// import CreateCounsellor from "../form/CreateCounsellor";
 import { toast } from "react-toastify";
+import CreateTestemonial from "../form/CreateTestemonial";
 
 const CounsellorManager = () => {
   const dispatch = useDispatch();
@@ -19,7 +20,7 @@ const CounsellorManager = () => {
 
   // Fetch Counsellor
   const loadCounsellors = async () => {
-    const res = await dispatch(fetchCounsellor());
+    const res = await dispatch(fetchTestemonial());
     if (res?.meta?.requestStatus === "fulfilled") {
       setCounsellor(res.payload);
     }
@@ -53,10 +54,10 @@ const CounsellorManager = () => {
     if (!confirmed) return;
 
     try {
-      const res = await dispatch(deleteCounsellor(idsToDelete));
+      const res = await dispatch(deleteTestemonial(idsToDelete));
       console.log(res);
 
-      if (deleteCounsellor.fulfilled.match(res)) {
+      if (deleteTestemonial.fulfilled.match(res)) {
         toast.success("✅ Counsellor deleted successfully!");
         setSelectedIds([]); // clear selection
         loadCounsellors();
@@ -98,7 +99,7 @@ const CounsellorManager = () => {
             </button>
           )}
 
-          {showModal && <CreateCounsellor ele={editingCounsellor} handleClose={() => {
+          {showModal && <CreateTestemonial loadCounsellors={loadCounsellors} ele={editingCounsellor} handleClose={() => {
             setShowModal(false);
             setEditingCounsellor();
           }} />}

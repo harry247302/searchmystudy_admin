@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { createService, updateService } from "../slice/serviceSlice";
+import { toast } from "react-toastify";
 
-const CreateService = ({ ele, handleClose }) => {
+const CreateService = ({ ele, handleClose,loadServices }) => {
   const [form, setForm] = useState({
     title: ele?.title || '',
     banner: ele?.banner || '',
@@ -88,25 +89,21 @@ const CreateService = ({ ele, handleClose }) => {
     try {
 
       if (ele && ele._id) {
-        console.log("Hello");
-        
         // Update existing webinar
         const res = await dispatch(updateService({id:ele._id,data:form}));
-        console.log(res);
-        
-        
         if (updateService.fulfilled.match(res)) {
           alert("Service updated successfully!");
           handleClose();
+          loadServices()
         } else if (updateService.rejected.match(res)) {
           alert("Failed to update Service: " + (res.payload?.message || res.error.message || "Unknown error"));
         }
       } else {
         // Create new webinar
         const res = await dispatch(createService(form));
-        
         if (createService.fulfilled.match(res)) {
-          alert("Service created successfully!");
+          toast.success("Service created successfully!");
+          loadServices()
           handleClose();
         } else if (createService.rejected.match(res)) {
           alert("Failed to create Service: " + (res.payload?.message || res.error.message || "Unknown error"));

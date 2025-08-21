@@ -3,12 +3,12 @@ import { useDispatch } from "react-redux";
 import { createWebinar, updateWebinar } from "../slice/webinarSlice";
 import { app } from "../firebase";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { toast, ToastContainer } from "react-toastify";
+import {  toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const storage = getStorage(app);
 
-const CreateWebinar = ({ ele, handleClose }) => {
+const CreateWebinar = ({ ele, handleClose,fetchData }) => {
   const dispatch = useDispatch();
 
   const [form, setForm] = useState({
@@ -90,19 +90,23 @@ const CreateWebinar = ({ ele, handleClose }) => {
 
       if (ele && ele._id) {
         // Update existing webinar
+        
         const res = await dispatch(updateWebinar({ id: ele._id, data: form }));
-
+        
+        console.log(res);
         if (updateWebinar.fulfilled.match(res)) {
           alert("Webinar updated successfully!");
           handleClose();
+          fetchData()
         } else if (updateWebinar.rejected.match(res)) {
           alert("Failed to update Webinar: " + (res.payload?.message || res.error.message || "Unknown error"));
         }
       } else {
         const res = await dispatch(createWebinar(form))
         if (res.type === "blogs/createBlog/fulfilled") {
-          toast.success("✅ Webinar created:", res.payload);
+          alert("✅ Webinar created:", res.payload);
           handleClose()
+          fetchData()
           // show success toast / redirect
         } else if (res.type === "blogs/createBlog/rejected") {
           toast.error("❌ Webinar creation failed:", res.error?.message || "Unknown error");

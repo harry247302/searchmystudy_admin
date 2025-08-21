@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 // Create Counsellor
-export const createCounsellor = createAsyncThunk(
+export const createTestemonial = createAsyncThunk(
     'counsellor/createCounsellor',
     async(data,thunkAPI) => {
         try {
@@ -20,7 +20,7 @@ export const createCounsellor = createAsyncThunk(
 );
 
 // fetch Counsellors
-export const fetchCounsellor = createAsyncThunk(
+export const fetchTestemonial = createAsyncThunk(
     'counsellor/fetchCounsellor',
     async (_,{rejectWithValue}) => {
         try {
@@ -35,7 +35,7 @@ export const fetchCounsellor = createAsyncThunk(
 );
 
 // Delete Counsellor
-export const deleteCounsellor = createAsyncThunk(
+export const deleteTestemonial = createAsyncThunk(
     'counsellor/deleteCounsellor',
     async(ids,{ rejectWithValue })=>{
         if (!ids || ids.length === 0) {
@@ -52,7 +52,7 @@ export const deleteCounsellor = createAsyncThunk(
     }
 );
 // update Counsellor
-export const updateCounsellor = createAsyncThunk(
+export const updateTestemonial = createAsyncThunk(
     'counsellor/updateCounsellor',
     async({id,data},{ rejectWithValue })=>{
         try {
@@ -73,15 +73,15 @@ const counsellorSlice = createSlice({
     },
     reducers:{},
     extraReducers: (builder)=>{
-        builder.addCase(fetchCounsellor.pending, (state)=>{
+        builder.addCase(fetchTestemonial.pending, (state)=>{
             state.loading = true;
             state.error = null;
         })
-        .addCase(fetchCounsellor.fulfilled, (state,action)=>{
+        .addCase(fetchTestemonial.fulfilled, (state,action)=>{
             state.loading = false;
             state.counsellors = action.payload;
         })
-        .addCase(fetchCounsellor.rejected,(state,action)=>{
+        .addCase(fetchTestemonial.rejected,(state,action)=>{
             state.loading = false;
             state.error = action.payload;
         });

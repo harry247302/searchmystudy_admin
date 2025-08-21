@@ -289,7 +289,7 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
                     <Form.Control
                       type="text"
                       name={`sections.${index}.title`}
-                      value={section.title}
+                      value={section?.title}
                       onChange={handleChange}
                     />
                   </Form.Group>

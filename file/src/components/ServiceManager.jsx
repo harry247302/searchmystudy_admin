@@ -111,6 +111,7 @@ const ServiceManager = () => {
 
           {showModal && (
             <CreateService
+            loadServices={loadServices}
               ele={editingService}
               handleClose={() => {
                 setShowModal(false);

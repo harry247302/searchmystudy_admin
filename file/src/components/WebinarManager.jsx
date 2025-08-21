@@ -16,8 +16,13 @@ const WebinarManager = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingWebinar, setEditingWebinar] = useState(null);
 
+  const fetchData = async ()=>{
+      const res = await dispatch(fetchWebinar());
+    }
   useEffect(() => {
-    dispatch(fetchWebinar());
+    
+    fetchData()
+    
   }, [dispatch]);
 
   const handleCheckboxChange = (id) => {
@@ -32,19 +37,22 @@ const WebinarManager = () => {
     });
   };
 
+const handleDelete = async (id) => {
+  try {
+    const confirmed = window.confirm("Are you sure you want to delete this webinar?");
+    if (!confirmed) return; // stop if user clicks Cancel
 
-  const handleDelete = async (id) => {
-    try {
-      // console.log(selectedIds, "|||||");
+    const res = await dispatch(deleteWebinar(selectedIds));
+    dispatch(fetchWebinar());
+    toast.success("Webinar deleted successfully");
+  } catch (error) {
+    console.log(error);
+    toast.error("Error deleting webinar");
+  }
+};
 
-      const res = await dispatch(deleteWebinar(selectedIds));
-      dispatch(fetchWebinar());
-      toast.success("Blog Deleted successfully")
-    } catch (error) {
-      console.log(error);
-      toast.error('Error deleting testimonial');
-    }
-  };
+  // console.log(webinars);
+  
   return (
     <div className="card basic-data-table">
       <div className="card-header" style={{ display: "flex", justifyContent: "space-between" }}>
@@ -60,7 +68,7 @@ const WebinarManager = () => {
 
             <button   className="mx-4 btn rounded-pill text-danger radius-8 px-4 py-2" onClick={handleDelete}>Delete</button>
 
-          {showModal && <CreateWebinar ele={editingWebinar} handleClose={() => {
+          {showModal && <CreateWebinar fetchData={fetchData} ele={editingWebinar} handleClose={() => {
             setShowModal(false);
             setEditingWebinar(null);
           }} />}
@@ -107,6 +115,8 @@ const WebinarManager = () => {
                   Date
                 </th>
                 <th scope="col">Image</th>
+                <th scope="col">Start Time</th>
+                <th scope="col">End Time</th>
                 <th scope="col">Created At</th>
                 <th scope="col">Action</th>
               </tr>
@@ -139,6 +149,16 @@ const WebinarManager = () => {
                     <a href={ele?.imageURL} target="_blank" rel="noopener noreferrer">
                       Click to View
                     </a>
+                  </td>
+                   <td>
+                    {/* <a href={ele?.imageURL} target="_blank" rel="noopener noreferrer"> */}
+                      {ele?.timeEnd}
+                    {/* </a> */}
+                  </td>
+                   <td>
+                    {/* <a href={ele?.imageURL} target="_blank" rel="noopener noreferrer"> */}
+                      {ele?.timeStart}
+                    {/* </a> */}
                   </td>
                   <td>
                     <span className="text-success-main px-24 py-4 rounded-pill fw-medium text-sm">

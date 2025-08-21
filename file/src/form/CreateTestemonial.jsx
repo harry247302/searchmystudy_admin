@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useDispatch } from "react-redux";
-import { createCounsellor, fetchCounsellor, updateCounsellor } from "../slice/counsellorSlice";
+import { createTestemonial, fetchTestemonial  , updateTestemonial } from "../slice/counsellorSlice";
 import { app } from "../firebase";
 import {  ToastContainer } from "react-toastify";
+import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const storage = getStorage(app);
 
-const CreateCounsellor = ({ ele, handleClose, loadCounsellors }) => {
+const CreateTestemonial = ({ ele, handleClose, loadCounsellors }) => {
   const dispatch = useDispatch();
 
   const [form, setForm] = useState({
@@ -187,10 +188,10 @@ const CreateCounsellor = ({ ele, handleClose, loadCounsellors }) => {
     try {
       if (ele && ele._id) {
         // update existing counsellor
-        const res = await dispatch(updateCounsellor({ id: ele._id, data: formData }));
+        const res = await dispatch(updateTestemonial({ id: ele._id, data: formData }));
         if (updateCounsellor.fulfilled.match(res)) {
           toast.success("Counsellor updated successfully!");
-          dispatch(fetchCounsellor());
+          dispatch(fetchTestemonial ());
           handleClose();
         } else if (updateCounsellor.rejected.match(res)) {
           toast.error("Failed to update Counsellor: " + (res.payload?.message || res.error.message || "Unknown error"));
@@ -205,12 +206,13 @@ const CreateCounsellor = ({ ele, handleClose, loadCounsellors }) => {
           toast.error("Please fill in all required fields with valid image.");
           return;
         }
-        console.log(formData, "|||||||||||||||||||");
-        const res = await dispatch(createCounsellor(formData));
+        const res = await dispatch(createTestemonial(formData));
+        // console.log(res, "|||||||||||||||||||");
 
-        if (createCounsellor.fulfilled.match(res)) {
+        if (createTestemonial.fulfilled.match(res)) {
           toast.success("Counsellor created successfully!");
-          dispatch(fetchCounsellor());
+          // dispatch(fetchTestemonial());
+          loadCounsellors()
           handleClose();
         } else if (createCounsellor.rejected.match(res)) {
           toast.error("Failed to create Counsellor: " + (res.payload?.message || res.error.message || "Unknown error"));
@@ -280,12 +282,12 @@ const CreateCounsellor = ({ ele, handleClose, loadCounsellors }) => {
                 />
                 {uploads.image.preview && (
                   <div className="mt-2">
+                    <p className="text-red-500 text-sm mt-1">Image should be 1200x600 px</p>
                     <img src={uploads.image.preview} alt="preview" style={{ width: "150px" }} />
-                    <div>Upload Progress: {Math.round(uploads.image.progress)}%</div>
+                    {/* <div>Upload Progress: {Math.round(uploads.image.progress)}%</div> */}
                   </div>
                 )}
                 {errors.imageURL && <div className="invalid-feedback">{errors.imageURL}</div>}
-                <p className="text-red-500 text-sm mt-1">Image should be 1200x600 px</p>
               </div>
             </div>
 
@@ -294,7 +296,7 @@ const CreateCounsellor = ({ ele, handleClose, loadCounsellors }) => {
                 Close
               </button>
               <button className="btn btn-primary" onClick={handleSubmit}>
-                {ele && ele._id ? "Update Counsellor" : "Create counsellor"}
+                {ele && ele._id ? "Update" : "Create"}
               </button>
             </div>
           </div>
@@ -304,4 +306,4 @@ const CreateCounsellor = ({ ele, handleClose, loadCounsellors }) => {
   );
 };
 
-export default CreateCounsellor;
+export default CreateTestemonial;
