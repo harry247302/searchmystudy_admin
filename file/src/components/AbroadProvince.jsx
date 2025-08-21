@@ -1,4 +1,4 @@
-import React,{ useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import $ from "jquery";
 import "datatables.net-dt";
 import { useDispatch } from "react-redux";
@@ -9,14 +9,14 @@ import { deleteAbroadProvince, fetchAbroadProvince } from "../slice/AbroadProvin
 import CreateAbroadProvince from "../form/CreateAbroadProvince";
 
 const AbroadProvince = () => {
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const [selectedIds, setSelectedIds] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [province, setProvince] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editingProvince, setEditingProvince] = useState(null);
 
-    const loadProvince = async () => {
+  const loadProvince = async () => {
     setLoading(true);
     try {
       const res = await dispatch(fetchAbroadProvince());
@@ -29,14 +29,14 @@ const AbroadProvince = () => {
   };
 
 
-    useEffect(() => {
-     loadProvince();
-    }, [dispatch]);
+  useEffect(() => {
+    loadProvince();
+  }, [dispatch]);
 
-    console.log(province,"++++++++++");
-    
+  console.log(province, "++++++++++");
 
-        const handleCheckboxChange = (id) => {
+
+  const handleCheckboxChange = (id) => {
     setSelectedIds((prevSelected) => {
       if (prevSelected.includes(id)) {
         // Remove if already selected
@@ -48,40 +48,40 @@ const AbroadProvince = () => {
     });
   };
 
-      // Delete single OR multiple blogs
-    const handleDelete = async (id) => {
-        const idsToDelete = id ? [id] : selectedIds;
-        if (idsToDelete.length === 0) {
-          toast.warn("⚠️ No items selected for deletion.");
-          return;
-        }
-    
-        const confirmed = window.confirm(
-          idsToDelete.length > 1
-            ? `Are you sure you want to delete ${idsToDelete.length} blogs?`
-            : "Are you sure you want to delete this blog?"
+  // Delete single OR multiple blogs
+  const handleDelete = async (id) => {
+    const idsToDelete = id ? [id] : selectedIds;
+    if (idsToDelete.length === 0) {
+      toast.warn("⚠️ No items selected for deletion.");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      idsToDelete.length > 1
+        ? `Are you sure you want to delete ${idsToDelete.length} blogs?`
+        : "Are you sure you want to delete this blog?"
+    );
+    if (!confirmed) return;
+
+    try {
+      const res = await dispatch(deleteAbroadProvince(selectedIds));
+      console.log(res);
+
+      if (deleteAbroadProvince.fulfilled.match(res)) {
+        toast.success("✅ Abroad Province deleted successfully!");
+        setSelectedIds([]); // clear selection
+        loadProvince();
+      } else if (deleteAbroadProvince.rejected.match(res)) {
+        toast.error(
+          "❌ Failed to delete Abroad Province: " +
+          (res.payload?.message || res.error?.message || "Unknown error")
         );
-        if (!confirmed) return;
-    
-        try {
-          const res = await dispatch(deleteAbroadProvince(idsToDelete));
-          console.log(res);
-    
-          if (deleteAbroadProvince.fulfilled.match(res)) {
-            toast.success("✅ Abroad Province deleted successfully!");
-            setSelectedIds([]); // clear selection
-            loadBlogs();
-          } else if (deleteAbroadProvince.rejected.match(res)) {
-            toast.error(
-              "❌ Failed to delete Abroad Province: " +
-              (res.payload?.message || res.error?.message || "Unknown error")
-            );
-          }
-        } catch (error) {
-          console.error(error);
-          toast.error("⚠️ Unexpected error: " + (error.message || "Something went wrong"));
-        }
-      };
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("⚠️ Unexpected error: " + (error.message || "Something went wrong"));
+    }
+  };
 
   return (
     <div className="card basic-data-table">
@@ -110,6 +110,7 @@ const AbroadProvince = () => {
 
           {showModal && (
             <CreateAbroadProvince
+              loadProvince={loadProvince}
               ele={editingProvince}
               handleClose={() => {
                 setShowModal(false);
@@ -143,7 +144,7 @@ const AbroadProvince = () => {
             id="dataTable"
             className="table bordered-table mb-0"
             data-page-length={10}
-            // style={{overflowX:"auto"}}
+          // style={{overflowX:"auto"}}
           >
             <thead>
               <tr>
@@ -163,86 +164,86 @@ const AbroadProvince = () => {
               </tr>
             </thead>
             <tbody>
-              {province?.map((ele,ind) => {
-                return(
+              {province?.map((ele, ind) => {
+                return (
                   <tr key={ele._id}>
-                <td>
-                  <div className="form-check style-check d-flex align-items-center">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      checked={selectedIds.includes(ele._id)}
-                      onChange={() => handleCheckboxChange(ele._id)}
-                    />
-                    <label className="form-check-label">{ind+1}</label>
-                  </div>
-                </td>
-                <td>{ele?.name}</td>
-                <td>{ele?.Country?.name}</td>
-                <td>
-                  <div
-                      className="custom-scrollbar"
-                      style={{
-                        width: "300px",
-                        height: "50px",
-                        overflowY: "auto",
-                        overflowX: "hidden",
-                        whiteSpace: "normal",
-                      }}
-                    >
-                      <h6 className="text-md mb-0 fw-medium flex-grow-1">
-                        {ele?.description.slice(0, 300)}
-                      </h6>
-                    </div>
-                </td>
-                <td>
-                  <a
-                    href={ele?.heroURL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Click to View
-                  </a>
-                </td>
-                <td>
-                  <a
-                    href={ele?.bannerURL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Click to View
-                  </a>
-                </td>
-                <td>
-                  <span className="text-success-main px-24 py-4 rounded-pill fw-medium text-sm">
-                    {new Date(ele?.createdAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                      weekday: "short",
-                    })}
-                  </span>
-                </td>
-                <td>
-                  <Link
-                    onClick={() => {
-                      setEditingProvince(ele);
-                      setShowModal(true);
-                    }}
-                    to="#"
-                    className="w-32-px h-32-px me-8 bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center"
-                  >
-                    <Icon icon="lucide:edit" />
-                  </Link>
-                  <Link
-                    onClick={handleDelete}
-                    to="#"
-                    className="w-32-px h-32-px me-8 bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center"
-                  >
-                    <Icon icon="mingcute:delete-2-line" />
-                  </Link>
-                </td>
-              </tr>
+                    <td>
+                      <div className="form-check style-check d-flex align-items-center">
+                        <input
+                          type="checkbox"
+                          className="form-check-input"
+                          checked={selectedIds.includes(ele._id)}
+                          onChange={() => handleCheckboxChange(ele._id)}
+                        />
+                        <label className="form-check-label">{ind + 1}</label>
+                      </div>
+                    </td>
+                    <td>{ele?.name}</td>
+                    <td>{ele?.Country?.name}</td>
+                    <td>
+                      <div
+                        className="custom-scrollbar"
+                        style={{
+                          width: "300px",
+                          height: "50px",
+                          overflowY: "auto",
+                          overflowX: "hidden",
+                          whiteSpace: "normal",
+                        }}
+                      >
+                        <h6 className="text-md mb-0 fw-medium flex-grow-1">
+                          {ele?.description.slice(0, 300)}
+                        </h6>
+                      </div>
+                    </td>
+                    <td>
+                      <a
+                        href={ele?.heroURL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Click to View
+                      </a>
+                    </td>
+                    <td>
+                      <a
+                        href={ele?.bannerURL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Click to View
+                      </a>
+                    </td>
+                    <td>
+                      <span className="text-success-main px-24 py-4 rounded-pill fw-medium text-sm">
+                        {new Date(ele?.createdAt).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                          weekday: "short",
+                        })}
+                      </span>
+                    </td>
+                    <td>
+                      <Link
+                        onClick={() => {
+                          setEditingProvince(ele);
+                          setShowModal(true);
+                        }}
+                        to="#"
+                        className="w-32-px h-32-px me-8 bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center"
+                      >
+                        <Icon icon="lucide:edit" />
+                      </Link>
+                      <Link
+                        onClick={handleDelete}
+                        to="#"
+                        className="w-32-px h-32-px me-8 bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center"
+                      >
+                        <Icon icon="mingcute:delete-2-line" />
+                      </Link>
+                    </td>
+                  </tr>
                 )
               })}
             </tbody>

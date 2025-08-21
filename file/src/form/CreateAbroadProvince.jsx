@@ -1,30 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  Modal,
-  Button,
-  Form,
-  Accordion,
-  Card,
-  Row,
-  Col
-} from 'react-bootstrap';
+import { Modal, Button, Form, Accordion } from 'react-bootstrap';
 import { app } from "../firebase";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TextEditor from "./TextEditor";
 import { createAbroadProvince, updateAbroadProvince } from "../slice/AbroadProvinceSlice.js";
+import { fetchAbroadStudy } from "../slice/AbroadSlice.js";
 
-
-const CreateAbroadProvince = ({ ele, handleClose }) => {
+const CreateAbroadProvince = ({ ele, handleClose, loadProvince }) => {
   const storage = getStorage(app);
-  const [sectionPreviews, setSectionPreviews] = useState([]);
   const dispatch = useDispatch();
-  const {studyAbroad } = useSelector((state)=>state.abroadStudy)
-  console.log(studyAbroad,"))))))))))))))))");
-  
-  
+  const { studyAbroad } = useSelector((state) => state.abroadStudy);
 
   const [form, setForm] = useState({
     name: ele?.name || '',
@@ -35,327 +23,239 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
     Country: ele?.Country || '',
   });
 
-  console.log(form,"Y^^^^^^^^");
-  
-  const [bannerPreview, setBannerPreview] = useState(null);
-  const [heroPreview, setHeroPreview] = useState(null);
-  const [flagPreview, setFlagPreview] = useState(null);
+  const [bannerPreview, setBannerPreview] = useState(ele?.bannerURL || null);
+  const [heroPreview, setHeroPreview] = useState(ele?.heroURL || null);
+  const [sectionPreviews, setSectionPreviews] = useState(
+    ele?.sections?.map(s => s.url) || []
+  );
 
-    const [uploads, setUploads] = useState({
-    banner: { progress: 0, preview: null, name: "", loading: false },
-    thumbnail: { progress: 0, preview: null, name: "", loading: false },
-  });
-
+  const [uploadProgress, setUploadProgress] = useState({});
   const [errors, setErrors] = useState({});
 
-  const uploadImage = async (file) => {
-    const storageRef = ref(storage, `provinces/${Date.now()}-${file.name}`);
-    await uploadBytesResumable(storageRef, file);
-    const url = await getDownloadURL(storageRef);
-    return url;
-  };
+  // 🔹 Upload helper with progress
+  const uploadImage = (file, key) => {
+    return new Promise((resolve, reject) => {
+      const storageRef = ref(storage, `provinces/${Date.now()}-${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
 
-  const handleChange = async (event) => {
-    const { name, value, type, files } = event.target;
-
-    if (type === 'file') {
-      const file = files[0];
-      if (file) {
-        try {
-          if (name === 'bannerURL') {
-            // await validateImageDimensions(file, { width: 1500, height: 500 });
-            const previewURL = URL.createObjectURL(file);
-            setBannerPreview(previewURL);
-            const imageURL = await uploadImage(file);
-            setForm(prev => ({ ...prev, bannerURL: imageURL }));
-          } 
-          else if (name === 'heroURL') {
-            // await validateImageDimensions(file, { width: 350, height: 400 });
-            const previewURL = URL.createObjectURL(file);
-            setHeroPreview(previewURL);
-            const imageURL = await uploadImage(file);
-            setForm(prev => ({ ...prev, heroURL: imageURL }));
-          }
-          else if (name.startsWith('sectionImage')) {
-            const sectionIndex = parseInt(name.split('-')[1]);
-            const previewURL = URL.createObjectURL(file);
-            setSectionPreviews(prev => {
-              const newPreviews = [...prev];
-              newPreviews[sectionIndex] = previewURL;
-              return newPreviews;
-            });
-            const imageURL = await uploadImage(file);
-            setForm(prev => {
-              const newSections = [...prev.sections];
-              newSections[sectionIndex] = {
-                ...newSections[sectionIndex],
-                url: imageURL
-              };
-              return { ...prev, sections: newSections };
-            });
-          }
-        } catch (error) {
-          toast.error(error.message);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+          setUploadProgress(prev => ({ ...prev, [key]: progress }));
+        },
+        (error) => reject(error),
+        async () => {
+          const url = await getDownloadURL(uploadTask.snapshot.ref);
+          resolve(url);
         }
+      );
+    });
+  };
+
+const handleChange = async (e) => {
+  const { name, value, type, files } = e.target;
+
+  // File uploads
+  if (type === "file") {
+    const file = files[0];
+    if (!file) return;
+
+    try {
+      if (name === "bannerURL") {
+        setBannerPreview(URL.createObjectURL(file));
+        const url = await uploadImage(file, "banner");
+        setForm(prev => ({ ...prev, bannerURL: url }));
+      } else if (name === "heroURL") {
+        setHeroPreview(URL.createObjectURL(file));
+        const url = await uploadImage(file, "hero");
+        setForm(prev => ({ ...prev, heroURL: url }));
+      } else if (name.startsWith("section-")) {
+        const index = parseInt(name.split("-")[1]);
+        setSectionPreviews(prev => {
+          const newPreviews = [...prev];
+          newPreviews[index] = URL.createObjectURL(file);
+          return newPreviews;
+        });
+        const url = await uploadImage(file, `section-${index}`);
+        setForm(prev => {
+          const newSections = [...prev.sections];
+          newSections[index] = { ...newSections[index], url };
+          return { ...prev, sections: newSections };
+        });
       }
-    } else if (name.startsWith('section-')) {
-      const [, index, field] = name.split('-');
-      setForm(prev => {
-        const newSections = [...prev.sections];
-        newSections[parseInt(index)] = {
-          ...newSections[parseInt(index)],
-          [field]: value
-        };
-        return { ...prev, sections: newSections };
-      });
-    } else {
-      setForm(prev => ({ ...prev, [name]: value }));
+    } catch (error) {
+      toast.error(error.message);
     }
+  }
+  // Section text inputs
+  else if (name.startsWith("section-")) {
+    const [_, index, field] = name.split("-");
+    setForm(prev => {
+      const newSections = [...prev.sections];
+      newSections[index] = { ...newSections[index], [field]: value };
+      return { ...prev, sections: newSections };
+    });
+  }
+  // Country select
+  else if (name === "Country") {
+    const selectedCountry = studyAbroad.find(c => c._id === value) || null;
+    setForm(prev => ({ ...prev, Country: selectedCountry }));
+  }
+  // Normal inputs
+  else {
+    setForm(prev => ({ ...prev, [name]: value }));
+  }
+};
+
+  const handleContentChange = (value) => {
+    setForm(prev => ({ ...prev, description: value }));
+    setErrors(prev => ({ ...prev, description: "" }));
   };
 
-    // const handleFileChange = async (event, type) => {
-    //   const file = event.target.files[0];
-    //   if (!file) return;
-  
-    //   setUploads((prev) => ({
-    //     ...prev,
-    //     [type]: { ...prev[type], loading: true, name: file.name },
-    //   }));
-  
-    //   try {
-    //     const previewURL = URL.createObjectURL(file);
-  
-    //     const progressInterval = setInterval(() => {
-    //       setUploads((prev) => ({
-    //         ...prev,
-    //         [type]: {
-    //           ...prev[type],
-    //           progress: Math.min(prev[type].progress + 10, 90),
-    //         },
-    //       }));
-    //     }, 200);
-  
-    //     const storageRef = ref(storage, `${type}/${file.name}`);
-    //     await uploadBytesResumable(storageRef, file);
-    //     const url = await getDownloadURL(storageRef);
-  
-    //     clearInterval(progressInterval);
-  
-    //     setForm((prev) => ({ ...prev, [`${type}URL`]: url }));
-    //     setUploads((prev) => ({
-    //       ...prev,
-    //       [type]: { progress: 100, preview: previewURL, name: file.name, loading: false },
-    //     }));
-  
-    //     toast.success(`${type} uploaded successfully!`);
-    //   } catch (error) {
-    //     console.error(`Failed to upload ${type}:`, error);
-    //     setUploads((prev) => ({
-    //       ...prev,
-    //       [type]: { progress: 0, preview: null, name: "", loading: false },
-    //     }));
-    //     toast.error(`Failed to upload ${type}`);
-    //   }
-    // };
-
-    const handleContentChange = (value) => {
-    setForm((prev) => ({ ...prev, content: value }));
-    setErrors((prev) => ({ ...prev, content: "" }));
-  };
-
-    const validateForm = () => {
-    const newErrors = {};
-    if (!form.name.trim()) newErrors.name = "Name is required";
-    if (!form.bannerURL.trim()) newErrors.bannerURL = "Banner image is required";
-    if (!form.bullet.trim()) newErrors.bullet = "Bullet is required";
-    if (!form.flagURL.trim()) newErrors.flagURL = "Flag image is required";
-    if (!form.description.trim()) newErrors.description = "Description is required";
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const handleContentChangeSection = (index, value) => {
+    setForm(prev => ({
+      ...prev,
+      sections: prev.sections.map((sec, i) => i === index ? { ...sec, description: value } : sec)
+    }));
+    setErrors(prev => ({ ...prev, description: "" }));
   };
 
   const addSection = () => {
-    setForm((prevValues) => ({
-      ...prevValues,
-      sections: [...prevValues.sections, { title: '', description: '', url: '' }],
+    setForm(prev => ({
+      ...prev,
+      sections: [...prev.sections, { title: '', description: '', url: '' }]
     }));
-    setSectionPreviews([...sectionPreviews, '']);
+    setSectionPreviews(prev => [...prev, '']);
   };
 
   const removeSection = (index) => {
-    setForm((prevValues) => ({
-      ...prevValues,
-      sections: prevValues.sections.filter((_, i) => i !== index),
+    setForm(prev => ({
+      ...prev,
+      sections: prev.sections.filter((_, i) => i !== index)
     }));
-    setSectionPreviews(sectionPreviews.filter((_, i) => i !== index));
+    setSectionPreviews(prev => prev.filter((_, i) => i !== index));
   };
-
 
   const handleSubmit = async () => {
     try {
-        if(ele && ele._id) {
-            // Update existing country
-            console.log("form",form);
-            
-            const res = await dispatch(updateAbroadProvince({ id: ele._id, data: form }));
-            if (updateAbroadProvince.fulfilled.match(res)) {
-                toast.success("✅ Province updated successfully!");
-                handleClose();
-            }
-            else if (updateAbroadProvince.rejected.match(res)) {
-                  // Failure case with detailed error
-                  const errorMsg =
-                    res.payload?.message || res.error?.message || "Unknown error occurred.";
-                  toast.error("❌ Failed to update Province: " + errorMsg);
-                }
-        }else{
-            // Create new country
-            console.log(form,"+++++++++++++++++++++");
-            
-            const res = await dispatch(createAbroadProvince(form));
-            if (createAbroadProvince.fulfilled.match(res)) {
-                toast.success("✅ Province created successfully!");
-                handleClose();
-            } else if (createAbroadProvince.rejected.match(res)) {
-                // Failure case with detailed error
-                const errorMsg =
-                    res.payload?.message || res.error?.message || "Unknown error occurred.";
-                toast.error("❌ Failed to create Province: " + errorMsg);
-            }
+      if (!form.name || !form.bannerURL || !form.description) {
+        toast.error("Please fill all required fields!");
+        return;
+      }
+
+      if (ele && ele._id) {
+        // update
+        const res = await dispatch(updateAbroadProvince({ id: ele._id, data: form }));
+        if (updateAbroadProvince.fulfilled.match(res)) {
+          toast.success("✅ Province updated successfully!");
+          handleClose();
+          loadProvince();
+        } else {
+          toast.error(res.payload?.message || "Failed to update province");
         }
-    } catch (error) {
-        console.error("Failed to create Province:", error);
-        toast.error("Failed to create Province");
+      } else {
+        // create
+        const res = await dispatch(createAbroadProvince(form));
+        if (createAbroadProvince.fulfilled.match(res)) {
+          toast.success("✅ Province created successfully!");
+          handleClose();
+          loadProvince();
+        } else {
+          toast.error(res.payload?.message || "Failed to create province");
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong!");
     }
-  }
-  return(
-    <Modal show={open} onHide={handleClose} size="lg" centered scrollable>
-      <Modal.Header closeButton className="text-black">
-        <Modal.Title>Add Province</Modal.Title>
+  };
+
+  useEffect(() => {
+    dispatch(fetchAbroadStudy());
+  }, [dispatch]);
+
+  return (
+    <Modal show={true} onHide={handleClose} size="lg" centered scrollable>
+      <Modal.Header closeButton>
+        <Modal.Title>{ele?._id ? "Update Province" : "Add Province"}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
           <Form.Group>
             <Form.Label>Name</Form.Label>
-            <Form.Control
-              type="text"
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              isInvalid={!!errors.name}
-            />
-            <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
+            <Form.Control type="text" name="name" value={form.name} onChange={handleChange} />
           </Form.Group>
 
+          {/* Banner */}
           <Form.Group className="mt-3">
-            <Form.Label>Banner Image (1500x500)</Form.Label>
-            <Form.Control
-              type="file"
-              name="bannerURL"
-              onChange={(e)=>{
-                handleChange(e,"banner")
-              }}
-              isInvalid={!!errors.bannerURL}
-            />
-            {bannerPreview && <img src={bannerPreview} alt="Banner" className="mt-2 img-fluid rounded" />}
+            <Form.Label>Banner Image</Form.Label>
+            <Form.Control type="file" name="bannerURL" onChange={handleChange} />
+            {bannerPreview && <img src={bannerPreview} alt="Banner" width="200" className="mt-2" />}
+            {uploadProgress.banner && <p>Uploading: {uploadProgress.banner}%</p>}
           </Form.Group>
 
+          {/* Hero */}
           <Form.Group className="mt-3">
-            <Form.Label> Image (200x200)</Form.Label>
-            <Form.Control
-              type="file"
-              name="heroURL"
-              onChange={(e)=>{
-                handleChange(e,"image")
-              }}
-              isInvalid={!!errors.heroURL}
-            />
-            {heroPreview && <img src={heroPreview} alt="Hero Image" className="mt-2 rounded-circle" width="100" />}
+            <Form.Label>Hero Image</Form.Label>
+            <Form.Control type="file" name="heroURL" onChange={handleChange} />
+            {heroPreview && <img src={heroPreview} alt="Hero" width="100" className="mt-2 rounded-circle" />}
+            {uploadProgress.hero && <p>Uploading: {uploadProgress.hero}%</p>}
           </Form.Group>
+
+          {/* Description */}
           <Form.Group className="mt-3">
             <Form.Label>Description</Form.Label>
-            <TextEditor name="description" value={form.description} onChange={handleChange} />
+            <TextEditor content={form.description} setContent={handleContentChange} />
           </Form.Group>
 
           {/* Sections */}
-          <Accordion className="mt-4">
-            {form.sections.map((section, index) => (
-              <Accordion.Item eventKey={index.toString()} key={index}>
-                <Accordion.Header>Section {index + 1}</Accordion.Header>
+          <Accordion className="mt-3">
+            {form.sections.map((section, idx) => (
+              <Accordion.Item eventKey={idx.toString()} key={idx}>
+                <Accordion.Header>Section {idx + 1}</Accordion.Header>
                 <Accordion.Body>
                   <Form.Group>
                     <Form.Label>Title</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name={`sections.${index}.title`}
-                      value={section?.title}
-                      onChange={handleChange}
-                    />
+                    <Form.Control type="text" name={`section-${idx}-title`} value={section.title} onChange={handleChange} />
                   </Form.Group>
 
                   <Form.Group className="mt-2">
-                    <Form.Label>Description (max 100 words)</Form.Label>
-                    <TextEditor
-                      name={`sections.${index}.description`}
-                      value={section.description}
-                      onChange={handleChange}
-                    />
+                    <Form.Label>Description</Form.Label>
+                    <TextEditor content={section.description} setContent={(val) => handleContentChangeSection(idx, val)} />
                   </Form.Group>
 
                   <Form.Group className="mt-2">
-                    <Form.Label>Section Image (300x300)</Form.Label>
-                    <Form.Control
-                      type="file"
-                      name={`sections.${index}.url`}
-                      onChange={handleChange}
-                    />
-                    {sectionPreviews[index] && (
-                      <img src={sectionPreviews[index]} alt="Preview" className="mt-2 img-fluid rounded" />
-                    )}
+                    <Form.Label>Section Image</Form.Label>
+                    <Form.Control type="file" name={`section-${idx}-url`} onChange={handleChange} />
+                    {sectionPreviews[idx] && <img src={sectionPreviews[idx]} alt="Section" width="150" className="mt-2" />}
+                    {uploadProgress[`section-${idx}`] && <p>Uploading: {uploadProgress[`section-${idx}`]}%</p>}
                   </Form.Group>
 
-                  <Button variant="danger" className="mt-3" onClick={() => removeSection(index)}>
-                    Remove Section
-                  </Button>
+                  <Button variant="danger" className="mt-2" onClick={() => removeSection(idx)}>Remove Section</Button>
                 </Accordion.Body>
               </Accordion.Item>
             ))}
           </Accordion>
-          <Button className="mt-3" variant="outline-primary" onClick={addSection}>
-            Add Section
-          </Button>
-            <Form.Group className="mt-3">
-              <Form.Label>Country</Form.Label>
-              <Form.Select 
-                name="Country" 
-                value={ele?.Country?._id || form?.Country?._id || ""} 
-                onChange={handleChange}
-                isInvalid={!!errors.Country}
-              >
-                <option value="" disabled>
-                  {ele?.Country?.name || "Select"}
-                </option>
-                {studyAbroad?.map((country) => (
-                  <option key={country._id} value={country._id}>
-                    {country?.name}
-                  </option>
-                ))}
-              </Form.Select>
-              {errors.Country && (
-                <Form.Control.Feedback type="invalid">
-                  {errors.Country}
-                </Form.Control.Feedback>
-              )}
-            </Form.Group>
+
+          <Button className="mt-3" onClick={addSection}>Add Section</Button>
+
+          {/* Country Select */}
+          <Form.Group className="mt-3">
+            <Form.Label>Country</Form.Label>
+            <Form.Select name="Country" value={form.Country?._id || ""} onChange={handleChange}>
+              <option value="">Select Country</option>
+              {studyAbroad?.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
+            </Form.Select>
+          </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>Cancel</Button>
-        <Button variant="primary" onClick={handleSubmit}>
-          {ele && ele._id ? "Update" : "Submit"}
-        </Button>
+        <Button variant="primary" onClick={handleSubmit}>{ele?._id ? "Update" : "Submit"}</Button>
       </Modal.Footer>
+
+      <ToastContainer position="top-right" theme="colored" />
     </Modal>
   );
 };

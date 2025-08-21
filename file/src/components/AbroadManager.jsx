@@ -1,4 +1,4 @@
-import React,{ useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import $ from "jquery";
 import "datatables.net-dt";
 import { useDispatch } from "react-redux";
@@ -20,6 +20,8 @@ const AbroadManager = () => {
     setLoading(true);
     try {
       const res = await dispatch(fetchAbroadStudy());
+      console.log(res);
+
       if (res?.meta?.requestStatus === "fulfilled") {
         setStudyAbroad(res.payload);
       }
@@ -29,12 +31,12 @@ const AbroadManager = () => {
   };
 
 
-    useEffect(() => {
-     loadAbroadStudy();
-    }, [dispatch]);
-    
+  useEffect(() => {
+    loadAbroadStudy();
+  }, [dispatch]);
 
-    const handleCheckboxChange = (id) => {
+
+  const handleCheckboxChange = (id) => {
     setSelectedIds((prevSelected) => {
       if (prevSelected.includes(id)) {
         // Remove if already selected
@@ -46,40 +48,42 @@ const AbroadManager = () => {
     });
   };
 
-    // Delete single OR multiple blogs
-    const handleDelete = async (id) => {
-        const idsToDelete = id ? [id] : selectedIds;
-        if (idsToDelete.length === 0) {
-          toast.warn("⚠️ No items selected for deletion.");
-          return;
-        }
-    
-        const confirmed = window.confirm(
-          idsToDelete.length > 1
-            ? `Are you sure you want to delete ${idsToDelete.length} blogs?`
-            : "Are you sure you want to delete this blog?"
+  // Delete single OR multiple blogs
+  const handleDelete = async (id) => {
+    const idsToDelete = id ? [id] : selectedIds;
+    if (idsToDelete.length === 0) {
+      toast.warn("⚠️ No items selected for deletion.");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      idsToDelete.length > 1
+        ? `Are you sure you want to delete ${idsToDelete.length} blogs?`
+        : "Are you sure you want to delete this blog?"
+    );
+    if (!confirmed) return;
+
+    try {
+      console.log(selectedIds);
+
+      const res = await dispatch(deleteAbroadStudy(selectedIds));
+      console.log(res);
+
+      if (deleteAbroadStudy.fulfilled.match(res)) {
+        toast.success("✅ StudyAbroad deleted successfully!");
+        setSelectedIds([]); // clear selection
+        loadBlogs();
+      } else if (deleteAbroadStudy.rejected.match(res)) {
+        toast.error(
+          "❌ Failed to delete Abroad: " +
+          (res.payload?.message || res.error?.message || "Unknown error")
         );
-        if (!confirmed) return;
-    
-        try {
-          const res = await dispatch(deleteAbroadStudy(idsToDelete));
-          console.log(res);
-    
-          if (deleteAbroadStudy.fulfilled.match(res)) {
-            toast.success("✅ StudyAbroad deleted successfully!");
-            setSelectedIds([]); // clear selection
-            loadBlogs();
-          } else if (deleteAbroadStudy.rejected.match(res)) {
-            toast.error(
-              "❌ Failed to delete Abroad: " +
-              (res.payload?.message || res.error?.message || "Unknown error")
-            );
-          }
-        } catch (error) {
-          console.error(error);
-          toast.error("⚠️ Unexpected error: " + (error.message || "Something went wrong"));
-        }
-      };
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("⚠️ Unexpected error: " + (error.message || "Something went wrong"));
+    }
+  };
 
   return (
     <div className="card basic-data-table">
@@ -108,7 +112,7 @@ const AbroadManager = () => {
 
           {showModal && (
             <CreateCountry
-            loadAbroadStudy={loadAbroadStudy}
+              loadAbroadStudy={loadAbroadStudy}
               ele={editingCountry}
               handleClose={() => {
                 setShowModal(false);
@@ -142,7 +146,7 @@ const AbroadManager = () => {
             id="dataTable"
             className="table bordered-table mb-0"
             data-page-length={10}
-            // style={{overflowX:"auto"}}
+          // style={{overflowX:"auto"}}
           >
             <thead>
               <tr>
@@ -162,86 +166,86 @@ const AbroadManager = () => {
               </tr>
             </thead>
             <tbody>
-              {studyAbroad?.map((ele,ind) => {
-                return(
+              {studyAbroad?.map((ele, ind) => {
+                return (
                   <tr key={ele._id}>
-                <td>
-                  <div className="form-check style-check d-flex align-items-center">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      checked={selectedIds.includes(ele._id)}
-                      onChange={() => handleCheckboxChange(ele._id)}
-                    />
-                    <label className="form-check-label">{ind+1}</label>
-                  </div>
-                </td>
-                <td>{ele?.name}</td>
-                <td>
-                  <div
-                      className="custom-scrollbar"
-                      style={{
-                        width: "300px",
-                        height: "50px",
-                        overflowY: "auto",
-                        overflowX: "hidden",
-                        whiteSpace: "normal",
-                      }}
-                    >
-                      <h6 className="text-md mb-0 fw-medium flex-grow-1">
-                        {ele?.description.slice(0, 300)}
-                      </h6>
-                    </div>
-                </td>
-                <td>{ele?.mbbsAbroad == true? "Yes": "No"}</td>
-                <td>
-                  <a
-                    href={ele?.flagURL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Click to View
-                  </a>
-                </td>
-                <td>
-                  <a
-                    href={ele?.bannerURL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Click to View
-                  </a>
-                </td>
-                <td>
-                  <span className="text-success-main px-24 py-4 rounded-pill fw-medium text-sm">
-                    {new Date(ele?.createdAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                      weekday: "short",
-                    })}
-                  </span>
-                </td>
-                <td>
-                  <Link
-                    onClick={() => {
-                      setEditingCountry(ele);
-                      setShowModal(true);
-                    }}
-                    to="#"
-                    className="w-32-px h-32-px me-8 bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center"
-                  >
-                    <Icon icon="lucide:edit" />
-                  </Link>
-                  <Link
-                    onClick={handleDelete}
-                    to="#"
-                    className="w-32-px h-32-px me-8 bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center"
-                  >
-                    <Icon icon="mingcute:delete-2-line" />
-                  </Link>
-                </td>
-              </tr>
+                    <td>
+                      <div className="form-check style-check d-flex align-items-center">
+                        <input
+                          type="checkbox"
+                          className="form-check-input"
+                          checked={selectedIds.includes(ele._id)}
+                          onChange={() => handleCheckboxChange(ele._id)}
+                        />
+                        <label className="form-check-label">{ind + 1}</label>
+                      </div>
+                    </td>
+                    <td>{ele?.name}</td>
+                    <td>
+                      <div
+                        className="custom-scrollbar"
+                        style={{
+                          width: "300px",
+                          height: "50px",
+                          overflowY: "auto",
+                          overflowX: "hidden",
+                          whiteSpace: "normal",
+                        }}
+                      >
+                        <h6 className="text-md mb-0 fw-medium flex-grow-1">
+                          {ele?.description.slice(0, 300)}
+                        </h6>
+                      </div>
+                    </td>
+                    <td>{ele?.mbbsAbroad == true ? "Yes" : "No"}</td>
+                    <td>
+                      <a
+                        href={ele?.flagURL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Click to View
+                      </a>
+                    </td>
+                    <td>
+                      <a
+                        href={ele?.bannerURL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Click to View
+                      </a>
+                    </td>
+                    <td>
+                      <span className="text-success-main px-24 py-4 rounded-pill fw-medium text-sm">
+                        {new Date(ele?.createdAt).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                          weekday: "short",
+                        })}
+                      </span>
+                    </td>
+                    <td>
+                      <Link
+                        onClick={() => {
+                          setEditingCountry(ele);
+                          setShowModal(true);
+                        }}
+                        to="#"
+                        className="w-32-px h-32-px me-8 bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center"
+                      >
+                        <Icon icon="lucide:edit" />
+                      </Link>
+                      <Link
+                        onClick={handleDelete}
+                        to="#"
+                        className="w-32-px h-32-px me-8 bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center"
+                      >
+                        <Icon icon="mingcute:delete-2-line" />
+                      </Link>
+                    </td>
+                  </tr>
                 )
               })}
             </tbody>

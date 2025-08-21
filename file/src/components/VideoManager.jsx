@@ -1,58 +1,40 @@
 import React, { useEffect, useState } from "react";
 import $ from "jquery";
 import "datatables.net-dt";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { deleteAbroadUniversity, fetchAbroadUniversity } from "../slice/AbroadUniversitySlice";
-import CreateAbroadUniversity from "../form/CreateAbroadUniversity";
-import { deleteAbroadProvince } from "../slice/AbroadProvinceSlice";
+import { deleteVideo, fetchVideos } from "../slice/VideoSlice";
+import CreateVideo from "../form/CreateVideo";
 
-const AbroadUniversity = () => {
+const VideoManager = () => {
   const dispatch = useDispatch();
+  const { videos } = useSelector((state)=>state.video)
   const [selectedIds, setSelectedIds] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [university, setUniversity] = useState([]);
+  const [editVideo, setEditVideo] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [editingUniversity, setEditingUniversity] = useState(null);
-  console.log(university, "::::::::::::");
 
-  const loadUniversity = async () => {
-    setLoading(true);
-    try {
-      const res = await dispatch(fetchAbroadUniversity());
-      if (res?.meta?.requestStatus === "fulfilled") {
-        setUniversity(res.payload);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-  console.log(university, "+++++++++");
+  console.log(videos);
+  
 
+    // Handle checkbox (select blogs)
+    const handleCheckboxChange = (id) => {
+      setSelectedIds((prevSelected) => {
+        if (prevSelected.includes(id)) {
+          return prevSelected.filter((item) => item !== id);
+        } else {
+          return [...prevSelected, id];
+        }
+      });
+    };
 
-  useEffect(() => {
-    loadUniversity();
-  }, [dispatch]);
-
-  const handleCheckboxChange = (id) => {
-    setSelectedIds((prevSelected) => {
-      if (prevSelected.includes(id)) {
-        // Remove if already selected
-        return prevSelected.filter((item) => item !== id);
-      } else {
-        // Add if not selected
-        return [...prevSelected, id];
-      }
-    });
-  };
-
-  // Delete single OR multiple blogs
+     // Delete single OR multiple blogs
   const handleDelete = async (id) => {
     const idsToDelete = id ? [id] : selectedIds;
     if (idsToDelete.length === 0) {
-      toast.warn("⚠️ No items selected for deletion.");
+      toast.warn("⚠️ No blogs selected for deletion.");
       return;
     }
 
@@ -64,16 +46,16 @@ const AbroadUniversity = () => {
     if (!confirmed) return;
 
     try {
-      const res = await dispatch(deleteAbroadUniversity(selectedIds));
+      const res = await dispatch(deleteVideo(idsToDelete));
       console.log(res);
 
-      if (deleteAbroadProvince.fulfilled.match(res)) {
-        toast.success("✅ Abroad University deleted successfully!");
+      if (deleteVideo.fulfilled.match(res)) {
+        toast.success("✅ Blog deleted successfully!");
         setSelectedIds([]); // clear selection
-        loadBlogs();
-      } else if (deleteAbroadProvince.rejected.match(res)) {
+        await dispatch(fetchVideos());
+      } else if (deleteVideo.rejected.match(res)) {
         toast.error(
-          "❌ Failed to delete Abroad University: " +
+          "❌ Failed to delete blog: " +
           (res.payload?.message || res.error?.message || "Unknown error")
         );
       }
@@ -83,22 +65,32 @@ const AbroadUniversity = () => {
     }
   };
 
+
+  useEffect(()=>{
+    const data = async ()=>{
+     await dispatch(fetchVideos())
+    }
+    data()
+  },[])
+
   return (
     <div className="card basic-data-table">
       <div
         className="card-header"
         style={{ display: "flex", justifyContent: "space-between" }}
       >
-        <h5 className="card-title mb-0">Country Table</h5>
+        <h5 className="card-title mb-0">Blog Tables</h5>
         <div>
           <button
             type="button"
             className="btn rounded-pill text-primary radius-8 px-4 py-2"
             onClick={() => setShowModal(true)}
           >
-            Add University
+            Add Video
           </button>
 
+
+          {/* <div className="mb-3"> */}
           {selectedIds.length > 0 && (
             <button
               className="btn rounded-pill text-danger radius-8 px-4 py-2"
@@ -107,66 +99,65 @@ const AbroadUniversity = () => {
               Delete Selected ({selectedIds.length})
             </button>
           )}
+          {/* </div> */}
 
           {showModal && (
-            <CreateAbroadUniversity
-              ele={editingUniversity}
-              handleClose={() => {
-                setShowModal(false);
-                setEditingUniversity(null);
-              }}
+            <CreateVideo
+            ele={editVideo}
+              handleClose={() =>{ setShowModal(false); setEditVideo(null)}}
             />
           )}
         </div>
       </div>
-      <div className="card-body overflow-x-auto">
-        <>
-          <style>{`
-            .custom-scrollbar::-webkit-scrollbar {
-              width: 8px;
+
+      <div className="card-body">
+        {loading ? (
+          <p className="text-center py-4">Loading Videos...</p>
+        ) : (
+          <>
+            <style>{`
+              .custom-scrollbar::-webkit-scrollbar {
+                width: 8px;
               }
               .custom-scrollbar::-webkit-scrollbar-track {
                 background: #f1f1f1;
                 border-radius: 4px;
-                }
-            .custom-scrollbar::-webkit-scrollbar-thumb {
-              background-color: #888;
-              border-radius: 4px;
-              border: 2px solid #f1f1f1;
+              }
+              .custom-scrollbar::-webkit-scrollbar-thumb {
+                background-color: #888;
+                border-radius: 4px;
+                border: 2px solid #f1f1f1;
               }
               .custom-scrollbar::-webkit-scrollbar-thumb:hover {
                 background-color: #555;
-                }
-                `}</style>
+              }
+            `}</style>
 
-          <table
-            id="dataTable"
-            className="table bordered-table mb-0"
-            data-page-length={10}
-          // style={{overflowX:"auto"}}
-          >
-            <thead>
-              <tr>
-                <th scope="col">
-                  <div className="form-check style-check d-flex align-items-center">
-                    <input className="form-check-input" type="checkbox" />
-                    <label className="form-check-label">S.L</label>
-                  </div>
-                </th>
-                <th scope="col">Name</th>
-                <th scope="col">Province</th>
-                <th scope="col">Country</th>
-                <th scope="col">Image</th>
-                <th scope="col">Banner</th>
-                <th scope="col">Logo</th>
-                <th scope="col">Created Date</th>
-                <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {university?.map((ele, ind) => {
-                return (
-                  <tr key={ele._id}>
+
+
+            <table
+              id="dataTable"
+              className="table bordered-table mb-0"
+              data-page-length={10}
+            >
+              <thead>
+                <tr>
+                  <th scope="col">
+                    <div className="form-check style-check d-flex align-items-center">
+                      <input className="form-check-input" type="checkbox" />
+                      <label className="form-check-label">S.L</label>
+                    </div>
+                  </th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Video URL</th>
+                  <th scope="col">Thumbnail URL</th>
+                  <th scope="col">Created At</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {videos?.map((ele, ind) => (
+                  <tr key={ele._id || ind}>
                     <td>
                       <div className="form-check style-check d-flex align-items-center">
                         <input
@@ -179,33 +170,22 @@ const AbroadUniversity = () => {
                       </div>
                     </td>
                     <td>{ele?.name}</td>
-                    <td>{ele?.name}</td>
-                    <td>{ele?.Country?.name}</td>
                     <td>
                       <a
-                        href={ele?.heroURL}
+                        href={ele?.videoURL}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Click to View
+                        Click to view
                       </a>
                     </td>
                     <td>
-                      <a
-                        href={ele?.bannerURL}
+                    <a
+                        href={ele?.thumbnailURL}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Click to View
-                      </a>
-                    </td>
-                    <td>
-                      <a
-                        href={ele?.logo}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Click to View
+                        Click to view
                       </a>
                     </td>
                     <td>
@@ -220,32 +200,31 @@ const AbroadUniversity = () => {
                     </td>
                     <td>
                       <Link
-                        onClick={() => {
-                          setEditingUniversity(ele);
-                          setShowModal(true);
-                        }}
+                        onClick={() => {setShowModal(true); setEditVideo(ele)}}
                         to="#"
                         className="w-32-px h-32-px me-8 bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center"
                       >
                         <Icon icon="lucide:edit" />
                       </Link>
-                      <Link
-                        onClick={handleDelete}
+
+                     
+                      {/* <Link
+                        onClick={() => handleDelete(ele._id)}
                         to="#"
                         className="w-32-px h-32-px me-8 bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center"
                       >
                         <Icon icon="mingcute:delete-2-line" />
-                      </Link>
+                      </Link> */}
                     </td>
                   </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
       </div>
     </div>
   )
 }
 
-export default AbroadUniversity
+export default VideoManager

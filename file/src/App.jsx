@@ -105,6 +105,7 @@ import AbroadStudyPage from "./pages/AbroadStudyPage";
 import AbroadProvincePage from "./pages/AbroadProvincePage";
 import AbroadUniversityPage from "./pages/AbroadUniversityPage";
 import MbbsStudyPage from "./pages/MbbsStudyPage";
+import VideoManagerPage from "./pages/VideoManagerPage";
 
 function App() {
   return (
@@ -254,6 +255,7 @@ function App() {
         <Route exact path='/webinar-manager' element={<WebinarPage />} />
         <Route exact path='/service-manager' element={<ServicePage />} />
         <Route exact path='/counsellor-manager' element={<CounsellorPage />} />
+        <Route exact path='/video-manager' element={<VideoManagerPage />} />
         <Route exact path='/abroad-country' element={<AbroadStudyPage />} />
         <Route exact path='/mbss-country' element={<MbbsStudyPage />} />
         <Route exact path='/abroad-province' element={<AbroadProvincePage />} />

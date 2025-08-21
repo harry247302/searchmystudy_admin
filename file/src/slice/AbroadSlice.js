@@ -23,6 +23,8 @@ export const fetchAbroadStudy = createAsyncThunk(
 export const deleteAbroadStudy = createAsyncThunk(
   'abroad/deleteAbroadStudy',
     async (ids, { rejectWithValue }) => {
+      console.log(ids);
+      
         if (!ids || ids.length === 0) {
         return rejectWithValue({ message: "No abroad study IDs provided" });
         }
