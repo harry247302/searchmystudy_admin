@@ -205,6 +205,19 @@ const MasterLayout = ({ children }) => {
                 <span>Testemonial Management</span>
               </NavLink>
             </li>
+
+            <li>
+              <NavLink
+                to='/video-manager'
+                className={(navData) => (navData.isActive ? "active-page" : "")}
+              >
+                <Icon
+                  icon='material-symbols:map-outline'
+                  className='menu-icon'
+                />
+                <span>Video Management</span>
+              </NavLink>
+            </li>
             {/* <li>
               <NavLink
                 to='/abroad-study-manager'
