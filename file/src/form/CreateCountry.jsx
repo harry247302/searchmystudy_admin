@@ -18,27 +18,27 @@ import TextEditor from "./TextEditor";
 
 const storage = getStorage(app);
 
-const CreateCountry = ({loadAbroadStudy, ele, handleClose }) => {
+const CreateCountry = ({ loadAbroadStudy, ele, handleClose }) => {
   const [sectionPreviews, setSectionPreviews] = useState([]);
   const dispatch = useDispatch();
-  
+
 
   const [form, setForm] = useState({
     name: ele?.name || "",
-    bannerURL:ele?.bannerURL || "",
-    bullet:ele?.bullet || "",
+    bannerURL: ele?.bannerURL || "",
+    bullet: ele?.bullet || "",
     mbbsAbroad: ele?.mbbsAbroad || false,
     flagURL: ele?.flagURL || "",
-    description:ele?.description || "",
-    sectionExpanded: true ,
+    description: ele?.description || "",
+    sectionExpanded: true,
     sections: ele?.sections || [{ title: "", description: "", url: "", }],
-    eligiblity:ele?.eligibility || ["", "", "", "", "", "", ""],
+    eligiblity: ele?.eligibility || ["", "", "", "", "", "", ""],
     faq: ele?.faq || [{ question: "", answer: "" }],
   });
   const [bannerPreview, setBannerPreview] = useState(null);
   const [flagPreview, setFlagPreview] = useState(null);
 
-    const [uploads, setUploads] = useState({
+  const [uploads, setUploads] = useState({
     banner: { progress: 0, preview: null, name: "", loading: false },
     thumbnail: { progress: 0, preview: null, name: "", loading: false },
   });
@@ -66,7 +66,7 @@ const CreateCountry = ({loadAbroadStudy, ele, handleClose }) => {
             const updatedSections = [...form.sections];
             updatedSections[index].url = imageURL;
 
-            setForm({ ...formValues, sections: updatedSections });
+            setForm({ ...form, sections: updatedSections });
 
             // Set image preview
             const updatedPreviews = [...sectionPreviews];
@@ -87,9 +87,9 @@ const CreateCountry = ({loadAbroadStudy, ele, handleClose }) => {
       }
     } else if (name.includes('sections') || name.includes('faq')) {
       const [sectionOrFaq, index, field] = name.split('.');
-      const updatedArray = [...formValues[sectionOrFaq]];
+      const updatedArray = [...form[sectionOrFaq]];
       updatedArray[index][field] = value;
-      setForm({ ...formValues, [sectionOrFaq]: updatedArray });
+      setForm({ ...form, [sectionOrFaq]: updatedArray });
     } else {
       setForm((prevValues) => ({
         ...prevValues,
@@ -99,57 +99,70 @@ const CreateCountry = ({loadAbroadStudy, ele, handleClose }) => {
     validateForm();
   };
 
-    const handleFileChange = async (event, type) => {
-      const file = event.target.files[0];
-      if (!file) return;
-  
+  const handleFileChange = async (event, type) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setUploads((prev) => ({
+      ...prev,
+      [type]: { ...prev[type], loading: true, name: file.name },
+    }));
+
+    try {
+      const previewURL = URL.createObjectURL(file);
+
+      const progressInterval = setInterval(() => {
+        setUploads((prev) => ({
+          ...prev,
+          [type]: {
+            ...prev[type],
+            progress: Math.min(prev[type].progress + 10, 90),
+          },
+        }));
+      }, 200);
+
+      const storageRef = ref(storage, `${type}/${file.name}`);
+      await uploadBytesResumable(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+
+      clearInterval(progressInterval);
+
+      setForm((prev) => ({ ...prev, [`${type}URL`]: url }));
       setUploads((prev) => ({
         ...prev,
-        [type]: { ...prev[type], loading: true, name: file.name },
+        [type]: { progress: 100, preview: previewURL, name: file.name, loading: false },
       }));
-  
-      try {
-        const previewURL = URL.createObjectURL(file);
-  
-        const progressInterval = setInterval(() => {
-          setUploads((prev) => ({
-            ...prev,
-            [type]: {
-              ...prev[type],
-              progress: Math.min(prev[type].progress + 10, 90),
-            },
-          }));
-        }, 200);
-  
-        const storageRef = ref(storage, `${type}/${file.name}`);
-        await uploadBytesResumable(storageRef, file);
-        const url = await getDownloadURL(storageRef);
-  
-        clearInterval(progressInterval);
-  
-        setForm((prev) => ({ ...prev, [`${type}URL`]: url }));
-        setUploads((prev) => ({
-          ...prev,
-          [type]: { progress: 100, preview: previewURL, name: file.name, loading: false },
-        }));
-  
-        toast.success(`${type} uploaded successfully!`);
-      } catch (error) {
-        console.error(`Failed to upload ${type}:`, error);
-        setUploads((prev) => ({
-          ...prev,
-          [type]: { progress: 0, preview: null, name: "", loading: false },
-        }));
-        toast.error(`Failed to upload ${type}`);
-      }
-    };
 
-    const handleContentChange = (value) => {
-    setForm((prev) => ({ ...prev, content: value }));
-    setErrors((prev) => ({ ...prev, content: "" }));
+      toast.success(`${type} uploaded successfully!`);
+    } catch (error) {
+      console.error(`Failed to upload ${type}:`, error);
+      setUploads((prev) => ({
+        ...prev,
+        [type]: { progress: 0, preview: null, name: "", loading: false },
+      }));
+      toast.error(`Failed to upload ${type}`);
+    }
   };
 
-    const validateForm = () => {
+  const handleContentChange = (value) => {
+    setForm((prev) => ({ ...prev, description: value }));
+    setErrors((prev) => ({ ...prev, description: "" }));
+  };
+
+
+  const handleContentChangeSection = (index, value) => {
+    setForm((prev) => ({
+      ...prev,
+      sections: prev.sections.map((section, i) =>
+        i === index ? { ...section, description: value } : section
+      ),
+    }));
+    setErrors((prev) => ({ ...prev, description: "" }));
+
+  };
+
+
+  const validateForm = () => {
     const newErrors = {};
     if (!form.name.trim()) newErrors.name = "Name is required";
     if (!form.bannerURL.trim()) newErrors.bannerURL = "Banner image is required";
@@ -193,43 +206,43 @@ const CreateCountry = ({loadAbroadStudy, ele, handleClose }) => {
 
   const handleSubmit = async () => {
     try {
-        if(ele && ele._id) {
-            // Update existing country
-            console.log("form",form);
-            
-            const res = await dispatch(updateAbroadStudy({ id: ele._id, data: form }));
-            if (updateAbroadStudy.fulfilled.match(res)) {
-                toast.success("✅ Country updated successfully!");
-                handleClose();
-            }
-            else if (updateAbroadStudy.rejected.match(res)) {
-                  // Failure case with detailed error
-                  const errorMsg =
-                    res.payload?.message || res.error?.message || "Unknown error occurred.";
-                  toast.error("❌ Failed to update country: " + errorMsg);
-                }
-        }else{
-            // Create new country
-            console.log(form,"+++++++++++++++++++++");
-            
-            const res = await dispatch(createAbroadStudyThunk(form));
-            if (createAbroadStudyThunk.fulfilled.match(res)) {
-                toast.success("✅ Country created successfully!");
-                loadAbroadStudy()
-                handleClose();
-            } else if (createAbroadStudyThunk.rejected.match(res)) {
-                // Failure case with detailed error
-                const errorMsg =
-                    res.payload?.message || res.error?.message || "Unknown error occurred.";
-                toast.error("❌ Failed to create country: " + errorMsg);
-            }
+      if (ele && ele._id) {
+        // Update existing country
+        console.log("form-*******", form);
+
+        const res = await dispatch(updateAbroadStudy({ id: ele._id, data: form }));
+        if (updateAbroadStudy.fulfilled.match(res)) {
+          toast.success("✅ Country updated successfully!");
+          handleClose();
         }
+        else if (updateAbroadStudy.rejected.match(res)) {
+          // Failure case with detailed error
+          const errorMsg =
+            res.payload?.message || res.error?.message || "Unknown error occurred.";
+          toast.error("❌ Failed to update country: " + errorMsg);
+        }
+      } else {
+        // Create new country
+        console.log(form, "+++++++++++++++++++++");
+
+        const res = await dispatch(createAbroadStudyThunk(form));
+        if (createAbroadStudyThunk.fulfilled.match(res)) {
+          toast.success("✅ Country created successfully!");
+          loadAbroadStudy()
+          handleClose();
+        } else if (createAbroadStudyThunk.rejected.match(res)) {
+          // Failure case with detailed error
+          const errorMsg =
+            res.payload?.message || res.error?.message || "Unknown error occurred.";
+          toast.error("❌ Failed to create country: " + errorMsg);
+        }
+      }
     } catch (error) {
-        console.error("Failed to create country:", error);
-        toast.error("Failed to create country");
+      console.error("Failed to create country:", error);
+      toast.error("Failed to create country");
     }
   }
-  return(
+  return (
     <Modal show={open} onHide={handleClose} size="lg" centered scrollable>
       <Modal.Header closeButton className="text-black">
         <Modal.Title>Add Country</Modal.Title>
@@ -253,8 +266,8 @@ const CreateCountry = ({loadAbroadStudy, ele, handleClose }) => {
             <Form.Control
               type="file"
               name="bannerURL"
-              onChange={(e)=>{
-                handleFileChange(e,"banner")
+              onChange={(e) => {
+                handleFileChange(e, "banner")
               }}
               isInvalid={!!errors.bannerURL}
             />
@@ -266,8 +279,8 @@ const CreateCountry = ({loadAbroadStudy, ele, handleClose }) => {
             <Form.Control
               type="file"
               name="flagURL"
-              onChange={(e)=>{
-                handleFileChange(e,"flag")
+              onChange={(e) => {
+                handleFileChange(e, "flag")
               }}
               isInvalid={!!errors.flagURL}
             />
@@ -281,12 +294,12 @@ const CreateCountry = ({loadAbroadStudy, ele, handleClose }) => {
 
           <Form.Group className="mt-3">
             <Form.Label>Description</Form.Label>
-            <TextEditor name="description" value={form.description} onChange={handleChange} />
+            <TextEditor name="description" content={form?.description} setContent={handleContentChange} />
           </Form.Group>
 
           {/* Sections */}
           <Accordion className="mt-4">
-            {form.sections.map((section, index) => (
+            {form?.sections?.map((section, index) => (
               <Accordion.Item eventKey={index.toString()} key={index}>
                 <Accordion.Header>Section {index + 1}</Accordion.Header>
                 <Accordion.Body>
@@ -304,8 +317,9 @@ const CreateCountry = ({loadAbroadStudy, ele, handleClose }) => {
                     <Form.Label>Description (max 100 words)</Form.Label>
                     <TextEditor
                       name={`sections.${index}.description`}
-                      value={section.description}
-                      onChange={handleChange}
+                      content={section?.description}
+                      setContent={handleContentChangeSection}
+                    // onChange={handleChange}
                     />
                   </Form.Group>
 

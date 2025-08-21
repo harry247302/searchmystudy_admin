@@ -21,10 +21,10 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
   const storage = getStorage(app);
   const [sectionPreviews, setSectionPreviews] = useState([]);
   const dispatch = useDispatch();
-  const {studyAbroad } = useSelector((state)=>state.abroadStudy)
-  console.log(studyAbroad,"))))))))))))))))");
-  
-  
+  const { studyAbroad } = useSelector((state) => state.abroadStudy)
+  console.log(studyAbroad, "))))))))))))))))");
+
+
 
   const [form, setForm] = useState({
     name: ele?.name || '',
@@ -35,16 +35,22 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
     Country: ele?.Country || '',
   });
 
-  console.log(form,"Y^^^^^^^^");
-  
+  console.log(form, "Y^^^^^^^^");
+
   const [bannerPreview, setBannerPreview] = useState(null);
   const [heroPreview, setHeroPreview] = useState(null);
   const [flagPreview, setFlagPreview] = useState(null);
 
-    const [uploads, setUploads] = useState({
+  const [uploads, setUploads] = useState({
     banner: { progress: 0, preview: null, name: "", loading: false },
     thumbnail: { progress: 0, preview: null, name: "", loading: false },
   });
+
+
+  //   const handleContentChange = (value) => {
+  //   setForm((prev) => ({ ...prev, content: value }));
+  //   setErrors((prev) => ({ ...prev, content: "" }));
+  // };
 
   const [errors, setErrors] = useState({});
 
@@ -68,7 +74,7 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
             setBannerPreview(previewURL);
             const imageURL = await uploadImage(file);
             setForm(prev => ({ ...prev, bannerURL: imageURL }));
-          } 
+          }
           else if (name === 'heroURL') {
             // await validateImageDimensions(file, { width: 350, height: 400 });
             const previewURL = URL.createObjectURL(file);
@@ -113,57 +119,68 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
     }
   };
 
-    // const handleFileChange = async (event, type) => {
-    //   const file = event.target.files[0];
-    //   if (!file) return;
-  
-    //   setUploads((prev) => ({
-    //     ...prev,
-    //     [type]: { ...prev[type], loading: true, name: file.name },
-    //   }));
-  
-    //   try {
-    //     const previewURL = URL.createObjectURL(file);
-  
-    //     const progressInterval = setInterval(() => {
-    //       setUploads((prev) => ({
-    //         ...prev,
-    //         [type]: {
-    //           ...prev[type],
-    //           progress: Math.min(prev[type].progress + 10, 90),
-    //         },
-    //       }));
-    //     }, 200);
-  
-    //     const storageRef = ref(storage, `${type}/${file.name}`);
-    //     await uploadBytesResumable(storageRef, file);
-    //     const url = await getDownloadURL(storageRef);
-  
-    //     clearInterval(progressInterval);
-  
-    //     setForm((prev) => ({ ...prev, [`${type}URL`]: url }));
-    //     setUploads((prev) => ({
-    //       ...prev,
-    //       [type]: { progress: 100, preview: previewURL, name: file.name, loading: false },
-    //     }));
-  
-    //     toast.success(`${type} uploaded successfully!`);
-    //   } catch (error) {
-    //     console.error(`Failed to upload ${type}:`, error);
-    //     setUploads((prev) => ({
-    //       ...prev,
-    //       [type]: { progress: 0, preview: null, name: "", loading: false },
-    //     }));
-    //     toast.error(`Failed to upload ${type}`);
-    //   }
-    // };
+  // const handleFileChange = async (event, type) => {
+  //   const file = event.target.files[0];
+  //   if (!file) return;
 
-    const handleContentChange = (value) => {
-    setForm((prev) => ({ ...prev, content: value }));
-    setErrors((prev) => ({ ...prev, content: "" }));
+  //   setUploads((prev) => ({
+  //     ...prev,
+  //     [type]: { ...prev[type], loading: true, name: file.name },
+  //   }));
+
+  //   try {
+  //     const previewURL = URL.createObjectURL(file);
+
+  //     const progressInterval = setInterval(() => {
+  //       setUploads((prev) => ({
+  //         ...prev,
+  //         [type]: {
+  //           ...prev[type],
+  //           progress: Math.min(prev[type].progress + 10, 90),
+  //         },
+  //       }));
+  //     }, 200);
+
+  //     const storageRef = ref(storage, `${type}/${file.name}`);
+  //     await uploadBytesResumable(storageRef, file);
+  //     const url = await getDownloadURL(storageRef);
+
+  //     clearInterval(progressInterval);
+
+  //     setForm((prev) => ({ ...prev, [`${type}URL`]: url }));
+  //     setUploads((prev) => ({
+  //       ...prev,
+  //       [type]: { progress: 100, preview: previewURL, name: file.name, loading: false },
+  //     }));
+
+  //     toast.success(`${type} uploaded successfully!`);
+  //   } catch (error) {
+  //     console.error(`Failed to upload ${type}:`, error);
+  //     setUploads((prev) => ({
+  //       ...prev,
+  //       [type]: { progress: 0, preview: null, name: "", loading: false },
+  //     }));
+  //     toast.error(`Failed to upload ${type}`);
+  //   }
+  // };
+
+  const handleContentChange = (value) => {
+    setForm((prev) => ({ ...prev, description: value }));
+    setErrors((prev) => ({ ...prev, description: "" }));
   };
 
-    const validateForm = () => {
+
+  const handleContentChangeSection = (index, value) => {
+    setForm((prev) => ({
+      ...prev,
+      sections: prev.sections.map((section, i) =>
+        i === index ? { ...section, description: value } : section
+      ),
+    }));
+    setErrors((prev) => ({ ...prev, description: "" }));
+  };
+
+  const validateForm = () => {
     const newErrors = {};
     if (!form.name.trim()) newErrors.name = "Name is required";
     if (!form.bannerURL.trim()) newErrors.bannerURL = "Banner image is required";
@@ -194,42 +211,42 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
 
   const handleSubmit = async () => {
     try {
-        if(ele && ele._id) {
-            // Update existing country
-            console.log("form",form);
-            
-            const res = await dispatch(updateAbroadProvince({ id: ele._id, data: form }));
-            if (updateAbroadProvince.fulfilled.match(res)) {
-                toast.success("✅ Province updated successfully!");
-                handleClose();
-            }
-            else if (updateAbroadProvince.rejected.match(res)) {
-                  // Failure case with detailed error
-                  const errorMsg =
-                    res.payload?.message || res.error?.message || "Unknown error occurred.";
-                  toast.error("❌ Failed to update Province: " + errorMsg);
-                }
-        }else{
-            // Create new country
-            console.log(form,"+++++++++++++++++++++");
-            
-            const res = await dispatch(createAbroadProvince(form));
-            if (createAbroadProvince.fulfilled.match(res)) {
-                toast.success("✅ Province created successfully!");
-                handleClose();
-            } else if (createAbroadProvince.rejected.match(res)) {
-                // Failure case with detailed error
-                const errorMsg =
-                    res.payload?.message || res.error?.message || "Unknown error occurred.";
-                toast.error("❌ Failed to create Province: " + errorMsg);
-            }
+      if (ele && ele._id) {
+        // Update existing country
+        console.log("form", form);
+
+        const res = await dispatch(updateAbroadProvince({ id: ele._id, data: form }));
+        if (updateAbroadProvince.fulfilled.match(res)) {
+          toast.success("✅ Province updated successfully!");
+          handleClose();
         }
+        else if (updateAbroadProvince.rejected.match(res)) {
+          // Failure case with detailed error
+          const errorMsg =
+            res.payload?.message || res.error?.message || "Unknown error occurred.";
+          toast.error("❌ Failed to update Province: " + errorMsg);
+        }
+      } else {
+        // Create new country
+        console.log(form, "+++++++++++++++++++++");
+
+        const res = await dispatch(createAbroadProvince(form));
+        if (createAbroadProvince.fulfilled.match(res)) {
+          toast.success("✅ Province created successfully!");
+          handleClose();
+        } else if (createAbroadProvince.rejected.match(res)) {
+          // Failure case with detailed error
+          const errorMsg =
+            res.payload?.message || res.error?.message || "Unknown error occurred.";
+          toast.error("❌ Failed to create Province: " + errorMsg);
+        }
+      }
     } catch (error) {
-        console.error("Failed to create Province:", error);
-        toast.error("Failed to create Province");
+      console.error("Failed to create Province:", error);
+      toast.error("Failed to create Province");
     }
   }
-  return(
+  return (
     <Modal show={open} onHide={handleClose} size="lg" centered scrollable>
       <Modal.Header closeButton className="text-black">
         <Modal.Title>Add Province</Modal.Title>
@@ -253,8 +270,8 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
             <Form.Control
               type="file"
               name="bannerURL"
-              onChange={(e)=>{
-                handleChange(e,"banner")
+              onChange={(e) => {
+                handleChange(e, "banner")
               }}
               isInvalid={!!errors.bannerURL}
             />
@@ -266,8 +283,8 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
             <Form.Control
               type="file"
               name="heroURL"
-              onChange={(e)=>{
-                handleChange(e,"image")
+              onChange={(e) => {
+                handleChange(e, "image")
               }}
               isInvalid={!!errors.heroURL}
             />
@@ -275,7 +292,7 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
           </Form.Group>
           <Form.Group className="mt-3">
             <Form.Label>Description</Form.Label>
-            <TextEditor name="description" value={form.description} onChange={handleChange} />
+            <TextEditor name="description" setContent={handleContentChange} value={form.description} onChange={handleChange} />
           </Form.Group>
 
           {/* Sections */}
@@ -299,6 +316,7 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
                     <TextEditor
                       name={`sections.${index}.description`}
                       value={section.description}
+                      setContent={handleContentChangeSection}
                       onChange={handleChange}
                     />
                   </Form.Group>
@@ -325,29 +343,29 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
           <Button className="mt-3" variant="outline-primary" onClick={addSection}>
             Add Section
           </Button>
-            <Form.Group className="mt-3">
-              <Form.Label>Country</Form.Label>
-              <Form.Select 
-                name="Country" 
-                value={ele?.Country?._id || form?.Country?._id || ""} 
-                onChange={handleChange}
-                isInvalid={!!errors.Country}
-              >
-                <option value="" disabled>
-                  {ele?.Country?.name || "Select"}
+          <Form.Group className="mt-3">
+            <Form.Label>Country</Form.Label>
+            <Form.Select
+              name="Country"
+              value={ele?.Country?._id || form?.Country?._id || ""}
+              onChange={handleChange}
+              isInvalid={!!errors.Country}
+            >
+              <option value="" disabled>
+                {ele?.Country?.name || "Select"}
+              </option>
+              {studyAbroad?.map((country) => (
+                <option key={country._id} value={country._id}>
+                  {country?.name}
                 </option>
-                {studyAbroad?.map((country) => (
-                  <option key={country._id} value={country._id}>
-                    {country?.name}
-                  </option>
-                ))}
-              </Form.Select>
-              {errors.Country && (
-                <Form.Control.Feedback type="invalid">
-                  {errors.Country}
-                </Form.Control.Feedback>
-              )}
-            </Form.Group>
+              ))}
+            </Form.Select>
+            {errors.Country && (
+              <Form.Control.Feedback type="invalid">
+                {errors.Country}
+              </Form.Control.Feedback>
+            )}
+          </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>
