@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Modal,
@@ -15,9 +15,10 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TextEditor from "./TextEditor";
 import { createAbroadProvince, updateAbroadProvince } from "../slice/AbroadProvinceSlice.js";
+import { fetchAbroadStudy } from "../slice/AbroadSlice.js";
 
 
-const CreateAbroadProvince = ({ ele, handleClose }) => {
+const CreateAbroadProvince = ({ ele, handleClose, loadProvince }) => {
   const storage = getStorage(app);
   const [sectionPreviews, setSectionPreviews] = useState([]);
   const dispatch = useDispatch();
@@ -218,6 +219,7 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
         const res = await dispatch(updateAbroadProvince({ id: ele._id, data: form }));
         if (updateAbroadProvince.fulfilled.match(res)) {
           toast.success("✅ Province updated successfully!");
+          loadProvince()
           handleClose();
         }
         else if (updateAbroadProvince.rejected.match(res)) {
@@ -233,6 +235,7 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
         const res = await dispatch(createAbroadProvince(form));
         if (createAbroadProvince.fulfilled.match(res)) {
           toast.success("✅ Province created successfully!");
+          loadProvince()
           handleClose();
         } else if (createAbroadProvince.rejected.match(res)) {
           // Failure case with detailed error
@@ -246,6 +249,12 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
       toast.error("Failed to create Province");
     }
   }
+  useEffect(() => {
+    const data = async () => {
+      await dispatch(fetchAbroadStudy())
+    }
+    data()
+  }, [])
   return (
     <Modal show={open} onHide={handleClose} size="lg" centered scrollable>
       <Modal.Header closeButton className="text-black">
@@ -292,7 +301,7 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
           </Form.Group>
           <Form.Group className="mt-3">
             <Form.Label>Description</Form.Label>
-            <TextEditor name="description" setContent={handleContentChange} value={form.description} onChange={handleChange} />
+            <TextEditor name="description" setContent={handleContentChange} content={form.description} />
           </Form.Group>
 
           {/* Sections */}
@@ -315,9 +324,9 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
                     <Form.Label>Description (max 100 words)</Form.Label>
                     <TextEditor
                       name={`sections.${index}.description`}
-                      value={section.description}
-                      setContent={handleContentChangeSection}
-                      onChange={handleChange}
+                      content={section?.description}
+                      setContent={(value) => { handleContentChangeSection(index, value) }}
+                    // onChange={handleChange}
                     />
                   </Form.Group>
 
@@ -347,16 +356,14 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
             <Form.Label>Country</Form.Label>
             <Form.Select
               name="Country"
-              value={ele?.Country?._id || form?.Country?._id || ""}
+              value={form.Country}   // just the ID
               onChange={handleChange}
               isInvalid={!!errors.Country}
             >
-              <option value="" disabled>
-                {ele?.Country?.name || "Select"}
-              </option>
+              <option value="" disabled>Select</option>
               {studyAbroad?.map((country) => (
                 <option key={country._id} value={country._id}>
-                  {country?.name}
+                  {country.name}
                 </option>
               ))}
             </Form.Select>
@@ -366,6 +373,7 @@ const CreateAbroadProvince = ({ ele, handleClose }) => {
               </Form.Control.Feedback>
             )}
           </Form.Group>
+
         </Form>
       </Modal.Body>
       <Modal.Footer>

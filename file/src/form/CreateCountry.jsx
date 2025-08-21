@@ -317,8 +317,8 @@ const CreateCountry = ({ loadAbroadStudy, ele, handleClose }) => {
                     <Form.Label>Description (max 100 words)</Form.Label>
                     <TextEditor
                       name={`sections.${index}.description`}
-                      content={section?.description}
-                      setContent={handleContentChangeSection}
+                      content={section?.description || 0}
+                      setContent={(value) => { handleContentChangeSection(index, value) }}
                     // onChange={handleChange}
                     />
                   </Form.Group>
