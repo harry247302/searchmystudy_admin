@@ -18,6 +18,30 @@ export const fetchAbroadProvince = createAsyncThunk(
     }
 );
 
+export const getAllProvincesByCountryId = createAsyncThunk(
+  "abroad/getAllProvincesByCountryId",
+  async (countryId, { rejectWithValue }) => {
+    try {
+      console.log(countryId);
+      
+      // ✅ Pass countryId either as param or query
+      const response = await axios.get(
+        `https://searchmystudy.com/admin/getAllProvincesByCountryId/${countryId}`
+      );
+
+      // ✅ Ensure array and filter provinces
+      return Array.isArray(response.data)
+        ? response.data.filter((item) => item?.Country?.mbbsAbroad === false)
+        : [];
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Something went wrong"
+      );
+    }
+  }
+);
+
+
 export const createAbroadProvince = createAsyncThunk(
   'abroad/createAbroadProvince',
   async (abroadData, thunkAPI) => {

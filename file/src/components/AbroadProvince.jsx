@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { deleteAbroadProvince, fetchAbroadProvince } from "../slice/AbroadProvinceSlice";
+import { deleteAbroadProvince, fetchAbroadProvince, getAllProvincesByCountryId } from "../slice/AbroadProvinceSlice";
 import CreateAbroadProvince from "../form/CreateAbroadProvince";
 
 const AbroadProvince = () => {
@@ -89,7 +89,7 @@ const AbroadProvince = () => {
         className="card-header"
         style={{ display: "flex", justifyContent: "space-between" }}
       >
-        <h5 className="card-title mb-0">Country Table</h5>
+        <h5 className="card-title mb-0">Province Table</h5>
         <div>
           <button
             type="button"

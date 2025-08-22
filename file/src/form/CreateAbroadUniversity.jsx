@@ -16,14 +16,27 @@ import "react-toastify/dist/ReactToastify.css";
 import TextEditor from "./TextEditor";
 import { createAbroadUniversity, updateAbroadUniversity } from "../slice/AbroadUniversitySlice";
 import { fetchAbroadStudy } from "../slice/AbroadSlice";
-import { fetchAbroadProvince } from "../slice/AbroadProvinceSlice";
+import { fetchAbroadProvince, getAllProvincesByCountryId } from "../slice/AbroadProvinceSlice";
 
 
-const CreateAbroadUniversity = ({ ele, handleClose }) => {
+const CreateAbroadUniversity = ({ ele, handleClose, loadUniversity }) => {
   const storage = getStorage(app);
   const { abroadProvince } = useSelector((state) => state.abroadProvince)
   const { studyAbroad } = useSelector((state) => state.abroadStudy)
   const [sectionPreviews, setSectionPreviews] = useState([]);
+  const [countryId, setCountryId] = useState()
+  const [province, setProvince] = useState([])
+  console.log(province);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     log
+  //     const res = await dispatch(getAllProvincesByCountryId(countryId))
+  //     console.log(res);
+
+  //   }
+  //   fetchData()
+  // }, [])
 
   const dispatch = useDispatch();
   const [form, setForm] = useState({
@@ -58,10 +71,18 @@ const CreateAbroadUniversity = ({ ele, handleClose }) => {
   };
 
   const handleContentChange = (value) => {
-    setForm((prev) => ({ ...prev, content: value }));
-    setErrors((prev) => ({ ...prev, content: "" }));
+    setForm((prev) => ({ ...prev, description: value }));
+    setErrors((prev) => ({ ...prev, description: "" }));
   };
 
+
+  const handleContentChangeSection = (index, value) => {
+    setForm(prev => ({
+      ...prev,
+      sections: prev.sections.map((sec, i) => i === index ? { ...sec, description: value } : sec)
+    }));
+    setErrors(prev => ({ ...prev, description: "" }));
+  };
 
   const handleChange = async (event) => {
     const { name, value, type, files } = event.target;
@@ -123,8 +144,13 @@ const CreateAbroadUniversity = ({ ele, handleClose }) => {
         };
         return { ...prev, sections: newSections };
       });
-    } else {
+    } else if (name === "Province") {
+      const selectedProvince = abroadProvince.find(c => c._id === value) || null;
+      setForm(prev => ({ ...prev, Province: selectedProvince }));
+    }
+    else {
       setForm(prev => ({ ...prev, [name]: value }));
+
     }
   };
 
@@ -153,6 +179,7 @@ const CreateAbroadUniversity = ({ ele, handleClose }) => {
         const res = await dispatch(updateAbroadUniversity({ id: ele._id, data: form }));
         if (updateAbroadUniversity.fulfilled.match(res)) {
           toast.success("✅ University updated successfully!");
+          loadUniversity()
           handleClose();
         }
         else if (updateAbroadUniversity.rejected.match(res)) {
@@ -168,7 +195,9 @@ const CreateAbroadUniversity = ({ ele, handleClose }) => {
         const res = await dispatch(createAbroadUniversity(form));
         if (createAbroadUniversity.fulfilled.match(res)) {
           toast.success("✅ University created successfully!");
+          loadUniversity()
           handleClose();
+
         } else if (createAbroadUniversity.rejected.match(res)) {
           // Failure case with detailed error
           const errorMsg =
@@ -181,11 +210,12 @@ const CreateAbroadUniversity = ({ ele, handleClose }) => {
       toast.error("Failed to create Province");
     }
   }
+  console.log(ele, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 
   useEffect(() => {
     const data = async () => {
       await dispatch(fetchAbroadStudy())
-      await dispatch(fetchAbroadProvince())
+      // await dispatch(fetchAbroadProvince())
     }
     data()
   }, [])
@@ -248,7 +278,7 @@ const CreateAbroadUniversity = ({ ele, handleClose }) => {
           </Form.Group>
           <Form.Group className="mt-3">
             <Form.Label>Description</Form.Label>
-            <TextEditor name="description" value={form.description} setContent={handleContentChange} onChange={handleChange} />
+            <TextEditor name="description" content={form.description} setContent={handleContentChange} onChange={handleChange} />
           </Form.Group>
 
           {/* Sections */}
@@ -259,21 +289,13 @@ const CreateAbroadUniversity = ({ ele, handleClose }) => {
                 <Accordion.Body>
                   <Form.Group>
                     <Form.Label>Title</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name={`sections.${index}.title`}
-                      value={section.title}
-                      onChange={handleChange}
-                    />
+                    <Form.Control type="text" name={`section-${index}-title`} value={section.title} onChange={handleChange} />
+
                   </Form.Group>
 
                   <Form.Group className="mt-2">
-                    <Form.Label>Description (max 100 words)</Form.Label>
-                    <TextEditor
-                      name={`sections.${index}.description`}
-                      value={section.description}
-                      onChange={handleChange}
-                    />
+                    <Form.Label>Description</Form.Label>
+                    <TextEditor content={section.description} setContent={(val) => handleContentChangeSection(index, val)} />
                   </Form.Group>
 
                   <Form.Group className="mt-2">
@@ -303,7 +325,26 @@ const CreateAbroadUniversity = ({ ele, handleClose }) => {
             <Form.Select
               name="Country"
               value={ele?.Country?._id || form?.Country?._id || ""}
-              onChange={handleChange}
+              onChange={async (e) => {
+                const selectedCountryId = e.target.value; // ✅ only country._id
+                console.log("Selected Country ID:", selectedCountryId);
+
+                setCountryId(selectedCountryId);
+
+                setForm((prev) => ({
+                  ...prev,
+                  Country:
+                    studyAbroad.find((c) => c._id === selectedCountryId) || prev.Country,
+                  Province: {}, // reset province when country changes
+                }));
+
+                setErrors((prev) => ({ ...prev, Country: "" }));
+
+                const res = await dispatch(getAllProvincesByCountryId(selectedCountryId));
+                // console.log(res, "---------------------------");
+                setProvince(res?.payload)
+
+              }}
               isInvalid={!!errors.Country}
             >
               <option value="" disabled>
@@ -315,14 +356,23 @@ const CreateAbroadUniversity = ({ ele, handleClose }) => {
                 </option>
               ))}
             </Form.Select>
+
             {errors.Country && (
               <Form.Control.Feedback type="invalid">
                 {errors.Country}
               </Form.Control.Feedback>
             )}
           </Form.Group>
-
           <Form.Group className="mt-3">
+            <Form.Label>Province</Form.Label>
+            <Form.Select name="Province" value={form.Province?._id || ""} onChange={handleChange}>
+              <option value="">Select Province</option>
+              {province?.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
+            </Form.Select>
+          </Form.Group>
+
+
+          {/* <Form.Group className="mt-3">
             <Form.Label>Province</Form.Label>
             <Form.Select
               name="Province"
@@ -348,7 +398,7 @@ const CreateAbroadUniversity = ({ ele, handleClose }) => {
                 {errors.Province}
               </Form.Control.Feedback>
             )}
-          </Form.Group>
+          </Form.Group> */}
 
           <Form.Group>
             <Form.Label>Eligibility</Form.Label>

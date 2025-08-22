@@ -64,8 +64,8 @@ const AbroadUniversity = () => {
     if (!confirmed) return;
 
     try {
+      console.log(selectedIds);
       const res = await dispatch(deleteAbroadUniversity(selectedIds));
-      console.log(res);
 
       if (deleteAbroadProvince.fulfilled.match(res)) {
         toast.success("✅ Abroad University deleted successfully!");
@@ -89,7 +89,7 @@ const AbroadUniversity = () => {
         className="card-header"
         style={{ display: "flex", justifyContent: "space-between" }}
       >
-        <h5 className="card-title mb-0">Country Table</h5>
+        <h5 className="card-title mb-0">University Table</h5>
         <div>
           <button
             type="button"
@@ -110,6 +110,7 @@ const AbroadUniversity = () => {
 
           {showModal && (
             <CreateAbroadUniversity
+              loadUniversity={loadUniversity}
               ele={editingUniversity}
               handleClose={() => {
                 setShowModal(false);
