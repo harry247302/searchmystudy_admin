@@ -8,7 +8,7 @@ const VideoManagerPage = () => {
     <>
       <MasterLayout>
         {/* BreadCrumb */}
-        <Breadcrumb />
+        <Breadcrumb title="Video Details" />
 
         {/* Video MAnager */}
         <VideoManager/>
