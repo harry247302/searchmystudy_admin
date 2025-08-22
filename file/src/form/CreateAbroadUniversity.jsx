@@ -37,6 +37,7 @@ const CreateAbroadUniversity = ({ ele, handleClose, loadUniversity }) => {
   //   }
   //   fetchData()
   // }, [])
+  console.log(ele, "}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}");
 
   const dispatch = useDispatch();
   const [form, setForm] = useState({
@@ -47,7 +48,6 @@ const CreateAbroadUniversity = ({ ele, handleClose, loadUniversity }) => {
     grade: ele?.grade || 'A',
     rating: ele?.rating || '5',
     sections: ele?.sections || [{ title: '', description: '', url: '' }],
-    eligiblity: ele?.eligiblity || '',
     logo: ele?.logo || '',
     campusLife: ele?.campusLife || '',
     hostel: ele?.hostel || '',
@@ -190,14 +190,13 @@ const CreateAbroadUniversity = ({ ele, handleClose, loadUniversity }) => {
         }
       } else {
         // Create new country
-        // console.log(form, "+++++++++++++++++++++-----------");
 
+        console.log(form, "+++++++++++++++++++++-----------");
         const res = await dispatch(createAbroadUniversity(form));
         if (createAbroadUniversity.fulfilled.match(res)) {
           toast.success("✅ University created successfully!");
           loadUniversity()
           handleClose();
-
         } else if (createAbroadUniversity.rejected.match(res)) {
           // Failure case with detailed error
           const errorMsg =
@@ -400,17 +399,7 @@ const CreateAbroadUniversity = ({ ele, handleClose, loadUniversity }) => {
             )}
           </Form.Group> */}
 
-          <Form.Group>
-            <Form.Label>Eligibility</Form.Label>
-            <Form.Control
-              type="text"
-              name="eligiblity"
-              value={form.eligiblity}
-              onChange={handleChange}
-              isInvalid={!!errors.eligiblity}
-            />
-            <Form.Control.Feedback type="invalid">{errors.eligiblity}</Form.Control.Feedback>
-          </Form.Group>
+
 
           <Form.Group>
             <Form.Label>Campus Life</Form.Label>

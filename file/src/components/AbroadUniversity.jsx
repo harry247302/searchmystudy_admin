@@ -66,7 +66,8 @@ const AbroadUniversity = () => {
     try {
       console.log(selectedIds);
       const res = await dispatch(deleteAbroadUniversity(selectedIds));
-
+      console.log(res);
+      loadUniversity()
       if (deleteAbroadProvince.fulfilled.match(res)) {
         toast.success("✅ Abroad University deleted successfully!");
         setSelectedIds([]); // clear selection
