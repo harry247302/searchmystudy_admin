@@ -26,7 +26,7 @@ export const getAllProvincesByCountryId = createAsyncThunk(
       
       // ✅ Pass countryId either as param or query
       const response = await axios.get(
-        `https://searchmystudy.com/admin/getAllProvincesByCountryId/${countryId}`
+        `https://searchmystudy.com/api/admin/getAllProvincesByCountryId/${countryId}`
       );
 
       // ✅ Ensure array and filter provinces
