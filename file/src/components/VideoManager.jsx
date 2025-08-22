@@ -79,7 +79,7 @@ const VideoManager = () => {
         className="card-header"
         style={{ display: "flex", justifyContent: "space-between" }}
       >
-        <h5 className="card-title mb-0">Blog Tables</h5>
+        <h5 className="card-title mb-0">Video Table</h5>
         <div>
           <button
             type="button"
