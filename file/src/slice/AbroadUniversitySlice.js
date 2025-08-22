@@ -50,7 +50,7 @@ export const createAbroadUniversity = createAsyncThunk(
           return rejectWithValue({ message: "No abroad study IDs provided" });
           }
           try {
-          const response = await axios.delete(`http://localhost:3000/api/admin/university`, {
+          const response = await axios.delete(`https://searchmystudy.com/api/admin/university`, {
             data:{ids}
           });
           return response.data;
