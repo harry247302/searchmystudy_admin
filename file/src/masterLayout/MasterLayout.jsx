@@ -208,6 +208,19 @@ const MasterLayout = ({ children }) => {
 
             <li>
               <NavLink
+                to='/media-manager'
+                className={(navData) => (navData.isActive ? "active-page" : "")}
+              >
+                <Icon
+                  icon='material-symbols:map-outline'
+                  className='menu-icon'
+                />
+                <span>Media Management</span>
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink
                 to='/video-manager'
                 className={(navData) => (navData.isActive ? "active-page" : "")}
               >

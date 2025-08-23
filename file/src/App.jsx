@@ -107,6 +107,7 @@ import AbroadUniversityPage from "./pages/AbroadUniversityPage";
 import MbbsStudyPage from "./pages/MbbsStudyPage";
 import VideoManagerPage from "./pages/VideoManagerPage";
 import AbroadCoursePage from "./pages/AbroadCoursePage";
+import MediaManagerPage from "./pages/MediaManagerPage";
 
 function App() {
   return (
@@ -257,6 +258,7 @@ function App() {
         <Route exact path='/service-manager' element={<ServicePage />} />
         <Route exact path='/counsellor-manager' element={<CounsellorPage />} />
         <Route exact path='/video-manager' element={<VideoManagerPage />} />
+        <Route exact path='/media-manager' element={<MediaManagerPage />} />
         <Route exact path='/abroad-country' element={<AbroadStudyPage />} />
         <Route exact path='/mbss-country' element={<MbbsStudyPage />} />
         <Route exact path='/abroad-province' element={<AbroadProvincePage />} />
