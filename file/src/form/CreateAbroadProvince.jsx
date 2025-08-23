@@ -15,13 +15,31 @@ const CreateAbroadProvince = ({ ele, handleClose, loadProvince }) => {
   const { studyAbroad } = useSelector((state) => state.abroadStudy);
 
   const [form, setForm] = useState({
-    name: ele?.name || '',
-    bannerURL: ele?.bannerURL || '',
-    heroURL: ele?.heroURL || '',
-    description: ele?.description || '',
-    sections: ele?.sections || [{ title: '', description: '', url: '' }],
-    Country: ele?.Country || '',
+    ProgramName: ele?.ProgramName || "",
+    University: ele?.University || "", // will store ObjectId from dropdown/select
+    WebsiteURL: ele?.WebsiteURL || "",
+    Location: ele?.Location || "",
+    Duration: ele?.Duration || "",
+    broucherURL: ele?.broucherURL || "",
+    Category: ele?.Category || "",
+    Intake: ele?.Intake || [
+      {
+        status: true,
+        date: "",
+        expiresAt: "",
+      },
+    ],
+    Scholarships: ele?.Scholarships ?? false,
+    ProgramLevel: ele?.ProgramLevel || "",
+    languageRequire: ele?.languageRequire || {
+      english: false,
+      no_any_preference: false,
+      motherTongue: false,
+    },
+    Eligibility: ele?.Eligibility || "",
+    Fees: ele?.Fees || 0,
   });
+
 
   const [bannerPreview, setBannerPreview] = useState(ele?.bannerURL || null);
   const [heroPreview, setHeroPreview] = useState(ele?.heroURL || null);
@@ -53,60 +71,60 @@ const CreateAbroadProvince = ({ ele, handleClose, loadProvince }) => {
     });
   };
 
-const handleChange = async (e) => {
-  const { name, value, type, files } = e.target;
+  const handleChange = async (e) => {
+    const { name, value, type, files } = e.target;
 
-  // File uploads
-  if (type === "file") {
-    const file = files[0];
-    if (!file) return;
+    // File uploads
+    if (type === "file") {
+      const file = files[0];
+      if (!file) return;
 
-    try {
-      if (name === "bannerURL") {
-        setBannerPreview(URL.createObjectURL(file));
-        const url = await uploadImage(file, "banner");
-        setForm(prev => ({ ...prev, bannerURL: url }));
-      } else if (name === "heroURL") {
-        setHeroPreview(URL.createObjectURL(file));
-        const url = await uploadImage(file, "hero");
-        setForm(prev => ({ ...prev, heroURL: url }));
-      } else if (name.startsWith("section-")) {
-        const index = parseInt(name.split("-")[1]);
-        setSectionPreviews(prev => {
-          const newPreviews = [...prev];
-          newPreviews[index] = URL.createObjectURL(file);
-          return newPreviews;
-        });
-        const url = await uploadImage(file, `section-${index}`);
-        setForm(prev => {
-          const newSections = [...prev.sections];
-          newSections[index] = { ...newSections[index], url };
-          return { ...prev, sections: newSections };
-        });
+      try {
+        if (name === "bannerURL") {
+          setBannerPreview(URL.createObjectURL(file));
+          const url = await uploadImage(file, "banner");
+          setForm(prev => ({ ...prev, bannerURL: url }));
+        } else if (name === "heroURL") {
+          setHeroPreview(URL.createObjectURL(file));
+          const url = await uploadImage(file, "hero");
+          setForm(prev => ({ ...prev, heroURL: url }));
+        } else if (name.startsWith("section-")) {
+          const index = parseInt(name.split("-")[1]);
+          setSectionPreviews(prev => {
+            const newPreviews = [...prev];
+            newPreviews[index] = URL.createObjectURL(file);
+            return newPreviews;
+          });
+          const url = await uploadImage(file, `section-${index}`);
+          setForm(prev => {
+            const newSections = [...prev.sections];
+            newSections[index] = { ...newSections[index], url };
+            return { ...prev, sections: newSections };
+          });
+        }
+      } catch (error) {
+        toast.error(error.message);
       }
-    } catch (error) {
-      toast.error(error.message);
     }
-  }
-  // Section text inputs
-  else if (name.startsWith("section-")) {
-    const [_, index, field] = name.split("-");
-    setForm(prev => {
-      const newSections = [...prev.sections];
-      newSections[index] = { ...newSections[index], [field]: value };
-      return { ...prev, sections: newSections };
-    });
-  }
-  // Country select
-  else if (name === "Country") {
-    const selectedCountry = studyAbroad.find(c => c._id === value) || null;
-    setForm(prev => ({ ...prev, Country: selectedCountry }));
-  }
-  // Normal inputs
-  else {
-    setForm(prev => ({ ...prev, [name]: value }));
-  }
-};
+    // Section text inputs
+    else if (name.startsWith("section-")) {
+      const [_, index, field] = name.split("-");
+      setForm(prev => {
+        const newSections = [...prev.sections];
+        newSections[index] = { ...newSections[index], [field]: value };
+        return { ...prev, sections: newSections };
+      });
+    }
+    // Country select
+    else if (name === "Country") {
+      const selectedCountry = studyAbroad.find(c => c._id === value) || null;
+      setForm(prev => ({ ...prev, Country: selectedCountry }));
+    }
+    // Normal inputs
+    else {
+      setForm(prev => ({ ...prev, [name]: value }));
+    }
+  };
 
   const handleContentChange = (value) => {
     setForm(prev => ({ ...prev, description: value }));
