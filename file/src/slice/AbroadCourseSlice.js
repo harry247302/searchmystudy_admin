@@ -6,7 +6,7 @@ export const fetchAbroadCourse = createAsyncThunk(
   'abroad/fetchAbroadCourse',
     async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("https://searchmystudy.com/api/admin/course");
+      const response = await axios.get("http://localhost:3000/api/admin/course");
       // console.log(response?.data,"++++++++++++==");
       
       return response.data
@@ -20,28 +20,24 @@ export const fetchAbroadCourse = createAsyncThunk(
 
 export const deleteStudyCourse = createAsyncThunk(
   'abroad/deleteStudyCourse',
-    async (ids, { rejectWithValue }) => {
-      console.log(ids);
-      
-        if (!ids || ids.length === 0) {
-        return rejectWithValue({ message: "No Course IDs provided" });
-        }
-        try {
-        const response = await axios.delete(`https://searchmystudy.com/api/admin/course`, {
-          data:{ids}
-        });
-        return response.data;
-        } catch (error) {
-        return rejectWithValue(error.response?.data || error.message);
-        }
+  async (ids, { rejectWithValue }) => {
+    try {
+      await axios.delete(`http://localhost:3000/api/admin/course`, {
+        data: { ids }
+      });
+      return { ids }; // ✅ return the same ids
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
     }
+  }
 );
+
 
 export const createAbroadCourse = createAsyncThunk(
   'abroad/createAbroadCourse',
   async (abroadData, thunkAPI) => {
     try {
-      const response = await fetch("https://searchmystudy.com/api/admin/course", {
+      const response = await fetch("http://localhost:3000/api/admin/course", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -64,27 +60,26 @@ export const createAbroadCourse = createAsyncThunk(
 
 export const updateStudyCourse = createAsyncThunk(
   'abroad/updateStudyCourse',  
-    async ({ id, data }, thunkAPI) => {
-        try {
-        const response = await fetch(`https://searchmystudy.com/api/admin/course/${id}`, {
+   async ({ id, data }, thunkAPI) => {
+    try {
+        const response = await fetch(`http://localhost:3000/api/admin/course/${id}`, {
             method: 'PUT',
-            headers: {
-            'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
         });
-    
+
         if (!response.ok) {
             const errorData = await response.json();
             return thunkAPI.rejectWithValue(errorData);
         }
-    
+
         const updatedData = await response.json();
         return updatedData;
-        } catch (error) {
+    } catch (error) {
         return thunkAPI.rejectWithValue(error.message || 'Something went wrong');
-        }
     }
+}
+
 );
 
 export const abroadCourseSlice = createSlice({
@@ -102,31 +97,20 @@ export const abroadCourseSlice = createSlice({
             state.error = null;
             })
             .addCase(fetchAbroadCourse.fulfilled, (state, action) => {
-            state.studyAbroad = action.payload;
+            state.AbroadCourses = action.payload;
             state.loading = false;
             })
             .addCase(fetchAbroadCourse.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload || 'Failed to fetch abroad study data';
             })
-            .addCase(deleteStudyCourse.pending, (state) => {
-            state.loading = true;
-            state.error = null;
-            })
-            .addCase(deleteStudyCourse.fulfilled, (state, action) => {
-            state.studyAbroad = state.studyAbroad.filter(item => !action.payload.ids.includes(item._id));
-            state.loading = false;
-            })
-            .addCase(deleteStudyCourse.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.payload || 'Failed to delete abroad study data';
-            })
+           
             .addCase(createAbroadCourse.pending, (state) => {
             state.loading = true;
             state.error = null;
             })
             .addCase(createAbroadCourse.fulfilled, (state, action) => {
-            state.studyAbroad.push(action.payload);
+            state.AbroadCourses.push(action.payload);
             state.loading = false;
             })
             .addCase(createAbroadCourse.rejected, (state, action) => {

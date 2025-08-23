@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { deleteAbroadProvince, fetchAbroadProvince, getAllProvincesByCountryId } from "../slice/AbroadProvinceSlice";
 // import CreateAbroadProvince from "../form/CreateAbroadProvince";
-import { fetchAbroadCourse } from "../slice/AbroadCourseSlice";
+import { deleteStudyCourse, fetchAbroadCourse } from "../slice/AbroadCourseSlice";
 import CreateAbroadProvince from "../form/CreateAbroadProvince";
 import CreateAbroadCourse from "../form/CreateAbroadCourse";
 
@@ -24,11 +24,8 @@ const AbroadCourseManager = () => {
     try {
       const res = await dispatch(fetchAbroadCourse());
       console.log(res, "||||||||||||||||||||||||||||||||||||||");
-
       if (res?.meta?.requestStatus === "fulfilled") {
         setCourse(res.payload);
-        // console.log(province, "++++++++++");
-
       }
     } finally {
       setLoading(false);
@@ -40,16 +37,11 @@ const AbroadCourseManager = () => {
     loadCourse();
   }, [dispatch]);
 
-  // console.log(province, "++++++++++");
-
-
   const handleCheckboxChange = (id) => {
     setSelectedIds((prevSelected) => {
       if (prevSelected.includes(id)) {
-        // Remove if already selected
         return prevSelected.filter((item) => item !== id);
       } else {
-        // Add if not selected
         return [...prevSelected, id];
       }
     });
@@ -58,6 +50,7 @@ const AbroadCourseManager = () => {
   // Delete single OR multiple blogs
   const handleDelete = async (id) => {
     const idsToDelete = id ? [id] : selectedIds;
+
     if (idsToDelete.length === 0) {
       toast.warn("⚠️ No items selected for deletion.");
       return;
@@ -71,16 +64,18 @@ const AbroadCourseManager = () => {
     if (!confirmed) return;
 
     try {
-      const res = await dispatch(deleteAbroadProvince(selectedIds));
-      console.log(res);
+      console.log("Deleting IDs:", idsToDelete);
 
-      if (deleteAbroadProvince.fulfilled.match(res)) {
-        toast.success("✅ Abroad Province deleted successfully!");
+      const res = await dispatch(deleteStudyCourse(idsToDelete));
+      // console.log("Delete response:", res);
+
+      if (deleteStudyCourse.fulfilled.match(res)) {
+        toast.success("✅ Abroad Course deleted successfully!");
         setSelectedIds([]); // clear selection
-        loadProvince();
-      } else if (deleteAbroadProvince.rejected.match(res)) {
+        loadCourse(); // reload data (you might rename to loadCourses if it's about courses)
+      } else if (deleteStudyCourse.rejected.match(res)) {
         toast.error(
-          "❌ Failed to delete Abroad Province: " +
+          "❌ Failed to delete Abroad Course: " +
           (res.payload?.message || res.error?.message || "Unknown error")
         );
       }
@@ -89,6 +84,7 @@ const AbroadCourseManager = () => {
       toast.error("⚠️ Unexpected error: " + (error.message || "Something went wrong"));
     }
   };
+
 
   return (
     <div className="card basic-data-table">
@@ -164,11 +160,13 @@ const AbroadCourseManager = () => {
                 <th scope="col">Course Name</th>
                 <th scope="col">Country</th>
                 <th scope="col">Province</th>
+                <th scope="col">Fees</th>
                 <th scope="col">University</th>
                 <th scope="col">Category</th>
                 <th scope="col">Location</th>
                 <th scope="col">Website URL</th>
                 <th scope="col">Eligibility</th>
+                <th scrope="col">Created At</th>
                 <th scope="col">Action</th>
               </tr>
             </thead>
@@ -189,7 +187,8 @@ const AbroadCourseManager = () => {
                     </td>
                     <td>{ele?.ProgramName}</td>
                     <td>{ele?.University?.Country?.name ? ele?.University?.Country?.name : "None"}</td>
-                    <td>{ele?.University?.Province ? ele?.University?.Province?.name : "None"}</td>
+                    <td>{ele?.Province?.name || "None"}</td>
+                    <td>{ele?.Fees ? ele?.Fees : "None"}</td>
                     <td>
                       <div
 
@@ -213,14 +212,7 @@ const AbroadCourseManager = () => {
 
                     <td>
                       <div
-                        className="custom-scrollbar"
-                        style={{
-                          width: "300px",
-                          height: "50px",
-                          overflowY: "auto",
-                          overflowX: "hidden",
-                          whiteSpace: "normal",
-                        }}
+
                       >
                         <h6 className="text-md mb-0 fw-medium flex-grow-1">
                           {ele?.Eligibility.slice(0, 300)}
@@ -228,9 +220,29 @@ const AbroadCourseManager = () => {
                       </div>
                     </td>
                     <td>
+                      <div
+
+                      >
+                        {/* <h6 className="text-md mb-0 fw-medium flex-grow-1"> */}
+                        <p>
+                          {new Date(ele?.createdAt).toLocaleString("en-GB", {
+                            day: "2-digit",    // 22
+                            month: "2-digit",  // 08
+                            year: "numeric",   // 2025
+                            // hour: "2-digit",   // 07
+                            // minute: "2-digit", // 31
+                            // second: "2-digit", // 51
+                            hour12: true       // AM/PM
+                          })}
+                        </p>
+
+                        {/* </h6> */}
+                      </div>
+                    </td>
+                    <td>
                       <Link
                         onClick={() => {
-                          setEditingProvince(ele);
+                          setEditingCourse(ele);
                           setShowModal(true);
                         }}
                         to="#"
@@ -238,13 +250,13 @@ const AbroadCourseManager = () => {
                       >
                         <Icon icon="lucide:edit" />
                       </Link>
-                      <Link
+                      {/* <Link
                         onClick={handleDelete}
                         to="#"
                         className="w-32-px h-32-px me-8 bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center"
                       >
                         <Icon icon="mingcute:delete-2-line" />
-                      </Link>
+                      </Link> */}
                     </td>
                   </tr>
                 )

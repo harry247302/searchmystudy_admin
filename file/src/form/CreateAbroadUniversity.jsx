@@ -326,7 +326,7 @@ const CreateAbroadUniversity = ({ ele, handleClose, loadUniversity }) => {
               value={ele?.Country?._id || form?.Country?._id || ""}
               onChange={async (e) => {
                 const selectedCountryId = e.target.value; // ✅ only country._id
-                console.log("Selected Country ID:", selectedCountryId);
+                // console.log("Selected Country ID:", selectedCountryId);
 
                 setCountryId(selectedCountryId);
 

@@ -5,9 +5,11 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // import { createCourse, updateCourse } from "../slice/CourseSlice.js";
 // import { fetchUniversities } from "../slice/UniversitySlice.js";
-import { createAbroadCourse } from "../slice/AbroadCourseSlice.js";
+import { createAbroadCourse, updateStudyCourse } from "../slice/AbroadCourseSlice.js";
 import { fetchAbroadUniversity } from "../slice/AbroadUniversitySlice.js";
 import TextEditor from "./TextEditor.jsx";
+import { fetchAbroadStudy } from "../slice/AbroadSlice.js";
+import { fetchAbroadProvince } from "../slice/AbroadProvinceSlice.js";
 const categories = [
     'Arts',
     'Accounts',
@@ -40,12 +42,20 @@ const categories = [
 const level = ['High School', 'UG Diploma/Cerificate/Associate Degree', 'UG', 'PG Diploma', 'PG', 'UG+PG(Accelerated)Degree', 'PhD', 'Foundation', 'Short Term Program', 'Pathway Program', 'Twiming Program(UG)', 'Twiming Program(PG)', 'Online Programe/Distance Learning']
 
 const CreateAbroadCourse = ({ ele, handleClose, loadCourse }) => {
+    console.log(ele, "===================");
+    
     const dispatch = useDispatch();
     const [errors, setErrors] = useState({});
+    const [selectedCountries, setSelectedCountries] = useState();
     const [university, setUniversity] = useState()
+    const [country, setCountry] = useState() // Assuming abroad slice has abroadStudy array
+    const [province, setProvince] = useState()
     const [form, setForm] = useState({
+
         ProgramName: ele?.ProgramName || "",
-        University: ele?.University || "",
+        Country: ele?.University?.Country || "",
+        University: ele?.University._id || "",
+        Province: ele?.Province._id || "",
         WebsiteURL: ele?.WebsiteURL || "",
         Location: ele?.Location || "",
         Duration: ele?.Duration || "",
@@ -118,20 +128,22 @@ const CreateAbroadCourse = ({ ele, handleClose, loadCourse }) => {
 
             if (ele && ele._id) {
                 // ✅ Update course
-                res = await dispatch(updateCourse({ id: ele._id, data: form }));
-
-                if (updateCourse.fulfilled.match(res)) {
+                const res = await dispatch(updateStudyCourse({ id: ele._id, data: form }));
+                // console.log(res, "==================");
+                
+                if (updateStudyCourse.fulfilled.match(res)) {
                     toast.success("✅ Course updated!");
                     handleClose();
-                    loadCourses();
+                    loadCourse();
                 } else {
                     toast.error(res.payload?.message || res.error?.message || "Failed to update course");
                 }
             } else {
                 // ✅ Create course
-                res = await dispatch(createAbroadCourse(form));
-                console.log("Create Course Response:", res);
-
+                console.log(form, "{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{[");
+                const res = await dispatch(createAbroadCourse(form));
+                console.log(res);
+                
                 if (createAbroadCourse.fulfilled.match(res)) {
                     toast.success("✅ Course created!");
                     handleClose();
@@ -148,23 +160,58 @@ const CreateAbroadCourse = ({ ele, handleClose, loadCourse }) => {
 
     const [loading, setLoading] = useState(false);
 
-    const loadUniversity = async () => {
+    const loadUniversity = async (selectedCountries) => {
         setLoading(true);
         try {
+            console.log(selectedCountries, "------------------");
             const res = await dispatch(fetchAbroadUniversity());
-            console.log(res);
-
+            // 6894707bfee3784d9ab93f6e
             if (res?.meta?.requestStatus === "fulfilled") {
-                setUniversity(res.payload);
+                const filtered = res.payload?.filter((u) => u.Country._id === selectedCountries);
+                setUniversity(filtered);
+                console.log(filtered);
             }
         } finally {
             setLoading(false);
         }
     };
-    console.log(university, "+++++++++");
+
+    const loadCountry = async () => {
+        setLoading(true);
+        try {
+            // country fetch
+            const res = await dispatch(fetchAbroadStudy());
+            // console.log(res,"------------------");
+            if (res?.meta?.requestStatus === "fulfilled") {
+                setCountry(res.payload);
+            }
+        } catch {
+            console.log("error");
+        }
+    }
+
+
+    const loadProvince = async (id) => {
+        setLoading(true);
+        try {
+            // country fetch
+            const res = await dispatch(fetchAbroadProvince());
+            // console.log(res,"------------------");
+
+            if (res?.meta?.requestStatus === "fulfilled") {
+                const filtered = res.payload?.filter((u) => u.Country._id === id);
+                setProvince(filtered);
+                // console.log(filtered);
+            }
+        } catch {
+            console.log("error");
+        }
+    }
 
     useEffect(() => {
         loadUniversity();
+        loadCountry()
+        loadProvince()
     }, [dispatch]);
 
     return (
@@ -186,15 +233,51 @@ const CreateAbroadCourse = ({ ele, handleClose, loadCourse }) => {
                     </Form.Group>
 
                     <Form.Group className="mt-3">
+                        <Form.Label>Country</Form.Label>
+                        <Form.Select
+                            name="Country"
+                            value={form?.Country}
+                            onChange={(e) => {
+                                // setSelectedCountries(e.target.value); // stores the selected country ID
+                                handleChange(e); // updates form.Country
+                                loadUniversity(e.target.value); // load universities for selected country
+                                loadProvince(e.target.value); // load provinces for selected country
+                            }}
+                            required
+                        >
+                            <option value="">Select Country</option>
+                            {country?.map((u) => (
+                                <option key={u.name} value={u._id}>{u.name}</option>
+                            ))}
+                        </Form.Select>
+                    </Form.Group>
+
+                    <Form.Group className="mt-3">
                         <Form.Label>University</Form.Label>
                         <Form.Select
                             name="University"
-                            value={form.University}
+                            value={form?.University}
                             onChange={handleChange}
                             required
                         >
                             <option value="">Select University</option>
                             {university?.map(u => (
+                                <option key={u._id} value={u._id}>{u.name}</option>
+                            ))}
+                        </Form.Select>
+                    </Form.Group>
+
+
+                    <Form.Group className="mt-3">
+                        <Form.Label>Province</Form.Label>
+                        <Form.Select
+                            name="Province"
+                            value={form?.Province}
+                            onChange={handleChange}
+                        // required
+                        >
+                            <option value="">Select Province</option>
+                            {province?.map(u => (
                                 <option key={u._id} value={u._id}>{u.name}</option>
                             ))}
                         </Form.Select>
@@ -238,7 +321,7 @@ const CreateAbroadCourse = ({ ele, handleClose, loadCourse }) => {
                         <Form.Control
                             type="file"
                             name="broucherURL"
-                            value={form.broucherURL}
+                            // value={form.broucherURL}
                             onChange={handleChange}
                         />
                     </Form.Group>
