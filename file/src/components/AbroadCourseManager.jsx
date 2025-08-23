@@ -9,6 +9,7 @@ import { deleteAbroadProvince, fetchAbroadProvince, getAllProvincesByCountryId }
 // import CreateAbroadProvince from "../form/CreateAbroadProvince";
 import { fetchAbroadCourse } from "../slice/AbroadCourseSlice";
 import CreateAbroadProvince from "../form/CreateAbroadProvince";
+import CreateAbroadCourse from "../form/CreateAbroadCourse";
 
 const AbroadCourseManager = () => {
   const dispatch = useDispatch();
@@ -16,9 +17,9 @@ const AbroadCourseManager = () => {
   const [showModal, setShowModal] = useState(false);
   const [course, setCourse] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [editingProvince, setEditingProvince] = useState(null);
+  const [editingCourse, setEditingCourse] = useState(null);
 
-  const loadProvince = async () => {
+  const loadCourse = async () => {
     setLoading(true);
     try {
       const res = await dispatch(fetchAbroadCourse());
@@ -36,7 +37,7 @@ const AbroadCourseManager = () => {
 
 
   useEffect(() => {
-    loadProvince();
+    loadCourse();
   }, [dispatch]);
 
   // console.log(province, "++++++++++");
@@ -115,12 +116,12 @@ const AbroadCourseManager = () => {
           )}
 
           {showModal && (
-            <CreateAbroadUniversity
-              loadProvince={loadProvince}
-              ele={editingProvince}
+            <CreateAbroadCourse
+              loadCourse={loadCourse}
+              ele={editingCourse}
               handleClose={() => {
                 setShowModal(false);
-                setEditingProvince(null);
+                setEditingCourse(null);
               }}
             />
           )}
@@ -160,12 +161,14 @@ const AbroadCourseManager = () => {
                     <label className="form-check-label">S.L</label>
                   </div>
                 </th>
-                <th scope="col">Name</th>
+                <th scope="col">Course Name</th>
                 <th scope="col">Country</th>
-                <th scope="col">Description</th>
-                <th scope="col">Image</th>
-                <th scope="col">Banner</th>
-                <th scope="col">Created Date</th>
+                <th scope="col">Province</th>
+                <th scope="col">University</th>
+                <th scope="col">Category</th>
+                <th scope="col">Location</th>
+                <th scope="col">Website URL</th>
+                <th scope="col">Eligibility</th>
                 <th scope="col">Action</th>
               </tr>
             </thead>
@@ -184,8 +187,30 @@ const AbroadCourseManager = () => {
                         <label className="form-check-label">{ind + 1}</label>
                       </div>
                     </td>
-                    <td>{ele?.name}</td>
-                    <td>{ele?.Country?.name}</td>
+                    <td>{ele?.ProgramName}</td>
+                    <td>{ele?.University?.Country?.name ? ele?.University?.Country?.name : "None"}</td>
+                    <td>{ele?.University?.Province ? ele?.University?.Province?.name : "None"}</td>
+                    <td>
+                      <div
+
+                      >
+                        <h6 className="text-md mb-0 fw-medium flex-grow-1">
+                          {ele?.University?.name ? ele?.University?.name : "None"}
+                        </h6>
+                      </div>
+                    </td>
+                    <td>{ele?.Category ? ele?.Category : "None"}</td>
+                    <td>{ele?.Location ? ele?.Location : "None"}</td>
+                    <td>
+                      <a
+                        href={ele?.WebsiteURL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Click to Open
+                      </a>
+                    </td>
+
                     <td>
                       <div
                         className="custom-scrollbar"
@@ -198,37 +223,9 @@ const AbroadCourseManager = () => {
                         }}
                       >
                         <h6 className="text-md mb-0 fw-medium flex-grow-1">
-                          {/* {ele?.description.slice(0, 300)} */}
+                          {ele?.Eligibility.slice(0, 300)}
                         </h6>
                       </div>
-                    </td>
-                    <td>
-                      <a
-                        href={ele?.heroURL}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Click to View
-                      </a>
-                    </td>
-                    <td>
-                      <a
-                        href={ele?.bannerURL}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Click to View
-                      </a>
-                    </td>
-                    <td>
-                      <span className="text-success-main px-24 py-4 rounded-pill fw-medium text-sm">
-                        {new Date(ele?.createdAt).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                          weekday: "short",
-                        })}
-                      </span>
                     </td>
                     <td>
                       <Link
