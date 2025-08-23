@@ -14,7 +14,7 @@ const AbroadCourseManager = () => {
   const dispatch = useDispatch();
   const [selectedIds, setSelectedIds] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [province, setProvince] = useState([]);
+  const [course, setCourse] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editingProvince, setEditingProvince] = useState(null);
 
@@ -22,12 +22,12 @@ const AbroadCourseManager = () => {
     setLoading(true);
     try {
       const res = await dispatch(fetchAbroadCourse());
-      console.log(res);
-      
+      console.log(res, "||||||||||||||||||||||||||||||||||||||");
+
       if (res?.meta?.requestStatus === "fulfilled") {
-        setProvince(res.payload);
-        console.log(province, "++++++++++");
-        
+        setCourse(res.payload);
+        // console.log(province, "++++++++++");
+
       }
     } finally {
       setLoading(false);
@@ -39,7 +39,7 @@ const AbroadCourseManager = () => {
     loadProvince();
   }, [dispatch]);
 
-  console.log(province, "++++++++++");
+  // console.log(province, "++++++++++");
 
 
   const handleCheckboxChange = (id) => {
@@ -170,7 +170,7 @@ const AbroadCourseManager = () => {
               </tr>
             </thead>
             <tbody>
-              {province?.map((ele, ind) => {
+              {course?.map((ele, ind) => {
                 return (
                   <tr key={ele._id}>
                     <td>
