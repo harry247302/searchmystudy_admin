@@ -106,6 +106,7 @@ import AbroadProvincePage from "./pages/AbroadProvincePage";
 import AbroadUniversityPage from "./pages/AbroadUniversityPage";
 import MbbsStudyPage from "./pages/MbbsStudyPage";
 import VideoManagerPage from "./pages/VideoManagerPage";
+import AbroadCoursePage from "./pages/AbroadCoursePage";
 
 function App() {
   return (
@@ -260,6 +261,8 @@ function App() {
         <Route exact path='/mbss-country' element={<MbbsStudyPage />} />
         <Route exact path='/abroad-province' element={<AbroadProvincePage />} />
         <Route exact path='/abroad-university' element={<AbroadUniversityPage />} />
+                <Route exact path='/abroad-course-manager' element={<AbroadCoursePage />} />
+
         <Route exact path='*' element={<ErrorPage />} />
       </Routes>
     </BrowserRouter>

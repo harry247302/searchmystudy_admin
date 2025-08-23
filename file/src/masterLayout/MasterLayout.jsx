@@ -273,7 +273,7 @@ const MasterLayout = ({ children }) => {
                 </li>
                 <li>
                   <NavLink
-                    to='/invoice-edit'
+                    to='/abroad-course-manager'
                     className={(navData) =>
                       navData.isActive ? "active-page" : ""
                     }
@@ -315,7 +315,7 @@ const MasterLayout = ({ children }) => {
                 </li>
                 <li>
                   <NavLink
-                    to='/invoice-edit'
+                    to='/abroad-course-manager'
                     className={(navData) =>
                       navData.isActive ? "active-page" : ""
                     }
