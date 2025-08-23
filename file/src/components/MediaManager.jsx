@@ -6,7 +6,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import CreateMedia from "../form/CreateMedia";
-import { fetchMedias } from "../slice/MediaSlice";
+import { deleteMedia, fetchMedias } from "../slice/MediaSlice";
 
 const MediaManager = () => {
   const dispatch = useDispatch();
@@ -46,14 +46,14 @@ console.log(medias,"++++++++++");
     if (!confirmed) return;
 
     try {
-      const res = await dispatch(deleteVideo(idsToDelete));
+      const res = await dispatch(deleteMedia(idsToDelete));
       console.log(res);
 
-      if (deleteVideo.fulfilled.match(res)) {
+      if (deleteMedia.fulfilled.match(res)) {
         toast.success("✅ Blog deleted successfully!");
         setSelectedIds([]); // clear selection
         await dispatch(fetchVideos());
-      } else if (deleteVideo.rejected.match(res)) {
+      } else if (deleteMedia.rejected.match(res)) {
         toast.error(
           "❌ Failed to delete blog: " +
             (res.payload?.message || res.error?.message || "Unknown error")

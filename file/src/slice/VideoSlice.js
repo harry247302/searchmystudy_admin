@@ -48,7 +48,7 @@ export const createVideo = createAsyncThunk(
           return rejectWithValue({ message: "No abroad study IDs provided" });
           }
           try {
-          const response = await axios.delete(`https://searchmystudy.com/api/admin/university`, {
+          const response = await axios.delete(`https://searchmystudy.com/api/admin/DeleteVideo`, {
             data:{ids}
           });
           return response.data;

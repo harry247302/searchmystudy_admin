@@ -257,7 +257,7 @@ const AbroadCourseManager = () => {
                       >
                         <Icon icon="mingcute:delete-2-line" />
                       </Link> */}
-                    </td>
+                      </td>
                   </tr>
                 )
               })}

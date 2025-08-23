@@ -6,7 +6,7 @@ export const fetchAbroadCourse = createAsyncThunk(
   'abroad/fetchAbroadCourse',
     async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("http://localhost:3000/api/admin/course");
+      const response = await axios.get("https://searchmystudy.com/api/admin/course");
       // console.log(response?.data,"++++++++++++==");
       
       return response.data
@@ -22,7 +22,7 @@ export const deleteStudyCourse = createAsyncThunk(
   'abroad/deleteStudyCourse',
   async (ids, { rejectWithValue }) => {
     try {
-      await axios.delete(`http://localhost:3000/api/admin/course`, {
+      await axios.delete(`https://searchmystudy.com/api/admin/course`, {
         data: { ids }
       });
       return { ids }; // ✅ return the same ids
@@ -37,7 +37,7 @@ export const createAbroadCourse = createAsyncThunk(
   'abroad/createAbroadCourse',
   async (abroadData, thunkAPI) => {
     try {
-      const response = await fetch("http://localhost:3000/api/admin/course", {
+      const response = await fetch("https://searchmystudy.com/api/admin/course", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ export const updateStudyCourse = createAsyncThunk(
   'abroad/updateStudyCourse',  
    async ({ id, data }, thunkAPI) => {
     try {
-        const response = await fetch(`http://localhost:3000/api/admin/course/${id}`, {
+        const response = await fetch(`https://searchmystudy.com/api/admin/course/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
