@@ -111,18 +111,18 @@ export const abroadSlice = createSlice({
             state.loading = false;
             state.error = action.payload || 'Failed to fetch abroad study data';
             })
-            .addCase(deleteAbroadStudy.pending, (state) => {
-            state.loading = true;
-            state.error = null;
-            })
-            .addCase(deleteAbroadStudy.fulfilled, (state, action) => {
-            state.studyAbroad = state.studyAbroad.filter(item => !action.payload.ids.includes(item._id));
-            state.loading = false;
-            })
-            .addCase(deleteAbroadStudy.rejected, (state, action) => {
-            state.loading = false;
-            state.error = action.payload || 'Failed to delete abroad study data';
-            })
+            // .addCase(deleteAbroadStudy.pending, (state) => {
+            // state.loading = true;
+            // state.error = null;
+            // })
+            // .addCase(deleteAbroadStudy.fulfilled, (state, action) => {
+            // state.studyAbroad = state.studyAbroad.filter(item => !action.payload.ids.includes(item._id));
+            // state.loading = false;
+            // })
+            // .addCase(deleteAbroadStudy.rejected, (state, action) => {
+            // state.loading = false;
+            // state.error = action.payload || 'Failed to delete abroad study data';
+            // })
             .addCase(createAbroadStudyThunk.pending, (state) => {
             state.loading = true;
             state.error = null;

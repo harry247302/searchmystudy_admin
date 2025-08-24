@@ -72,7 +72,7 @@ const AbroadManager = () => {
       if (deleteAbroadStudy.fulfilled.match(res)) {
         toast.success("✅ StudyAbroad deleted successfully!");
         setSelectedIds([]); // clear selection
-        loadBlogs();
+        loadAbroadStudy();
       } else if (deleteAbroadStudy.rejected.match(res)) {
         toast.error(
           "❌ Failed to delete Abroad: " +

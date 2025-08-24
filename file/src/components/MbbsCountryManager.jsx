@@ -18,7 +18,7 @@ const MbbsCountryManager = () => {
   const [loading, setLoading] = useState(false);
   const [editingCountry, setEditingCountry] = useState(null);
 
-  const loadAbroadStudy = async () => {
+  const loadMbbsCOuntry = async () => {
     setLoading(true);
     try {
       const res = await dispatch(fetchMbbsStudy());
@@ -33,7 +33,7 @@ const MbbsCountryManager = () => {
 
 
     useEffect(() => {
-     loadAbroadStudy();
+     loadMbbsCOuntry();
     }, [dispatch]);
     
 
@@ -65,13 +65,14 @@ const MbbsCountryManager = () => {
         if (!confirmed) return;
     
         try {
-          const res = await dispatch(deleteAbroadStudy(idsToDelete));
-          console.log(res);
+          const res = await dispatch(deleteAbroadStudy(selectedIds));
+
+          // console.log(res);
     
           if (deleteAbroadStudy.fulfilled.match(res)) {
             toast.success("✅ StudyAbroad deleted successfully!");
             setSelectedIds([]); // clear selection
-            loadBlogs();
+            loadMbbsCOuntry();
           } else if (deleteAbroadStudy.rejected.match(res)) {
             toast.error(
               "❌ Failed to delete Abroad: " +
@@ -111,7 +112,7 @@ const MbbsCountryManager = () => {
 
           {showModal && (
             <CreateMbbsForm
-            loadAbroadStudy={loadAbroadStudy}
+            loadAbroadStudy={loadMbbsCOuntry}
               ele={editingCountry}
               handleClose={() => {
                 setShowModal(false);
