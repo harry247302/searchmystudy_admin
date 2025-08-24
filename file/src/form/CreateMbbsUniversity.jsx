@@ -35,7 +35,7 @@ const CreateMbbsUniversity = ({ ele, handleClose, loadUniversity }) => {
     logo: ele?.logo || '',
     campusLife: ele?.campusLife || '',
     hostel: ele?.hostel || '',
-    type: ele?.type || 'Public',
+    type: ele?.type || '',
     rank: ele?.rank || 0,
     UniLink: ele?.UniLink || '',
     Country: ele?.Country || null,
@@ -54,9 +54,12 @@ const CreateMbbsUniversity = ({ ele, handleClose, loadUniversity }) => {
     return url;
   };
 
-  const handleContentChange = (value) => {
-    setForm((prev) => ({ ...prev, description: value }));
-    setErrors((prev) => ({ ...prev, description: "" }));
+  const handleContentChange = (e,name) => {
+    console.log(e);
+    
+    setForm((prev) => ({ ...prev, [name]: e }));
+    
+    setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
 
@@ -170,7 +173,7 @@ const CreateMbbsUniversity = ({ ele, handleClose, loadUniversity }) => {
           toast.error("❌ Failed to update university: " + errorMsg);
         }
       } else {
-        // Create new country
+        // Create new University
 
         console.log(form, "+++++++++++++++++++++-----------");
         const res = await dispatch(creatembbsUniversity(form));
@@ -256,7 +259,7 @@ const CreateMbbsUniversity = ({ ele, handleClose, loadUniversity }) => {
           </Form.Group>
           <Form.Group className="mt-3">
             <Form.Label>Description</Form.Label>
-            <TextEditor name="description" content={form.description} setContent={handleContentChange} onChange={handleChange} />
+            <TextEditor name="description" content={form.description} setContent={(e)=>{handleContentChange(e,"description")}} />
           </Form.Group>
 
           {/* Sections */}
@@ -369,7 +372,7 @@ const CreateMbbsUniversity = ({ ele, handleClose, loadUniversity }) => {
 
 
 
-          <Form.Group>
+          {/* <Form.Group>
             <Form.Label>Campus Life</Form.Label>
             <Form.Control
               type="text"
@@ -379,9 +382,19 @@ const CreateMbbsUniversity = ({ ele, handleClose, loadUniversity }) => {
               isInvalid={!!errors.campusLife}
             />
             <Form.Control.Feedback type="invalid">{errors.campusLife}</Form.Control.Feedback>
+          </Form.Group> */}
+
+          <Form.Group className="mt-3">
+            <Form.Label>Campus Life</Form.Label>
+            <TextEditor name="campusLife" content={form.campusLife} setContent={(e)=>{handleContentChange(e,"campusLife")}} />
           </Form.Group>
 
-          <Form.Group>
+          <Form.Group className="mt-3">
+            <Form.Label>Hostel Life</Form.Label>
+            <TextEditor name="hostel" content={form.hostel} setContent={(e)=>{handleContentChange(e,"hostel")}} />
+          </Form.Group>
+
+          {/* <Form.Group>
             <Form.Label>Hostel</Form.Label>
             <Form.Control
               type="text"
@@ -391,18 +404,48 @@ const CreateMbbsUniversity = ({ ele, handleClose, loadUniversity }) => {
               isInvalid={!!errors.hostel}
             />
             <Form.Control.Feedback type="invalid">{errors.hostel}</Form.Control.Feedback>
-          </Form.Group>
+          </Form.Group> */}
 
           <Form.Group>
             <Form.Label>University Type</Form.Label>
-            <Form.Control
+            {/* <Form.Control
               type="text"
               name="type"
               value={form.type}
               onChange={handleChange}
               isInvalid={!!errors.type}
             />
-            <Form.Control.Feedback type="invalid">{errors.type}</Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid">{errors.type}</Form.Control.Feedback> */}
+
+            <Form.Select
+              name="type"
+              value={form?.type || ""}
+              onChange={(e) => {
+                setForm((prev) => ({
+                  ...prev,
+                  type: e.target.value || prev.type,
+                }));
+                setErrors((prev) => ({ ...prev, type: "" }));
+              }}
+              isInvalid={!!errors.type}
+            >
+              <option value="" disabled>
+                {form?.type || "Select"}
+              </option>
+              <option value="public">
+                Public
+              </option>
+              <option value="private">
+                Private
+              </option>
+              
+            </Form.Select>
+
+            {errors.Country && (
+              <Form.Control.Feedback type="invalid">
+                {errors.Country}
+              </Form.Control.Feedback>
+            )}
           </Form.Group>
 
           <Form.Group>
