@@ -317,7 +317,7 @@ const MasterLayout = ({ children }) => {
                 
                 <li>
                   <NavLink
-                    to='/invoice-add'
+                    to='/mbbs-university'
                     className={(navData) =>
                       navData.isActive ? "active-page" : ""
                     }

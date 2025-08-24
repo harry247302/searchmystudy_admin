@@ -49,7 +49,7 @@ export const createMedia = createAsyncThunk(
   );
 
 export const updateMedia = createAsyncThunk(
-    'admin/createMedia',
+    'admin/updateMedia',
     async ({id, data}, thunkAPI) => {
         try {
             const response = await axios.put(`https://searchmystudy.com/api/admin/media/${id}`,data)

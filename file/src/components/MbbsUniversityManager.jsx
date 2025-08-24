@@ -5,10 +5,11 @@ import { useDispatch } from "react-redux";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { deleteAbroadUniversity, fetchAbroadUniversity } from "../slice/AbroadUniversitySlice";
+import { deleteMbbsUniversity, fetchMbbsUniversity } from "../slice/mbbsUniversity";
 import CreateAbroadUniversity from "../form/CreateAbroadUniversity";
+import CreateMbbsUniversity from "../form/CreateMbbsUniversity";
 
-const AbroadUniversity = () => {
+const MbbsUniversityManager = () => {
   const dispatch = useDispatch();
   const [selectedIds, setSelectedIds] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -20,7 +21,7 @@ const AbroadUniversity = () => {
   const loadUniversity = async () => {
     setLoading(true);
     try {
-      const res = await dispatch(fetchAbroadUniversity());
+      const res = await dispatch(fetchMbbsUniversity());
       if (res?.meta?.requestStatus === "fulfilled") {
         setUniversity(res.payload);
       }
@@ -64,16 +65,16 @@ const AbroadUniversity = () => {
 
     try {
       console.log(selectedIds);
-      const res = await dispatch(deleteAbroadUniversity(selectedIds));
+      const res = await dispatch(deleteMbbsUniversity(selectedIds));
       console.log(res);
       loadUniversity()
-      if (deleteAbroadUniversity.fulfilled.match(res)) {
-        toast.success("✅ Abroad University deleted successfully!");
+      if (deleteMbbsUniversity.fulfilled.match(res)) {
+        toast.success("✅ Mbbs University deleted successfully!");
         setSelectedIds([]); // clear selection
         loadBlogs();
-      } else if (deleteAbroadUniversity.rejected.match(res)) {
+      } else if (deleteMbbsUniversity.rejected.match(res)) {
         toast.error(
-          "❌ Failed to delete Abroad University: " +
+          "❌ Failed to delete Mbbs University: " +
           (res.payload?.message || res.error?.message || "Unknown error")
         );
       }
@@ -109,7 +110,7 @@ const AbroadUniversity = () => {
           )}
 
           {showModal && (
-            <CreateAbroadUniversity
+            <CreateMbbsUniversity
               loadUniversity={loadUniversity}
               ele={editingUniversity}
               handleClose={() => {
@@ -155,7 +156,6 @@ const AbroadUniversity = () => {
                   </div>
                 </th>
                 <th scope="col">Name</th>
-                <th scope="col">Province</th>
                 <th scope="col">Country</th>
                 <th scope="col">Image</th>
                 <th scope="col">Banner</th>
@@ -179,7 +179,6 @@ const AbroadUniversity = () => {
                         <label className="form-check-label">{ind + 1}</label>
                       </div>
                     </td>
-                    <td>{ele?.name}</td>
                     <td>{ele?.name}</td>
                     <td>{ele?.Country?.name}</td>
                     <td>
@@ -249,4 +248,4 @@ const AbroadUniversity = () => {
   )
 }
 
-export default AbroadUniversity
+export default MbbsUniversityManager
