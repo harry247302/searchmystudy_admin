@@ -75,6 +75,17 @@ const CreateAbroadUniversity = ({ ele, handleClose, loadUniversity }) => {
     setErrors((prev) => ({ ...prev, description: "" }));
   };
 
+    const handleHostelChange = (value) => {
+    setForm((prev) => ({ ...prev, hostel: value }));
+    setErrors((prev) => ({ ...prev, hostel: "" }));
+  };
+
+  // handleCampusLifeChange
+    const handleCampusLifeChange = (value) => {
+    setForm((prev) => ({ ...prev, campusLife: value }));
+    setErrors((prev) => ({ ...prev, campusLife: "" }));
+  };
+
 
   const handleContentChangeSection = (index, value) => {
     setForm(prev => ({
@@ -403,25 +414,29 @@ const CreateAbroadUniversity = ({ ele, handleClose, loadUniversity }) => {
 
           <Form.Group>
             <Form.Label>Campus Life</Form.Label>
-            <Form.Control
+            <TextEditor name="description" content={form.campusLife} setContent={handleCampusLifeChange}  />
+
+            {/* <Form.Control
               type="text"
               name="campusLife"
               value={form.campusLife}
               onChange={handleChange}
               isInvalid={!!errors.campusLife}
-            />
+            /> */}
             <Form.Control.Feedback type="invalid">{errors.campusLife}</Form.Control.Feedback>
           </Form.Group>
 
           <Form.Group>
             <Form.Label>Hostel</Form.Label>
-            <Form.Control
+            <TextEditor name="description" content={form.hostel} setContent={handleHostelChange}  />
+
+            {/* <Form.Control
               type="text"
               name="hostel"
               value={form.hostel}
               onChange={handleChange}
               isInvalid={!!errors.hostel}
-            />
+            /> */}
             <Form.Control.Feedback type="invalid">{errors.hostel}</Form.Control.Feedback>
           </Form.Group>
 
