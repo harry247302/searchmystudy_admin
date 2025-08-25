@@ -175,6 +175,8 @@ const CreateAbroadProvince = ({ ele, handleClose, loadProvince }) => {
       } else {
         // create
         const res = await dispatch(createAbroadProvince(form));
+        console.log(res);
+        
         if (createAbroadProvince.fulfilled.match(res)) {
           toast.success("✅ Province created successfully!");
           handleClose();
@@ -229,7 +231,7 @@ const CreateAbroadProvince = ({ ele, handleClose, loadProvince }) => {
 
           {/* Sections */}
           <Accordion className="mt-3">
-            {form.sections.map((section, idx) => (
+            {ele?.sections.map((section, idx) => (
               <Accordion.Item eventKey={idx.toString()} key={idx}>
                 <Accordion.Header>Section {idx + 1}</Accordion.Header>
                 <Accordion.Body>

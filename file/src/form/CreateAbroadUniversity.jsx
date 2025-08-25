@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Modal,
@@ -22,22 +22,19 @@ import { fetchAbroadProvince, getAllProvincesByCountryId } from "../slice/Abroad
 const CreateAbroadUniversity = ({ ele, handleClose, loadUniversity }) => {
   const storage = getStorage(app);
   const { abroadProvince } = useSelector((state) => state.abroadProvince)
-  const { studyAbroad } = useSelector((state) => state.abroadStudy)
+  const [studyAbroad, setstudyAbroad] = useState([])
   const [sectionPreviews, setSectionPreviews] = useState([]);
   const [countryId, setCountryId] = useState()
   const [province, setProvince] = useState([])
-  console.log(province);
+  // console.log(province);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     log
-  //     const res = await dispatch(getAllProvincesByCountryId(countryId))
-  //     console.log(res);
-
-  //   }
-  //   fetchData()
-  // }, [])
-  console.log(ele, "}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}");
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await dispatch(fetchAbroadStudy())
+      setstudyAbroad(res?.payload || [])
+    }
+    fetchData()
+  }, [])
 
   const dispatch = useDispatch();
   const [form, setForm] = useState({
@@ -202,8 +199,8 @@ const CreateAbroadUniversity = ({ ele, handleClose, loadUniversity }) => {
       } else {
         // Create new country
 
-        console.log(form, "+++++++++++++++++++++-----------");
         const res = await dispatch(createAbroadUniversity(form));
+        // console.log(res, "+++++++++++++++++++++-----------");
         if (createAbroadUniversity.fulfilled.match(res)) {
           toast.success("✅ University created successfully!");
           loadUniversity()
@@ -220,15 +217,13 @@ const CreateAbroadUniversity = ({ ele, handleClose, loadUniversity }) => {
       toast.error("Failed to create Province");
     }
   }
-  console.log(ele, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 
-  useEffect(() => {
-    const data = async () => {
-      await dispatch(fetchAbroadStudy())
-      // await dispatch(fetchAbroadProvince())
+ const data = async (id) => {
+      const res = await dispatch(fetchAbroadProvince())
+      const filter = res?.payload?.filter(c => c.Country._id === id)
+      setProvince(filter)      
     }
-    data()
-  }, [])
+
   return (
     <Modal show={open} onHide={handleClose} size="lg" centered scrollable>
       <Modal.Header closeButton className="text-black">
@@ -336,24 +331,14 @@ const CreateAbroadUniversity = ({ ele, handleClose, loadUniversity }) => {
               name="Country"
               value={ele?.Country?._id || form?.Country?._id || ""}
               onChange={async (e) => {
-                const selectedCountryId = e.target.value; // ✅ only country._id
-                // console.log("Selected Country ID:", selectedCountryId);
-
-                setCountryId(selectedCountryId);
-
                 setForm((prev) => ({
                   ...prev,
                   Country:
-                    studyAbroad.find((c) => c._id === selectedCountryId) || prev.Country,
+                    studyAbroad.find((c) => c._id === e.target.value) || prev.Country,
                   Province: {}, // reset province when country changes
                 }));
-
                 setErrors((prev) => ({ ...prev, Country: "" }));
-
-                const res = await dispatch(getAllProvincesByCountryId(selectedCountryId));
-                // console.log(res, "---------------------------");
-                setProvince(res?.payload)
-
+                data(e.target.value)
               }}
               isInvalid={!!errors.Country}
             >
