@@ -46,13 +46,13 @@ console.log(medias,"++++++++++");
     if (!confirmed) return;
 
     try {
-      const res = await dispatch(deleteMedia(idsToDelete));
-      console.log(res);
+      const res = await dispatch(deleteMedia(selectedIds));
+      console.log(res,"++++++++++++++++++++++++++++++++++++");
 
       if (deleteMedia.fulfilled.match(res)) {
         toast.success("✅ Blog deleted successfully!");
         setSelectedIds([]); // clear selection
-        await dispatch(fetchVideos());
+       data()
       } else if (deleteMedia.rejected.match(res)) {
         toast.error(
           "❌ Failed to delete blog: " +
@@ -67,10 +67,12 @@ console.log(medias,"++++++++++");
     }
   };
 
-  useEffect(()=>{
-    const data = async ()=>{
+   const data = async ()=>{
      await dispatch(fetchMedias())
     }
+
+  useEffect(()=>{
+   
     data()
   },[])
 

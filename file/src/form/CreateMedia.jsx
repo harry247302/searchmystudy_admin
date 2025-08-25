@@ -102,7 +102,7 @@ const CreateMedia = ({ ele, handleClose}) => {
   return (
     <Modal show={true} onHide={handleClose} size="lg" centered scrollable>
       <Modal.Header closeButton className="text-black">
-        <Modal.Title>{ele && ele._id ? "Update Video" : "Add Video"}</Modal.Title>
+        <Modal.Title>{ele && ele._id ? "Update Media" : "Add Media"}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
@@ -147,6 +147,7 @@ const CreateMedia = ({ ele, handleClose}) => {
               disabled={isUploading}
             />
             {imagePreview && <img src={imagePreview} alt="image" className="mt-2 img-fluid rounded" />}
+            <p>Image should be 320*250px</p>
           </Form.Group>
           {isUploading && (
             <div className="text-center mt-3">

@@ -38,7 +38,7 @@ export const createMedia = createAsyncThunk(
           return rejectWithValue({ message: "No abroad study IDs provided" });
           }
           try {
-          const response = await axios.delete(`https://searchmystudy.com/api/admin/deleteMediaItem`, {
+          const response = await axios.delete(`https://searchmystudy.com/api/admin/media`, {
             data:{ids}
           });
           return response.data;

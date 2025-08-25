@@ -142,7 +142,8 @@ const CreateVideo = ({ele, handleClose}) => {
             />
             {thumbnailPreview && <img src={thumbnailPreview} alt="thumbnail" className="mt-2 img-fluid rounded" />}
           </Form.Group>
-      
+                  <p className="color-red">Image size should be 1024 x 1536 px</p>
+
           <Form.Group className="mt-3">
             <Form.Label>Video File</Form.Label>
             <Form.Control
