@@ -12,6 +12,7 @@ import AbroadUniversityReducer from './slice/AbroadUniversitySlice'
 import abroadCourseReducer from './slice/AbroadCourseSlice'
 import mbbsReducer from './slice/MbbsSlice'
 import mbbsUniversityReducer from './slice/mbbsUniversity'
+import mbbsCourseReducer from './slice/MbbsCourse'
 const store = configureStore({
   reducer: {
       blog: blogReducer,
@@ -27,6 +28,7 @@ const store = configureStore({
       abroadCourse: abroadCourseReducer,
       mbbsStudy: mbbsReducer,
       mbbsUniversity:mbbsUniversityReducer, 
+      mbbsCourse:mbbsCourseReducer, 
   },
  
 });

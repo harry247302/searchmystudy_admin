@@ -109,6 +109,7 @@ import VideoManagerPage from "./pages/VideoManagerPage";
 import AbroadCoursePage from "./pages/AbroadCoursePage";
 import MediaManagerPage from "./pages/MediaManagerPage";
 import MbbsUniversityPage from "./pages/MbbsUniversityPage";
+import MbbsCoursePage from "./pages/MbbsCoursePage";
 
 function App() {
   return (
@@ -263,6 +264,7 @@ function App() {
         <Route exact path='/abroad-country' element={<AbroadStudyPage />} />
         <Route exact path='/mbss-country' element={<MbbsStudyPage />} />
         <Route exact path='/mbbs-university' element={<MbbsUniversityPage />} />
+        <Route exact path='/mbbs-course' element={<MbbsCoursePage />} />
         <Route exact path='/abroad-province' element={<AbroadProvincePage />} />
         <Route exact path='/abroad-university' element={<AbroadUniversityPage />} />
                 <Route exact path='/abroad-course-manager' element={<AbroadCoursePage />} />
