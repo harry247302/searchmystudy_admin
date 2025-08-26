@@ -110,6 +110,7 @@ import AbroadCoursePage from "./pages/AbroadCoursePage";
 import MediaManagerPage from "./pages/MediaManagerPage";
 import MbbsUniversityPage from "./pages/MbbsUniversityPage";
 import MbbsCoursePage from "./pages/MbbsCoursePage";
+import ContactUsLeadPage from "./pages/ContactUsLeadPage";
 
 function App() {
   return (
@@ -267,7 +268,8 @@ function App() {
         <Route exact path='/mbbs-course' element={<MbbsCoursePage />} />
         <Route exact path='/abroad-province' element={<AbroadProvincePage />} />
         <Route exact path='/abroad-university' element={<AbroadUniversityPage />} />
-                <Route exact path='/abroad-course-manager' element={<AbroadCoursePage />} />
+        <Route exact path='/abroad-course-manager' element={<AbroadCoursePage />} />
+        <Route exact path='/contactus-lead' element={<ContactUsLeadPage />} />
 
         <Route exact path='*' element={<ErrorPage />} />
       </Routes>

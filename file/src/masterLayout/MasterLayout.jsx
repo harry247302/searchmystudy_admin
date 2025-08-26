@@ -340,6 +340,71 @@ const MasterLayout = ({ children }) => {
               </ul>
             </li>
 
+            {/* Lead Manager DropDown */}
+            <li className='dropdown'>
+              <Link to='#'>
+                <Icon icon='hugeicons:invoice-03' className='menu-icon' />
+                <span>Lead Manager</span>
+              </Link>
+              <ul className='sidebar-submenu'>
+                <li>
+                  <NavLink
+                    to='/counsellor-lead'
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className='ri-circle-fill circle-icon text-primary-600 w-auto' />{" "}
+                    Counsellor Lead
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to='/home-page-lead'
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className='ri-circle-fill circle-icon text-warning-main w-auto' />
+                    Home Page Lead
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to='/contactus-lead'
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className='ri-circle-fill circle-icon text-info-main w-auto' />{" "}
+                    Contact us lead
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to='/loan-lead'
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className='ri-circle-fill circle-icon text-danger-main w-auto' />{" "}
+                    Loan lead
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to='/query'
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className='ri-circle-fill circle-icon text-danger-main w-auto' />{" "}
+                    Query
+                  </NavLink>
+                </li>
+              </ul>
+            </li>
+
             {/* Ai Application Dropdown */}
             {/* <li className='dropdown'>
               <Link to='#'>
