@@ -22,7 +22,8 @@ const storage = getStorage(app);
 const CreateMbbsForm = ({loadAbroadStudy, ele, handleClose }) => {
   const [sectionPreviews, setSectionPreviews] = useState([]);
   const dispatch = useDispatch();                                                                                                                                                   
-       
+      console.log(ele);
+      
   const [form, setForm] = useState({
     name: ele?.name || "",
     bannerURL:ele?.bannerURL || "",
@@ -31,7 +32,15 @@ const CreateMbbsForm = ({loadAbroadStudy, ele, handleClose }) => {
     flagURL: ele?.flagURL || "",
     description:ele?.description || "",
     sectionExpanded: true ,
-    sections: ele?.sections || [{ title: "", description: "", url: "", }],
+sections: ele?.sections
+  ? ele.sections.map(sec => ({
+      title: sec.title || "",
+      description: sec.description || "",
+      url: sec.url || "",
+      _id: sec._id || undefined, // keep _id if needed
+    }))
+  : [{ title: "", description: "", url: "" }]
+,
     eligiblity:ele?.eligibility || ["", "", "", "", "", "", ""],
     faq: ele?.faq || [{ question: "", answer: "" }],
   });
@@ -207,7 +216,7 @@ const CreateMbbsForm = ({loadAbroadStudy, ele, handleClose }) => {
     try {
         if(ele && ele._id) {
             // Update existing country
-            console.log("form",form);
+            // console.log("form",form);
             
             const res = await dispatch(updateAbroadStudy({ id: ele._id, data: form }));
             if (updateAbroadStudy.fulfilled.match(res)) {
@@ -222,10 +231,10 @@ const CreateMbbsForm = ({loadAbroadStudy, ele, handleClose }) => {
                 }
         }else{
             // Create new country
-            console.log(form,"+++++++++++++++++++++");
+            // console.log(form,"+++++++++++++++++++++");
             
             const res = await dispatch(createMbbstudyThunk(form));
-            console.log(res);
+            // console.log(res);
             
             if (createAbroadStudyThunk.fulfilled.match(res)) {
                 toast.success("✅ Country created successfully!");
@@ -272,7 +281,7 @@ const CreateMbbsForm = ({loadAbroadStudy, ele, handleClose }) => {
               }}
               isInvalid={!!errors.bannerURL}
             />
-            {bannerPreview && <img src={bannerPreview} alt="Banner" className="mt-2 img-fluid rounded" />}
+            {form.bannerURL && <img src={form.bannerURL} alt="Banner" className="mt-2 img-fluid rounded" />}
           </Form.Group>
 
           <Form.Group className="mt-3">
@@ -285,7 +294,7 @@ const CreateMbbsForm = ({loadAbroadStudy, ele, handleClose }) => {
               }}
               isInvalid={!!errors.flagURL}
             />
-            {flagPreview && <img src={flagPreview} alt="Flag" className="mt-2 rounded-circle" width="100" />}
+            {form?.flagURL && <img src={form?.flagURL} alt="Flag" className="mt-2 rounded-circle" width="100" />}
           </Form.Group>
 
           <Form.Group className="mt-3">
@@ -295,12 +304,12 @@ const CreateMbbsForm = ({loadAbroadStudy, ele, handleClose }) => {
 
           <Form.Group className="mt-3">
             <Form.Label>Description</Form.Label>
-            <TextEditor name="description" onChange={handleChange} setContent={handleContentChange} />
+            <TextEditor name="description" content={form.description} setContent={handleContentChange} />
           </Form.Group>
 
           {/* Sections */}
           <Accordion className="mt-4">
-            {form.sections.map((section, index) => (
+            {form?.sections?.map((section, index) => (
               <Accordion.Item eventKey={index.toString()} key={index}>
                 <Accordion.Header>Section {index + 1}</Accordion.Header>
                 <Accordion.Body>
@@ -318,10 +327,11 @@ const CreateMbbsForm = ({loadAbroadStudy, ele, handleClose }) => {
                     <Form.Label>Description (max 100 words)</Form.Label>
                     <TextEditor
                       name={`sections.${index}.description`}
-                      value={section.description}
-                      setContent={handleDescriptionChange}
-                      onChange={handleChange}
+                      content={section.description || 0}
+                      setContent={(value)=>{handleDescriptionChange(index, value)}}
+                      // onChange={handleChange}
                     />
+                    {/* {section?.description } */}
                   </Form.Group>
 
                   <Form.Group className="mt-2">
