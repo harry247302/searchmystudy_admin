@@ -50,12 +50,13 @@ const CreateAbroadCourse = ({ ele, handleClose, loadCourse }) => {
     const [university, setUniversity] = useState()
     const [country, setCountry] = useState() // Assuming abroad slice has abroadStudy array
     const [province, setProvince] = useState()
+    console.log(ele)
     const [form, setForm] = useState({
-
+        
         ProgramName: ele?.ProgramName || "",
         Country: ele?.University?.Country || "",
         University: ele?.University._id || "",
-        Province: ele?.Province._id || "",
+        Province: ele?.Province? ele.province._id : null,
         WebsiteURL: ele?.WebsiteURL || "",
         Location: ele?.Location || "",
         Duration: ele?.Duration || "",
@@ -129,7 +130,7 @@ const CreateAbroadCourse = ({ ele, handleClose, loadCourse }) => {
             if (ele && ele._id) {
                 // ✅ Update course
                 const res = await dispatch(updateStudyCourse({ id: ele._id, data: form }));
-                // console.log(res, "==================");
+                console.log(res, "==================");
                 
                 if (updateStudyCourse.fulfilled.match(res)) {
                     toast.success("✅ Course updated!");
@@ -140,9 +141,9 @@ const CreateAbroadCourse = ({ ele, handleClose, loadCourse }) => {
                 }
             } else {
                 // ✅ Create course
-                console.log(form, "{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{[");
+                // console.log(form, "{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{[");
                 const res = await dispatch(createAbroadCourse(form));
-                console.log(res);
+                // console.log(res);
                 
                 if (createAbroadCourse.fulfilled.match(res)) {
                     toast.success("✅ Course created!");
