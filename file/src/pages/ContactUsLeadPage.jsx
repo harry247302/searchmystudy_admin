@@ -1,6 +1,6 @@
 import React from 'react'
 import MasterLayout from '../masterLayout/MasterLayout'
-import { Breadcrumb } from 'react-bootstrap'
+import Breadcrumb from "../components/Breadcrumb";
 import ContactUsLeadManager from '../components/ContactUsLeadManager'
 
 const ContactUsLeadPage = () => {
