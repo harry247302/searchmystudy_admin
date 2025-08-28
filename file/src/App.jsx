@@ -112,6 +112,7 @@ import MbbsUniversityPage from "./pages/MbbsUniversityPage";
 import MbbsCoursePage from "./pages/MbbsCoursePage";
 import ContactUsLeadPage from "./pages/ContactUsLeadPage";
 import CounsellorLeadPage from "./pages/CounsellorLeadPage";
+import QueryPage from "./pages/QueryPage";
 
 function App() {
   return (
@@ -272,6 +273,7 @@ function App() {
         <Route exact path='/abroad-course-manager' element={<AbroadCoursePage />} />
         <Route exact path='/contactus-lead' element={<ContactUsLeadPage />} />
         <Route exact path='/counsellor-lead' element={<CounsellorLeadPage />} />
+        <Route exact path='/query' element={<QueryPage />} />
 
         <Route exact path='*' element={<ErrorPage />} />
       </Routes>

@@ -54,7 +54,7 @@ export const deleteContactUsLead = createAsyncThunk(
     "lead/deleteContactUsLead",
     async(ids,{rejectWithValue})=>{
          if (!ids || ids.length === 0) {
-      return rejectWithValue({ message: "No blog IDs provided" });
+      return rejectWithValue({ message: "No IDs provided" });
     }
     try {
         const response = await axios.delete("https://searchmystudy.com/api/admin/contactlead",{data:{ids}});

@@ -15,6 +15,7 @@ import mbbsUniversityReducer from './slice/mbbsUniversity'
 import mbbsCourseReducer from './slice/MbbsCourse'
 import contactUsLeadReducer from './slice/contachUsLead'
 import counsellorLeadReducer from './slice/counsellorLead'
+import queryReducer from './slice/QuerySlice'
 const store = configureStore({
   reducer: {
       blog: blogReducer,
@@ -33,6 +34,7 @@ const store = configureStore({
       mbbsCourse:mbbsCourseReducer, 
       contactUsLead:contactUsLeadReducer, 
       counsellorLead:counsellorLeadReducer, 
+      query:queryReducer, 
   },
  
 });
