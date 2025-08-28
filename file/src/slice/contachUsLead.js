@@ -10,7 +10,6 @@ export const fetchContactUsLead = createAsyncThunk(
       const response = await axios.get("https://searchmystudy.com/api/admin/contactlead");
       console.log(response);
       
-      toast.success("Fetch Lead Successfully")
       return response.data; // returned data will be available in fulfilled reducer
       
     } catch (error) {

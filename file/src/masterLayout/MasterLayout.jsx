@@ -156,7 +156,7 @@ const MasterLayout = ({ children }) => {
                 <span>Chat</span>
               </NavLink>
             </li> */}
-         
+
             <li>
               <NavLink
                 to='/blog-manager'
@@ -297,7 +297,7 @@ const MasterLayout = ({ children }) => {
                 </li>
               </ul>
             </li>
-             <li className='dropdown'>
+            <li className='dropdown'>
               <Link to='#'>
                 <Icon icon='hugeicons:invoice-03' className='menu-icon' />
                 <span>MBBS Study</span>
@@ -314,7 +314,7 @@ const MasterLayout = ({ children }) => {
                     Country
                   </NavLink>
                 </li>
-                
+
                 <li>
                   <NavLink
                     to='/mbbs-university'
@@ -341,69 +341,7 @@ const MasterLayout = ({ children }) => {
             </li>
 
             {/* Lead Manager DropDown */}
-            <li className='dropdown'>
-              <Link to='#'>
-                <Icon icon='hugeicons:invoice-03' className='menu-icon' />
-                <span>Lead Manager</span>
-              </Link>
-              <ul className='sidebar-submenu'>
-                <li>
-                  <NavLink
-                    to='/counsellor-lead'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-primary-600 w-auto' />{" "}
-                    Counsellor Lead
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to='/home-page-lead'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-warning-main w-auto' />
-                    Home Page Lead
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to='/contactus-lead'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-info-main w-auto' />{" "}
-                    Contact us lead
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to='/loan-lead'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-danger-main w-auto' />{" "}
-                    Loan lead
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to='/query'
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className='ri-circle-fill circle-icon text-danger-main w-auto' />{" "}
-                    Query
-                  </NavLink>
-                </li>
-              </ul>
-            </li>
+
 
             {/* Ai Application Dropdown */}
             {/* <li className='dropdown'>
@@ -525,8 +463,65 @@ const MasterLayout = ({ children }) => {
               </ul>
             </li> */}
 
-            <li className='sidebar-menu-group-title'>UI Elements</li>
+            <li className='sidebar-menu-group-title'>Leads Manager</li>
+            <li>
+              <NavLink
+                to='/contactus-lead'
+                className={(navData) =>
+                  navData.isActive ? "active-page" : ""
+                }
+              >
+                <i className="ri-phone-line w-auto" />
+                Contact Us Lead
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to='/counsellor-lead'
+                className={(navData) =>
+                  navData.isActive ? "active-page" : ""
+                }
+              >
+                <i className="ri-customer-service-2-line  w-auto" />
+                Counsellor Lead
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to='/home-page-lead'
+                className={(navData) =>
+                  navData.isActive ? "active-page" : ""
+                }
+              >
+                {/* <i className='ri-circle-fill circle-icon text-warning-main w-auto' /> */}
+                Home Page Lead
+              </NavLink>
+            </li>
 
+            <li>
+              <NavLink
+                to='/loan-lead'
+                className={(navData) =>
+                  navData.isActive ? "active-page" : ""
+                }
+              >
+                {/* <i className='ri-circle-fill circle-icon text-danger-main w-auto' />{" "} */}
+                Loan lead
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to='/query'
+                className={(navData) =>
+                  navData.isActive ? "active-page" : ""
+                }
+              >
+                {/* <i className='ri-circle-fill circle-icon text-danger-main w-auto' />{" "} */}
+                Query
+              </NavLink>
+            </li>
+            {/* </ul> */}
+            {/* </li> */}
             {/* Components Dropdown */}
             <li className='dropdown'>
               <Link to='#'>

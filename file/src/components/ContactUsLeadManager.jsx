@@ -10,16 +10,14 @@ import CreateWebinar from "../form/CreateWebinar";
 import { toast } from "react-toastify";
 import { deleteContactUsLead, fetchContactUsLead } from "../slice/contachUsLead";
 import CreateContactUsLead from "../form/CreateContactUsLead";
-
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 const ContactUsLeadManager = () => {
   const dispatch = useDispatch();
   const { contactUsLeads } = useSelector((state)=>state.contactUsLead)
   const [selectedIds, setSelectedIds] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingLead, setEditingLead] = useState(null);
-
-  console.log(contactUsLeads,"_____________************");
-  
 
   const fetchData = async ()=>{
       const res1 = await dispatch(fetchContactUsLead());
@@ -43,19 +41,57 @@ const ContactUsLeadManager = () => {
 
 const handleDelete = async () => {
   try {
-    const confirmed = window.confirm("Are you sure you want to delete this webinar?");
-    if (!confirmed) return; // stop if user clicks Cancel
-
-    await dispatch(deleteContactUsLead(selectedIds));
-    fetchData()
-    toast.success("lead deleted successfully");
+    const confirmed = window.confirm("Are you sure you want to delete this lead?");
+    if (!confirmed) return;
+    console.log(selectedIds);
+    
+    const result = await dispatch(deleteContactUsLead(selectedIds));
+    if (result.meta.requestStatus === "fulfilled") {
+      fetchData();
+    } else {
+      toast.error(result.payload || "Error deleting lead");
+    }
   } catch (error) {
-    console.log(error);
-    toast.error("Error deleting lead");
+    console.error("Delete error:", error);
+    toast.error("Unexpected error deleting lead");
   }
 };
 
-  // console.log(webinars);
+const exportToExcel = (data) => {
+  if (!data || data.length === 0) {
+    alert("No data available to export");
+    return;
+  }
+
+  // Format data for Excel
+  const formattedData = data.map((item, index) => ({
+    SNo: index + 1,
+    Name: item.name || "",
+    Email: item.email || "",
+    Phone: item.phoneNo || "",
+    Occupation: item.occupation || "",
+    Comment: item.comment || "",
+    CreatedAt: new Date(item.createdAt).toLocaleString(),
+  }));
+
+  // Create worksheet
+  const worksheet = XLSX.utils.json_to_sheet(formattedData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Leads");
+
+  // Export Excel file
+  const excelBuffer = XLSX.write(workbook, {
+    bookType: "xlsx",
+    type: "array",
+  });
+
+  const dataBlob = new Blob([excelBuffer], {
+    type: "application/octet-stream",
+  });
+
+  saveAs(dataBlob, `Contact_Leads_${Date.now()}.xlsx`);
+};
+
   
   return (
     <div className="card basic-data-table">
@@ -64,10 +100,10 @@ const handleDelete = async () => {
         <div>
           <button
             type="button"
+             onClick={() => exportToExcel(contactUsLeads)}
             className="mx-4 btn rounded-pill text-primary radius-8 px-4 py-2"
-            onClick={() => setShowModal(true)}
           >
-            Add ContactUs lead
+            Download In Excel
           </button>
 
             <button   className="mx-4 btn rounded-pill text-danger radius-8 px-4 py-2" onClick={handleDelete}>Delete</button>
@@ -118,7 +154,6 @@ const handleDelete = async () => {
                 <th scope="col">Occupation</th>
                 <th scope="col">Comment</th>
                 <th scope="col">Created At</th>
-                <th scope="col">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -146,18 +181,17 @@ const handleDelete = async () => {
                   </td>
                   <td>{ele?.occupation}</td>
                   <td>{ele?.comment}</td>
-                  <td>{ele?.createdAt}</td>
+                  <td>  {new Date(ele?.createdAt).toLocaleString("en-GB", {
+                            day: "2-digit",    // 22
+                            month: "2-digit",  // 08
+                            year: "numeric",   // 2025
+                            // hour: "2-digit",   // 07
+                            // minute: "2-digit", // 31
+                            // second: "2-digit", // 51
+                            hour12: true       // AM/PM
+                          })}</td>
                   <td className="text-center">
-                    <Link
-                      onClick={() => {
-                        setEditingLead(ele);
-                        setShowModal(true);
-                      }}
-                      to="#"
-                      className="w-32-px h-32-px me-8 bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center"
-                    >
-                      <Icon icon="lucide:edit" />
-                    </Link>
+                   
                     {/* <Link
                       onClick={handleDelete}
                       to="#"
