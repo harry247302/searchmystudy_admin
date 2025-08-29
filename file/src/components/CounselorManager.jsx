@@ -21,7 +21,7 @@ const CounselorManager = () => {
   // Fetch Counsellor
   const loadCounsellors = async () => {
     const res = await dispatch(fetchCounselor());
-    // console.log(res,"}}}}}}}}}}}}}}}}}}}}}}}}]");
+    console.log(res,"}}}}}}}}}}}}}}}}}}}}}}}}]");
     if (res?.meta?.requestStatus === "fulfilled") {
       setCounsellor(res.payload);
     }
@@ -81,14 +81,14 @@ const CounselorManager = () => {
   return (
     <div className="card basic-data-table">
       <div className="card-header" style={{ display: "flex", justifyContent: "space-between" }}>
-        <h5 className="card-title mb-0">Counselor Table</h5>
+        <h5 className="card-title mb-0">Testemonials Table</h5>
         <div>
           <button
             type="button"
             className="btn rounded-pill text-primary radius-8 px-4 py-2"
             onClick={() => setShowModal(true)}
           >
-            Add Counselor
+            Add Testemonials
           </button>
 
           {selectedIds.length > 0 && (

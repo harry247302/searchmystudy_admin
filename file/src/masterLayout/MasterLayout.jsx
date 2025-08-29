@@ -195,14 +195,14 @@ const MasterLayout = ({ children }) => {
             </li>
             <li>
               <NavLink
-                to='/testemonials-manager'
+                to='/counselor-manager'
                 className={(navData) => (navData.isActive ? "active-page" : "")}
               >
                 <Icon
                   icon='material-symbols:map-outline'
                   className='menu-icon'
                 />
-                <span>Testemonial Management</span>
+                <span>Counselor Management</span>
               </NavLink>
             </li>
 
@@ -233,14 +233,14 @@ const MasterLayout = ({ children }) => {
             </li>
             <li>
               <NavLink
-                to='/counselor-manager'
+                to='/testemonials-manager'
                 className={(navData) => (navData.isActive ? "active-page" : "")}
               >
                 <Icon
                   icon='material-symbols:map-outline'
                   className='menu-icon'
                 />
-                <span>Counselor Management</span>
+                <span>Testemonials Management</span>
               </NavLink>
             </li>
             {/* <li>

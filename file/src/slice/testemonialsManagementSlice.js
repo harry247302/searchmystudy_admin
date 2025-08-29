@@ -5,7 +5,7 @@ export const createTestemonial = createAsyncThunk(
     'testemonial/createTestemonial',
     async(data,thunkAPI) => {
         try {
-            const response = await axios.post("http://localhost:3000/api/admin/CreateTestimonials",data);
+            const response = await axios.post("https://searchmystudy.com/api/admin/CreateTestimonials",data);
                 console.log(response,"++++++++++++++");
                 
             return response.data;

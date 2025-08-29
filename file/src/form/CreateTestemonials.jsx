@@ -201,12 +201,12 @@ const Createtestemonial = ({ ele, handleClose, loadCounsellors }) => {
         // console.log("Update response:", res);
         
         if (updateTestemonial.fulfilled.match(res)) {
-          toast.success("Testimonial updated successfully!");
+          toast.success("Counsellor updated successfully!");
           dispatch(fetchTestemonial());
           handleClose();
           loadCounsellors();
         } else if (updateTestemonial.rejected.match(res)) {
-          toast.error("Failed to update Testimonial: " + (res.payload?.message || res.error?.message || "Unknown error"));
+          toast.error("Failed to update Counsellor: " + (res.payload?.message || res.error?.message || "Unknown error"));
         }
       } else {
         console.log("budhau2");
@@ -220,11 +220,11 @@ const Createtestemonial = ({ ele, handleClose, loadCounsellors }) => {
         console.log("Create response:", res, "|||||||||||||||||||");
 
         if (createTestemonial.fulfilled.match(res)) {
-          toast.success("Testimonial created successfully!");
+          toast.success("Counsellor created successfully!");
           loadCounsellors();
           handleClose();
         } else if (createTestemonial.rejected.match(res)) {
-          toast.error("Failed to create Testimonial: " + (res.payload?.message || res.error?.message || "Unknown error"));
+          toast.error("Failed to create Counsellor: " + (res.payload?.message || res.error?.message || "Unknown error"));
         }
       }
     } catch (error) {
@@ -239,7 +239,7 @@ const Createtestemonial = ({ ele, handleClose, loadCounsellors }) => {
         <div className="modal-dialog" style={{ maxWidth: "800px" }}>
           <div className="modal-content p-4">
             <div className="modal-header">
-              <h5 className="modal-title">Add Testimonial</h5>
+              <h5 className="modal-title">Add Counsellors</h5>
               <button type="button" className="btn-close" onClick={handleClose}></button>
             </div>
 
@@ -284,6 +284,7 @@ const Createtestemonial = ({ ele, handleClose, loadCounsellors }) => {
 
               <div className="mb-3">
                 <label className="form-label">Image *</label>
+                <p className="text-[10px]">Image size should be 300x250 px</p>
                 <input
                   type="file"
                   accept="image/*"

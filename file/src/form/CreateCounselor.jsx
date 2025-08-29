@@ -190,14 +190,14 @@ const CreateCounselor = ({ ele, handleClose, loadCounsellors }) => {
         // update existing counsellor
         const res = await dispatch(updateCounselor({ id: ele._id, data: form }));       
         if (updateCounselor.fulfilled.match(res)) {
-          toast.success("Counsellor updated successfully!");
+          toast.success("Testemonial updated successfully!");
           dispatch(fetchTestemonial ());
           handleClose();
           loadCounsellors()
         } else if (updateCounselor.rejected.match(res)) {
-          toast.error("Failed to update Counsellor: " + (res.payload?.message || res.error.message || "Unknown error"));
+          toast.error("Failed to update Testemonial: " + (res.payload?.message || res.error.message || "Unknown error"));
         } else {
-          toast.error("Failed to update Counsellor: " + (res.payload?.message || res.error.message || "Unknown error"));
+          toast.error("Failed to update Testemonial: " + (res.payload?.message || res.error.message || "Unknown error"));
         }
       } else {
         if (!validateForm()) {
@@ -208,13 +208,13 @@ const CreateCounselor = ({ ele, handleClose, loadCounsellors }) => {
         // console.log(res, "|||||||||||||||||||");
 
         if (res?.meta?.requestStatus === "fulfilled") {
-          toast.success("Counsellor created successfully!");
+          toast.success("Testemonial created successfully!");
           loadCounsellors()
           handleClose();
         } else if (res.rejected.match(res)) {
-          toast.error("Failed to create Counsellor: " + (res.payload?.message || res.error.message || "Unknown error"));
+          toast.error("Failed to create Testemonial: " + (res.payload?.message || res.error.message || "Unknown error"));
         } else {
-          toast.error("Failed to create Counsellor: " + (res.payload?.message || res.error.message || "Unknown error"));
+          toast.error("Failed to create Testemonial: " + (res.payload?.message || res.error.message || "Unknown error"));
         }
       }
     } catch (error) {
@@ -228,7 +228,7 @@ const CreateCounselor = ({ ele, handleClose, loadCounsellors }) => {
         <div className="modal-dialog" style={{ maxWidth: "800px" }}>
           <div className="modal-content p-4">
             <div className="modal-header">
-              <h5 className="modal-title">Add Counsellor</h5>
+              <h5 className="modal-title">Add Testemonial</h5>
               <button type="button" className="btn-close" onClick={handleClose}></button>
             </div>
 
@@ -271,6 +271,8 @@ const CreateCounselor = ({ ele, handleClose, loadCounsellors }) => {
 
               <div className="mb-3">
                 <label className="form-label">Image</label>
+                <p className="text-[10px]">Image size should be 300x250 px</p>
+
                 <input
                   type="file"
                   accept="image/*"
