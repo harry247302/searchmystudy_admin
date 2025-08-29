@@ -1,23 +1,25 @@
 import React, { useState } from "react";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useDispatch } from "react-redux";
-import { createTestemonial, fetchTestemonial  , updateTestemonial } from "../slice/counsellorSlice";
+import { createTestemonial, fetchTestemonial  , updateTestemonial } from "../slice/testemonialsManagementSlice";
 import { app } from "../firebase";
 import {  ToastContainer } from "react-toastify";
 import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { createCounselor, updateCounselor } from "../slice/CounselorManagerSlice";
 
 const storage = getStorage(app);
 
-const CreateTestemonial = ({ ele, handleClose, loadCounsellors }) => {
+const CreateCounselor = ({ ele, handleClose, loadCounsellors }) => {
   const dispatch = useDispatch();
+  // console.log(ele);
+  
 
   const [form, setForm] = useState({
     name: ele?.name || "",
     course: ele?.course || "",
     experience: ele?.experience || "",
     imageURL: ele?.imageURL || "",
-    imageFile: null, // File object
   });
 
   const [uploads, setUploads] = useState({
@@ -169,9 +171,7 @@ const CreateTestemonial = ({ ele, handleClose, loadCounsellors }) => {
 
 
   const handleSubmit = async () => {
-    console.log(form);
-    console.log("budhau");
-    console.log(ele);
+
 
     let formData = {};
     if (form?.imageFile) {
@@ -183,38 +183,35 @@ const CreateTestemonial = ({ ele, handleClose, loadCounsellors }) => {
         imageURL: imageUrl,
       };
     } else {
-      alert("Enter Picture")
+      console.log("Logs")
     }
     try {
       if (ele && ele._id) {
         // update existing counsellor
-        const res = await dispatch(updateTestemonial({ id: ele._id, data: formData }));
-        if (updateCounsellor.fulfilled.match(res)) {
+        const res = await dispatch(updateCounselor({ id: ele._id, data: form }));       
+        if (updateCounselor.fulfilled.match(res)) {
           toast.success("Counsellor updated successfully!");
           dispatch(fetchTestemonial ());
           handleClose();
-        } else if (updateCounsellor.rejected.match(res)) {
+          loadCounsellors()
+        } else if (updateCounselor.rejected.match(res)) {
           toast.error("Failed to update Counsellor: " + (res.payload?.message || res.error.message || "Unknown error"));
         } else {
           toast.error("Failed to update Counsellor: " + (res.payload?.message || res.error.message || "Unknown error"));
         }
       } else {
-        console.log("budhau2");
-
-        // create new counsellor
         if (!validateForm()) {
           toast.error("Please fill in all required fields with valid image.");
           return;
         }
-        const res = await dispatch(createTestemonial(formData));
+        const res = await dispatch(createCounselor(formData));
         // console.log(res, "|||||||||||||||||||");
 
-        if (createTestemonial.fulfilled.match(res)) {
+        if (res?.meta?.requestStatus === "fulfilled") {
           toast.success("Counsellor created successfully!");
-          // dispatch(fetchTestemonial());
           loadCounsellors()
           handleClose();
-        } else if (createCounsellor.rejected.match(res)) {
+        } else if (res.rejected.match(res)) {
           toast.error("Failed to create Counsellor: " + (res.payload?.message || res.error.message || "Unknown error"));
         } else {
           toast.error("Failed to create Counsellor: " + (res.payload?.message || res.error.message || "Unknown error"));
@@ -231,7 +228,7 @@ const CreateTestemonial = ({ ele, handleClose, loadCounsellors }) => {
         <div className="modal-dialog" style={{ maxWidth: "800px" }}>
           <div className="modal-content p-4">
             <div className="modal-header">
-              <h5 className="modal-title">Add Testemonial</h5>
+              <h5 className="modal-title">Add Counsellor</h5>
               <button type="button" className="btn-close" onClick={handleClose}></button>
             </div>
 
@@ -280,12 +277,11 @@ const CreateTestemonial = ({ ele, handleClose, loadCounsellors }) => {
                   onChange={(e) => handleFileChange(e, "imageUrl")}
                   className={`form-control ${errors.imageUrl ? "is-invalid" : ""}`}
                 />
-                {uploads.image.preview && (
+                {ele?.imageURL && (
                   <div className="mt-2">
-                    <p className="text-red-500 text-sm mt-1">Image should be 1200x600 px</p>
-                    <img src={uploads.image.preview} alt="preview" style={{ width: "150px" }} />
-                    {/* <div>Upload Progress: {Math.round(uploads.image.progress)}%</div> */}
-                  </div>
+                    <p className="text-red-500 text-sm mt-1">Image should be 300x250 px</p>
+                    <img src={ele?.imageURL} alt="preview" />
+                   </div>
                 )}
                 {errors.imageURL && <div className="invalid-feedback">{errors.imageURL}</div>}
               </div>
@@ -306,4 +302,4 @@ const CreateTestemonial = ({ ele, handleClose, loadCounsellors }) => {
   );
 };
 
-export default CreateTestemonial;
+export default CreateCounselor;

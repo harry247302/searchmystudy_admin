@@ -18,6 +18,8 @@ const WebinarManager = () => {
 
   const fetchData = async ()=>{
       const res = await dispatch(fetchWebinar());
+      console.log(res);
+      
     }
   useEffect(() => {
     

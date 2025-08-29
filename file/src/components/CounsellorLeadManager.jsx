@@ -6,7 +6,8 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from "react-toastify";
-import { deleteCounsellorLead, fetchCounsellorLead } from "../slice/counsellorLead";
+import { fetchCounsellorLead,deleteCounsellorLead } from "../slice/counsellorLead";
+// import { deleteCounsellorLead, fetchCounsellorLead } from "../slice/counsellorLead";
 
 
 const CounsellorLeadManager = () => {

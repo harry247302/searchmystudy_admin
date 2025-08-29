@@ -5,12 +5,12 @@ import "datatables.net-dt";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link } from "react-router-dom";
 import { useDispatch } from 'react-redux';
-import { deleteTestemonial, fetchTestemonial } from "../slice/counsellorSlice";
-// import CreateCounsellor from "../form/CreateCounsellor";
 import { toast } from "react-toastify";
-import CreateTestemonial from "../form/CreateTestemonial";
+import CreateTestemonial from "../form/CreateCounselor";
+import { deleteCounselor, fetchCounselor } from "../slice/CounselorManagerSlice";
+import CreateCounselor from "../form/CreateCounselor";
 
-const CounsellorManager = () => {
+const CounselorManager = () => {
   const dispatch = useDispatch();
   const [counsellor, setCounsellor] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
@@ -20,7 +20,8 @@ const CounsellorManager = () => {
 
   // Fetch Counsellor
   const loadCounsellors = async () => {
-    const res = await dispatch(fetchTestemonial());
+    const res = await dispatch(fetchCounselor());
+    // console.log(res,"}}}}}}}}}}}}}}}}}}}}}}}}]");
     if (res?.meta?.requestStatus === "fulfilled") {
       setCounsellor(res.payload);
     }
@@ -54,14 +55,14 @@ const CounsellorManager = () => {
     if (!confirmed) return;
 
     try {
-      const res = await dispatch(deleteTestemonial(idsToDelete));
+      const res = await dispatch(deleteCounselor(idsToDelete));
       console.log(res);
 
-      if (deleteTestemonial.fulfilled.match(res)) {
+      if (deleteCounselor.fulfilled.match(res)) {
         toast.success("✅ Counsellor deleted successfully!");
         setSelectedIds([]); // clear selection
         loadCounsellors();
-      } else if (deleteCounsellor.rejected.match(res)) {
+      } else if (deleteCounselor.rejected.match(res)) {
         toast.error(
           "❌ Failed to delete Counsellor: " +
           (res.payload?.message || res.error?.message || "Unknown error")
@@ -80,14 +81,14 @@ const CounsellorManager = () => {
   return (
     <div className="card basic-data-table">
       <div className="card-header" style={{ display: "flex", justifyContent: "space-between" }}>
-        <h5 className="card-title mb-0">Testemonial Table</h5>
+        <h5 className="card-title mb-0">Counselor Table</h5>
         <div>
           <button
             type="button"
             className="btn rounded-pill text-primary radius-8 px-4 py-2"
             onClick={() => setShowModal(true)}
           >
-            Add Testemonial
+            Add Counselor
           </button>
 
           {selectedIds.length > 0 && (
@@ -99,7 +100,7 @@ const CounsellorManager = () => {
             </button>
           )}
 
-          {showModal && <CreateTestemonial loadCounsellors={loadCounsellors} ele={editingCounsellor} handleClose={() => {
+          {showModal && <CreateCounselor loadCounsellors={loadCounsellors} ele={editingCounsellor} handleClose={() => {
             setShowModal(false);
             setEditingCounsellor();
           }} />}
@@ -206,4 +207,4 @@ const CounsellorManager = () => {
   )
 }
 
-export default CounsellorManager
+export default CounselorManager

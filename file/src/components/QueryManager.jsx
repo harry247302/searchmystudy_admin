@@ -12,7 +12,7 @@ const QueryManager = () => {
   const [selectedIds, setSelectedIds] = useState([]);
   const [showModal, setShowModal] = useState(false);
 
-  console.log(queries,"_____________************");
+  // console.log(queries,"_____________************");
   
 
   const fetchData = async ()=>{
@@ -52,7 +52,7 @@ const handleDelete = async () => {
   return (
     <div className="card basic-data-table">
       <div className="card-header" style={{ display: "flex", justifyContent: "space-between" }}>
-        <h5 className="card-title mb-0">Query Table</h5>
+        <h5 className="card-title mb-0">Website Query Table</h5>
         <div>
           <button
             type="button"

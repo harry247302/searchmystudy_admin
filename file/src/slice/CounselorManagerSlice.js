@@ -1,17 +1,14 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Create Counsellor
-export const createTestemonial = createAsyncThunk(
+
+export const createCounselor = createAsyncThunk(
     'counsellor/createCounsellor',
     async(data,thunkAPI) => {
         try {
             console.log("Sending Counsellor data", data);
             const response = await axios.post("https://searchmystudy.com/api/admin/CreateCounsellor",data);
-                console.log(response,"++++++++++++++");
-                
             return response.data;
-            
         } catch (error) {
             console.log("Fetch error", error.message);
             return thunkAPI.rejectWithValue(error.message)
@@ -19,8 +16,9 @@ export const createTestemonial = createAsyncThunk(
     }
 );
 
-// fetch Counsellors
-export const fetchTestemonial = createAsyncThunk(
+
+
+export const fetchCounselor = createAsyncThunk(
     'counsellor/fetchCounsellor',
     async (_,{rejectWithValue}) => {
         try {
@@ -34,8 +32,8 @@ export const fetchTestemonial = createAsyncThunk(
     }
 );
 
-// Delete Counsellor
-export const deleteTestemonial = createAsyncThunk(
+
+export const deleteCounselor = createAsyncThunk(
     'counsellor/deleteCounsellor',
     async(ids,{ rejectWithValue })=>{
         if (!ids || ids.length === 0) {
@@ -51,8 +49,8 @@ export const deleteTestemonial = createAsyncThunk(
         }
     }
 );
-// update Counsellor
-export const updateTestemonial = createAsyncThunk(
+
+export const updateCounselor = createAsyncThunk(
     'counsellor/updateCounsellor',
     async({id,data},{ rejectWithValue })=>{
         try {

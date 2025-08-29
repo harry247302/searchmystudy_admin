@@ -195,7 +195,7 @@ const MasterLayout = ({ children }) => {
             </li>
             <li>
               <NavLink
-                to='/counsellor-manager'
+                to='/testemonials-manager'
                 className={(navData) => (navData.isActive ? "active-page" : "")}
               >
                 <Icon
@@ -229,6 +229,18 @@ const MasterLayout = ({ children }) => {
                   className='menu-icon'
                 />
                 <span>Video Management</span>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to='/counselor-manager'
+                className={(navData) => (navData.isActive ? "active-page" : "")}
+              >
+                <Icon
+                  icon='material-symbols:map-outline'
+                  className='menu-icon'
+                />
+                <span>Counselor Management</span>
               </NavLink>
             </li>
             {/* <li>
@@ -516,8 +528,10 @@ const MasterLayout = ({ children }) => {
                   navData.isActive ? "active-page" : ""
                 }
               >
+                <i className="ri-customer-service-2-line w-auto" />
+
                 {/* <i className='ri-circle-fill circle-icon text-danger-main w-auto' />{" "} */}
-                Query
+                Website Query
               </NavLink>
             </li>
             {/* </ul> */}

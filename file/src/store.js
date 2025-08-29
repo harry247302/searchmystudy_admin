@@ -5,7 +5,7 @@ import videoReducer from './slice/VideoSlice';
 import mediaReducer from './slice/MediaSlice';
 import authReducer from './slice/authSlice';
 import serviceReducer from './slice/serviceSlice';
-import counsellorReducer from './slice/counsellorSlice'
+import testemonialReducer from './slice/testemonialsManagementSlice'
 import abroadReducer from './slice/AbroadSlice'
 import AbroadProvinceReducer from './slice/AbroadProvinceSlice'
 import AbroadUniversityReducer from './slice/AbroadUniversitySlice'
@@ -24,7 +24,7 @@ const store = configureStore({
       media:mediaReducer,
       auth:authReducer,
       service:serviceReducer,
-      counsellor:counsellorReducer,
+      testemonial:testemonialReducer,
       abroadStudy:abroadReducer,
       abroadProvince:AbroadProvinceReducer,
       abroadUniversity:AbroadUniversityReducer,

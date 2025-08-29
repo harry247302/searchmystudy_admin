@@ -113,6 +113,7 @@ import MbbsCoursePage from "./pages/MbbsCoursePage";
 import ContactUsLeadPage from "./pages/ContactUsLeadPage";
 import CounsellorLeadPage from "./pages/CounsellorLeadPage";
 import QueryPage from "./pages/QueryPage";
+import CounselorManagerPage from "./pages/CounselorManagerPage";
 
 function App() {
   return (
@@ -261,7 +262,7 @@ function App() {
         <Route exact path='/blog-manager' element={<AddBlogPage />} />
         <Route exact path='/webinar-manager' element={<WebinarPage />} />
         <Route exact path='/service-manager' element={<ServicePage />} />
-        <Route exact path='/counsellor-manager' element={<CounsellorPage />} />
+        <Route exact path='/testemonials-manager' element={<CounsellorPage />} />
         <Route exact path='/video-manager' element={<VideoManagerPage />} />
         <Route exact path='/media-manager' element={<MediaManagerPage />} />
         <Route exact path='/abroad-country' element={<AbroadStudyPage />} />
@@ -274,6 +275,7 @@ function App() {
         <Route exact path='/contactus-lead' element={<ContactUsLeadPage />} />
         <Route exact path='/counsellor-lead' element={<CounsellorLeadPage />} />
         <Route exact path='/query' element={<QueryPage />} />
+        <Route exact path='/counselor-manager' element={<CounselorManagerPage />} />
 
         <Route exact path='*' element={<ErrorPage />} />
       </Routes>
