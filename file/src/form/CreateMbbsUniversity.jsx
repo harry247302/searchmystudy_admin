@@ -29,6 +29,8 @@ const CreateMbbsUniversity = ({ ele, handleClose, loadUniversity }) => {
     bannerURL: ele?.bannerURL || '',
     heroURL: ele?.heroURL || '',
     description: ele?.description || '',
+    MCI:ele?.MCI || '',
+    ECFMG:ele?.ECFMG || '',
     grade: ele?.grade || 'A',
     rating: ele?.rating || '5',
     sections: ele?.sections || [{ title: '', description: '', url: '' }],
@@ -261,6 +263,33 @@ const CreateMbbsUniversity = ({ ele, handleClose, loadUniversity }) => {
             <Form.Label>Description</Form.Label>
             <TextEditor name="description" content={form.description} setContent={(e)=>{handleContentChange(e,"description")}} />
           </Form.Group>
+
+             <div className="mt-3 p-3 border rounded bg-light">
+                      <Form.Label className="fw-bold d-block mb-2">
+                        Language Requirement
+                      </Form.Label>
+                     <div className="d-flex mt-20">
+                                              <div>
+                                                <Form.Check
+                                                  type="checkbox"
+                                                  label="mci_approved"
+                                                  name="english"
+                                                  // checked={form.languageRequire.english}
+                                                  // onChange={handleChange}
+                                              />
+                                              </div>
+                                             <div className="mx-64">
+                                               <Form.Check
+                                                  type="checkbox"
+                                                  label="ECFMG Approved"
+                                                  name="ecfmg_approved"
+                                                  // checked={form.languageRequire.no_any_preference}
+                                                  // onChange={handleChange}
+                                              />
+                                             </div>
+                                             
+                                          </div>
+                    </div>
 
           {/* Sections */}
           <Accordion className="mt-4">

@@ -67,27 +67,6 @@ const storage = getStorage(app);
   const [broucherPreview, setBroucherPreview] = useState({});
   const [university, setUniversity] = useState();
   const [loading, setLoading] = useState(false);
-  // const [form, setForm] = useState({
-  //   ProgramName: ele?.ProgramName || "",
-  //   University: ele?.University || "",
-  //   Country: ele?.Country || "",
-  //   Eligibility: ele?.Eligibility || "",
-  //   WebsiteURL: ele?.WebsiteURL || "",
-  //   Location: ele?.Location || "",
-  //   Duration: ele?.Duration || "",
-  //   Category: ele?.Category || "",
-  //   Fees: ele?.Fees || 0,
-  //   Intake: ele?.Intake || [{ status: true, date: "", expiresAt: "" }],
-  //   Scholarships:
-  //     typeof ele?.Scholarships === "boolean" ? ele.Scholarships : true,
-  //   ProgramLevel: ele?.ProgramLevel || "",
-  //   languageRequire: ele?.languageRequire || {
-  //     english: "",
-  //     no_any_preference: "",
-  //     motherTongue: "",
-  //   },
-  //   broucherURL: ele?.broucherURL || "",
-  // });
 
   const [form, setForm] = useState({
   ProgramName: ele?.ProgramName || "",
@@ -207,19 +186,20 @@ const storage = getStorage(app);
         const res = await dispatch(
           updateMbbsCourse({ id: ele._id, data: form })
         );
-        console.log(res, "==================");
+       
           toast.success("✅ Course updated!");
-          await dispatch(fetchMbbsCourse())
-          // handleClose();
+          // await dispatch(fetchMbbsCourse())
+          loadCourse()
+       
       } else {
-        // ✅ Create course
-        console.log(form, "{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{[");
+        
         const res = await dispatch(createMbbsCourse(form));
-        console.log(res);
+  
 
         if (createMbbsCourse.fulfilled.match(res)) {
           toast.success("✅ Course created!");
-          dispatch(fetchMbbsCourse())
+          // dispatch(fetchMbbsCourse())
+          loadCourse()
         }
         else {
           toast.error(
@@ -501,59 +481,35 @@ const storage = getStorage(app);
             <Form.Label className="fw-bold d-block mb-2">
               Language Requirement
             </Form.Label>
-            <div className="d-flex flex-column gap-2">
-              {/* <Form.Check
-                                type="checkbox"
-                                label="English Required"
-                                name="english"
-                                checked={form.languageRequire.english}
-                                onChange={handleChange}
-                            /> */}
-              <Form.Group className="mt-3">
-                <Form.Label>English Required</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="english"
-                  value={form.languageRequire.english}
-                  onChange={handleChange}
-                  required
-                />
-              </Form.Group>
-              {/* <Form.Check
-                                type="checkbox"
-                                label="No Preference"
-                                name="no_any_preference"
-                                checked={form.languageRequire.no_any_preference}
-                                onChange={handleChange}
-                            /> */}
-              <Form.Group className="mt-3">
-                <Form.Label>No Preference</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="no_any_preference"
-                  value={form.languageRequire.no_any_preference}
-                  onChange={handleChange}
-                  required
-                />
-              </Form.Group>
-              {/*        <Form.Check
-                                type="checkbox"
-                                label="Mother Tongue"
-                                name="motherTongue"
-                                checked={form.languageRequire.motherTongue}
-                                onChange={handleChange}
-                            /> */}
-              <Form.Group className="mt-3">
-                <Form.Label>Mother Tongue</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="motherTongue"
-                  value={form.languageRequire.motherTongue}
-                  onChange={handleChange}
-                  required
-                />
-              </Form.Group>
-            </div>
+           <div className="d-flex mt-20">
+                                    <div>
+                                      <Form.Check
+                                        type="checkbox"
+                                        label="English Required"
+                                        name="english"
+                                        checked={form.languageRequire.english}
+                                        onChange={handleChange}
+                                    />
+                                    </div>
+                                   <div className="mx-64">
+                                     <Form.Check
+                                        type="checkbox"
+                                        label="No Preference"
+                                        name="no_any_preference"
+                                        checked={form.languageRequire.no_any_preference}
+                                        onChange={handleChange}
+                                    />
+                                   </div>
+                                    <div>
+                                      <Form.Check
+                                        type="checkbox"
+                                        label="Mother Tongue"
+                                        name="motherTongue"
+                                        checked={form.languageRequire.motherTongue}
+                                        onChange={handleChange}
+                                    />
+                                    </div>
+                                </div>
           </div>
 
           {/* <Form.Group className="mt-3">

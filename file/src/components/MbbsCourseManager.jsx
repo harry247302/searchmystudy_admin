@@ -21,7 +21,7 @@ const MbbsCourseManager = () => {
     setLoading(true);
     try {
       const res = await dispatch(fetchMbbsCourse());
-      console.log(res, "||||||||||||||||||||||||||||||||||||||");
+      // console.log(res, "||||||||||||||||||||||||||||||||||||||");
       if (res?.meta?.requestStatus === "fulfilled") {
         setCourse(res.payload);
       }
@@ -45,7 +45,7 @@ const MbbsCourseManager = () => {
     });
   };
 
-  // Delete single OR multiple blogs
+
   const handleDelete = async (id) => {
     const idsToDelete = id ? [id] : selectedIds;
 
@@ -62,15 +62,15 @@ const MbbsCourseManager = () => {
     if (!confirmed) return;
 
     try {
-      console.log("Deleting IDs:", idsToDelete);
+     
 
       const res = await dispatch(deleteMbbsCourse(idsToDelete));
-      // console.log("Delete response:", res);
+      
 
       if (deleteMbbsCourse.fulfilled.match(res)) {
         toast.success("✅ Abroad Course deleted successfully!");
-        setSelectedIds([]); // clear selection
-        loadCourse(); // reload data (you might rename to loadCourses if it's about courses)
+        setSelectedIds([]);
+        loadCourse(); 
       } else if (deleteMbbsCourse.rejected.match(res)) {
         toast.error(
           "❌ Failed to delete Abroad Course: " +
@@ -148,7 +148,7 @@ const MbbsCourseManager = () => {
             id="dataTable"
             className="table bordered-table mb-0"
             data-page-length={10}
-          // style={{overflowX:"auto"}}
+         
           >
             <thead>
               <tr>
