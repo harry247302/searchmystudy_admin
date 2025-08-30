@@ -20,7 +20,7 @@ export const fetchTestemonial = createAsyncThunk(
     'testemonial/fetchTestemonial',
     async (_,{rejectWithValue}) => {
         try {
-            const response = await axios.get(" http://localhost:3000/api/admin/Testimonials/all");
+            const response = await axios.get(" https://searchmystudy.com/api/admin/Testimonials/all");
             return response?.data;
         } catch (error) {
             return rejectWithValue(
