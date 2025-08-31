@@ -9,6 +9,7 @@ export default function TextEditor({content,setContent}) {
 
   return (
     <div>
+      
       <Editor
         apiKey="25ay2rt9zs014kay8iepacupp13xjn6kv7dd4t2b6mnx148f"
         value={content}

@@ -11,6 +11,7 @@ import { deleteStudyCourse, fetchAbroadCourse } from "../slice/AbroadCourseSlice
 import CreateAbroadProvince from "../form/CreateAbroadProvince";
 import CreateAbroadCourse from "../form/CreateAbroadCourse";
 
+
 const AbroadCourseManager = () => {
   const dispatch = useDispatch();
   const [selectedIds, setSelectedIds] = useState([]);
@@ -161,6 +162,8 @@ const AbroadCourseManager = () => {
                 <th scope="col">Country</th>
                 <th scope="col">Province</th>
                 <th scope="col">Fees</th>
+                <th scope="col">Mode</th>
+                <th scope="col">Intake</th>
                 <th scope="col">University</th>
                 <th scope="col">Category</th>
                 <th scope="col">Location</th>
@@ -188,7 +191,70 @@ const AbroadCourseManager = () => {
                     <td>{ele?.ProgramName}</td>
                     <td>{ele?.University?.Country?.name ? ele?.University?.Country?.name : "None"}</td>
                     <td>{ele?.Province?.name || "None"}</td>
-                    <td>{ele?.Fees ? ele?.Fees : "None"}</td>
+                    <td>
+                      {ele?.Fees?.amount && ele?.Fees?.currency
+                        ? `${ele.Fees.amount} ${ele.Fees.currency}`
+                        : "None"}
+                    </td>
+                    <td>
+                      {ele?.Fees?.mode}
+                    </td>
+                         <td>
+                      <div
+                        className="custom-scrollbar"
+                        style={{
+                          width: "200px",
+                          height: "50px",
+                          overflowY: "auto",
+                          overflowX: "hidden",
+                          whiteSpace: "normal",
+                        }}
+                      >
+                        <div
+
+                        >
+                          {ele?.Intake?.map((intake, index) => {
+                            const isExpired = new Date(intake?.end_date) < new Date(); // compare with today
+                            return (
+                              <div
+                                key={index}
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                  marginBottom: "4px",
+                                }}
+                              >
+                                <span>{intake?.date}</span>
+                                {isExpired ? (
+                                  <span
+                                    style={{
+                                      backgroundColor: "#f800003b",
+                                      padding: "1px 6px",
+                                      marginLeft: "5px",
+                                      borderRadius: "10px",
+                                    }}
+                                  >
+                                    Closed
+                                  </span>
+                                ) : (
+                                  <span
+                                    style={{
+                                      backgroundColor: "#1bf8003b",
+                                      padding: "1px 6px",
+                                      marginLeft: "5px",
+                                      borderRadius: "5px",
+                                    }}
+                                  >
+                                    Open
+                                  </span>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </td>
                     <td>
                       <div
 
@@ -212,10 +278,19 @@ const AbroadCourseManager = () => {
 
                     <td>
                       <div
-
+                        className="custom-scrollbar"
+                        style={{
+                          width: "300px",
+                          height: "50px",
+                          overflowY: "auto",
+                          overflowX: "hidden",
+                          whiteSpace: "normal",
+                        }}
                       >
                         <h6 className="text-md mb-0 fw-medium flex-grow-1">
-                          {ele?.Eligibility.slice(0, 300)}
+                          {ele?.Eligibility
+                            ? ele.Eligibility.replace(/<[^>]+>/g, "") // remove HTML tags
+                            : "None"}
                         </h6>
                       </div>
                     </td>
@@ -257,7 +332,7 @@ const AbroadCourseManager = () => {
                       >
                         <Icon icon="mingcute:delete-2-line" />
                       </Link> */}
-                      </td>
+                    </td>
                   </tr>
                 )
               })}

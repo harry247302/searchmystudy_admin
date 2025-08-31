@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button, Form, Row, Col  } from 'react-bootstrap';
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // import { createCourse, updateCourse } from "../slice/CourseSlice.js";
 // import { fetchUniversities } from "../slice/UniversitySlice.js";
-import { createAbroadCourse, updateStudyCourse } from "../slice/AbroadCourseSlice.js";
+import {  updateStudyCourse } from "../slice/AbroadCourseSlice.js";
 import { fetchAbroadUniversity } from "../slice/AbroadUniversitySlice.js";
 import TextEditor from "./TextEditor.jsx";
 import { fetchAbroadStudy } from "../slice/AbroadSlice.js";
 import { fetchAbroadProvince } from "../slice/AbroadProvinceSlice.js";
+import { createMbbsCourse } from "../slice/MbbsCourse.js";
 const categories = [
     'Arts',
     'Accounts',
@@ -40,40 +41,49 @@ const categories = [
     'Artificial Intelligence'
 ]
 const level = ['High School', 'UG Diploma/Cerificate/Associate Degree', 'UG', 'PG Diploma', 'PG', 'UG+PG(Accelerated)Degree', 'PhD', 'Foundation', 'Short Term Program', 'Pathway Program', 'Twiming Program(UG)', 'Twiming Program(PG)', 'Online Programe/Distance Learning']
+const mode = ["Yearly", "Quaterly", "Semester"];
 
 const CreateAbroadCourse = ({ ele, handleClose, loadCourse }) => {
-    console.log(ele, "===================");
-    
     const dispatch = useDispatch();
     const [errors, setErrors] = useState({});
     const [selectedCountries, setSelectedCountries] = useState();
     const [university, setUniversity] = useState()
     const [country, setCountry] = useState() // Assuming abroad slice has abroadStudy array
     const [province, setProvince] = useState()
-    console.log(ele)
+    const [currencies, setCurrencies] = useState([]);
+
+  useEffect(() => {
+    fetch("https://open.er-api.com/v6/latest/USD")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.rates) {
+          const codes = Object.keys(data.rates);
+          setCurrencies(codes);
+        }
+      })
+      .catch((err) => console.error("Error fetching currencies:", err));
+  }, []);
     const [form, setForm] = useState({
-        
+
         ProgramName: ele?.ProgramName || "",
         Country: ele?.University?.Country || "",
         University: ele?.University._id || "",
-        Province: ele?.Province? ele.province._id : null,
+        Province: ele?.Province ? ele.province._id : null,
         WebsiteURL: ele?.WebsiteURL || "",
         Location: ele?.Location || "",
         Duration: ele?.Duration || "",
         broucherURL: ele?.broucherURL || "",
         Category: ele?.Category || "",
-        Intake: ele?.Intake || [
-            { status: true, date: "", expiresAt: "" },
-        ],
+        Intake: ele?.Intake || [{ status: true, date: "", end_date: "" }],
         Scholarships: ele?.Scholarships ?? false,
         ProgramLevel: ele?.ProgramLevel || "",
-        languageRequire: ele?.languageRequire || {
-            english: false,
-            no_any_preference: false,
-            motherTongue: false,
-        },
+        languageRequire: ele?.languageRequire || { english: false, motherTongue: false, },
         Eligibility: ele?.Eligibility || "",
-        Fees: ele?.Fees || 0,
+        Fees: {
+            amount: ele?.Fees?.amount || "",
+            currency: ele?.Fees?.currency || "",
+            mode: ele?.Fees?.mode || "",
+        },
     });
 
     const handleChange = (e) => {
@@ -106,7 +116,7 @@ const CreateAbroadCourse = ({ ele, handleClose, loadCourse }) => {
     const addIntake = () => {
         setForm(prev => ({
             ...prev,
-            Intake: [...prev.Intake, { status: true, date: "", expiresAt: "" }],
+            Intake: [...prev.Intake, { status: true, date: "", end_date: "" }],
         }));
     };
 
@@ -130,9 +140,8 @@ const CreateAbroadCourse = ({ ele, handleClose, loadCourse }) => {
             if (ele && ele._id) {
                 // ✅ Update course
                 const res = await dispatch(updateStudyCourse({ id: ele._id, data: form }));
-                console.log(res, "==================");
-                
-                if (updateStudyCourse.fulfilled.match(res)) {
+
+                if (res?.meta?.requestStatus === "fulfilled") {
                     toast.success("✅ Course updated!");
                     handleClose();
                     loadCourse();
@@ -142,16 +151,14 @@ const CreateAbroadCourse = ({ ele, handleClose, loadCourse }) => {
             } else {
                 // ✅ Create course
                 // console.log(form, "{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{[");
-                const res = await dispatch(createAbroadCourse(form));
-                // console.log(res);
-                
-                if (createAbroadCourse.fulfilled.match(res)) {
+                const res = await dispatch(createMbbsCourse(form));
+                console.log(res);
+
+                if (res?.meta?.requestStatus === "fulfilled") {
                     toast.success("✅ Course created!");
                     handleClose();
                     loadCourse();
-                } else {
-                    toast.error(res.payload?.message || res.error?.message || "Failed to create course");
-                }
+                } 
             }
         } catch (err) {
             console.error("Unexpected error:", err);
@@ -350,7 +357,8 @@ const CreateAbroadCourse = ({ ele, handleClose, loadCourse }) => {
                         {form.Intake.map((intake, idx) => (
                             <div
                                 key={idx}
-                                className="d-flex align-items-center gap-2 border rounded p-2 mb-2 bg-light"
+                                style={{justifyContent:"space-around"}}
+                                className="d-flex align-items-center  gap-2 border rounded p-3  "
                             >
                                 {/* Active Checkbox */}
                                 <Form.Check
@@ -363,7 +371,7 @@ const CreateAbroadCourse = ({ ele, handleClose, loadCourse }) => {
 
                                 {/* Intake Date */}
                                 <Form.Control
-                                    type="date"
+                                    type="text"
                                     value={intake.date}
                                     onChange={(e) => handleIntakeChange(idx, "date", e.target.value)}
                                     className="w-auto"
@@ -372,13 +380,13 @@ const CreateAbroadCourse = ({ ele, handleClose, loadCourse }) => {
                                 {/* Expiry Date */}
                                 <Form.Control
                                     type="date"
-                                    value={intake.expiresAt}
-                                    onChange={(e) => handleIntakeChange(idx, "expiresAt", e.target.value)}
+                                    value={intake.end_date}
+                                    onChange={(e) => handleIntakeChange(idx, "end_date", e.target.value)}
                                     className="w-auto"
                                 />
 
                                 {/* Action Buttons */}
-                                <div className="ms-auto d-flex gap-2">
+                                <div className="d-flex gap-2">
                                     <Button
                                         variant="danger"
                                         size="sm"
@@ -432,15 +440,11 @@ const CreateAbroadCourse = ({ ele, handleClose, loadCourse }) => {
                                 );
                             })}
 
-                            {/* <option value="">Select Program Level</option>
-                            <option value="UG">UG</option>
-                            <option value="PG">PG</option>
-                            <option value="PhD">PhD</option> */}
-                            {/* Map all enum values */}
+                          
                         </Form.Select>
                     </Form.Group>
 
-                    <div className="mt-3 p-3 border rounded bg-light">
+                    <div className="mt-3 p-3 border rounded ">
                         <Form.Label className="fw-bold d-block mb-2">Language Requirement</Form.Label>
                         <div className="d-flex flex-column gap-2">
                             <Form.Check
@@ -450,13 +454,7 @@ const CreateAbroadCourse = ({ ele, handleClose, loadCourse }) => {
                                 checked={form.languageRequire.english}
                                 onChange={handleChange}
                             />
-                            <Form.Check
-                                type="checkbox"
-                                label="No Preference"
-                                name="no_any_preference"
-                                checked={form.languageRequire.no_any_preference}
-                                onChange={handleChange}
-                            />
+                           
                             <Form.Check
                                 type="checkbox"
                                 label="Mother Tongue"
@@ -485,15 +483,61 @@ const CreateAbroadCourse = ({ ele, handleClose, loadCourse }) => {
                         <TextEditor content={form.Eligibility} setContent={handleContentChange} />
                     </Form.Group>
 
-                    <Form.Group className="mt-3">
-                        <Form.Label>Fees</Form.Label>
-                        <Form.Control
-                            type="number"
-                            name="Fees"
-                            value={form.Fees}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
+                         <Form.Group className="mt-3">
+            <Row>
+              <Col>
+                <Form.Label>Amount</Form.Label>
+                <Form.Control
+                  type="number"
+                  value={form.Fees.amount}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      Fees: { ...prev.Fees, amount: e.target.value },
+                    }))
+                  }
+                />
+              </Col>
+              <Col>
+                <Form.Label>Currency</Form.Label>
+                <Form.Select
+                  value={form.Fees.currency}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      Fees: { ...prev.Fees, currency: e.target.value },
+                    }))
+                  }
+                >
+                  <option value="">Select</option>
+                  {currencies.map((ele) => (
+                    <option key={ele} value={ele}>
+                      {ele}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Col>
+              <Col>
+                <Form.Label>Mode</Form.Label>
+                <Form.Select
+                  value={form.Fees.mode}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      Fees: { ...prev.Fees, mode: e.target.value },
+                    }))
+                  }
+                >
+                  <option value="">Select</option>
+                  {mode.map((ele) => (
+                    <option key={ele} value={ele}>
+                      {ele}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Col>
+            </Row>
+          </Form.Group>
                 </Form>
             </Modal.Body>
             <Modal.Footer>

@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Modal, Button, Form } from "react-bootstrap";
+import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import { toast, ToastContainer } from "react-toastify";
+
 import "react-toastify/dist/ReactToastify.css";
-// import { createCourse, updateCourse } from "../slice/CourseSlice.js";
-// import { fetchUniversities } from "../slice/UniversitySlice.js";
 import { fetchMbbsUniversity } from "../slice/mbbsUniversity.js";
 import { fetchMbbsStudy } from "../slice/MbbsSlice.js";
-import { createMbbsCourse, fetchMbbsCourse, updateMbbsCourse } from "../slice/MbbsCourse.js";
+import {
+  createMbbsCourse,
+  updateMbbsCourse,
+} from "../slice/MbbsCourse.js";
 import TextEditor from "./TextEditor.jsx";
 import { ref, uploadBytes, getDownloadURL, getStorage } from "firebase/storage";
 import { app } from "../firebase";
-
 
 const categories = [
   "Arts",
@@ -59,97 +60,97 @@ const level = [
   "Online Programe/Distance Learning",
 ];
 
+const mode = ["Yearly", "Quaterly", "Semester"];
+
 const CreateMbbsCourse = ({ ele, handleClose, loadCourse }) => {
   const dispatch = useDispatch();
-const storage = getStorage(app);
+  const storage = getStorage(app);
   const { studyMbbs } = useSelector((state) => state.mbbsStudy);
   const { mbbsUniversity } = useSelector((state) => state.mbbsUniversity);
-  const [broucherPreview, setBroucherPreview] = useState({});
+
+  const [broucherPreview, setBroucherPreview] = useState("");
   const [university, setUniversity] = useState();
   const [loading, setLoading] = useState(false);
+  const [currencies, setCurrencies] = useState([]);
+
+  useEffect(() => {
+    fetch("https://open.er-api.com/v6/latest/USD")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.rates) {
+          const codes = Object.keys(data.rates);
+          setCurrencies(codes);
+        }
+      })
+      .catch((err) => console.error("Error fetching currencies:", err));
+  }, []);
 
   const [form, setForm] = useState({
-  ProgramName: ele?.ProgramName || "",
-  University: typeof ele?.University === "object" ? ele.University._id : ele?.University || "",
-  Country: typeof ele?.Country === "object" ? ele.Country._id : ele?.Country || "",
-  Eligibility: ele?.Eligibility || "",
-  WebsiteURL: ele?.WebsiteURL || "",
-  Location: ele?.Location || "",
-  Duration: ele?.Duration || "",
-  Category: ele?.Category || "",
-  Fees: ele?.Fees || "",
-  Intake: ele?.Intake || [{ status: true, date: "", expiresAt: "" }],
-  Scholarships: typeof ele?.Scholarships === "boolean" ? ele.Scholarships : true,
-  ProgramLevel: ele?.ProgramLevel || "",
-  languageRequire: ele?.languageRequire || {
-    english: "",
-    no_any_preference: "",
-    motherTongue: "",
-  },
-  motherTongue: ele?.motherTongue || "",
-  broucherURL: ele?.broucherURL || "",
-});
-  console.log(ele,"++++++++++");
+    ProgramName: ele?.ProgramName || "",
+    University:
+      typeof ele?.University === "object" ? ele.University._id : ele?.University || "",
+    Country:
+      typeof ele?.Country === "object" ? ele.Country._id : ele?.Country || "",
+    Eligibility: ele?.Eligibility || "",
+    WebsiteURL: ele?.WebsiteURL || "",
+    Location: ele?.Location || "",
+    Duration: ele?.Duration || "",
+    Category: ele?.Category || "",
+    Fees: {
+      amount: ele?.Fees?.amount || "",
+      currency: ele?.Fees?.currency || "",
+      mode: ele?.Fees?.mode || "",
+    },
+    Intake: ele?.Intake || [{ status: true, date: "", end_date: "" }],
+    Scholarships:
+      typeof ele?.Scholarships === "boolean" ? ele.Scholarships : true,
+    ProgramLevel: ele?.ProgramLevel || "",
+    languageRequire: ele?.languageRequire || {
+      english: false,
+      motherTongue: false,
+    },
+    broucherURL: ele?.broucherURL || "",
+  });
 
-    const uploadImage = async (file) => {
-      const storageRef = ref(storage, `provinces/${Date.now()}-${file.name}`);
-      await uploadBytesResumable(storageRef, file);
-      const url = await getDownloadURL(storageRef);
-      return url;
-    };
+  const uploadImage = async (file) => {
+    const storageRef = ref(storage, `provinces/${Date.now()}-${file.name}`);
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+    return url;
+  };
 
   const handleChange = async (e) => {
     const { name, value, type, checked, files } = e.target;
 
-    if (type === 'file'){
-        const file = files[0];
-        if (file) {
-            if (name === 'broucherURL') {
-            // await validateImageDimensions(file, { width: 1500, height: 500 });
-            const previewURL = URL.createObjectURL(file);
-            setBroucherPreview(previewURL);
-            const imageURL = await uploadImage(file);
-            setForm(prev => ({ ...prev, broucherURL: imageURL }));
-          }
-        }
-    }
-
-    // Intake status select (inside Intake array)
-    if (name === "status") {
-      // Find the first intake with matching status and update it
-      setForm((prev) => {
-        const newIntake = prev.Intake.map((intake, idx) =>
-          idx === 0 ? { ...intake, status: value === "active" } : intake
-        );
-        return { ...prev, Intake: newIntake };
-      });
+    if (type === "file") {
+      const file = files[0];
+      if (file && name === "broucherURL") {
+        const previewURL = URL.createObjectURL(file);
+        setBroucherPreview(previewURL);
+        const imageURL = await uploadImage(file);
+        setForm((prev) => ({ ...prev, broucherURL: imageURL }));
+      }
       return;
     }
 
-    // Language Requirement text fields
-    if (["english", "no_any_preference", "motherTongue"].includes(name)) {
+    if (["english", "motherTongue"].includes(name)) {
       setForm((prev) => ({
         ...prev,
-        languageRequire: { ...prev.languageRequire, [name]: value },
+        languageRequire: { ...prev.languageRequire, [name]: checked },
       }));
       return;
     }
 
     if (type === "checkbox") {
       setForm((prev) => ({ ...prev, [name]: checked }));
-    } else if (type === "file") {
-      if (files && files.length > 0) {
-        setForm((prev) => ({ ...prev, [name]: files[0] }));
-      }
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
   };
 
-      const handleContentChange = (value) => {
-        setForm(prev => ({ ...prev, Eligibility: value }));
-        // setErrors(prev => ({ ...prev, Eligibility: "" }));
-    };
+  const handleContentChange = (value) => {
+    setForm((prev) => ({ ...prev, Eligibility: value }));
+  };
 
   const handleIntakeChange = (idx, field, value) => {
     const newIntakes = [...form.Intake];
@@ -160,7 +161,7 @@ const storage = getStorage(app);
   const addIntake = () => {
     setForm((prev) => ({
       ...prev,
-      Intake: [...prev.Intake, { status: true, date: "", expiresAt: "" }],
+      Intake: [...prev.Intake, { status: true, date: "", end_date: "" }],
     }));
   };
 
@@ -173,35 +174,26 @@ const storage = getStorage(app);
 
   const handleSubmit = async () => {
     try {
-      // ✅ Check required fields before submit
       if (!form.ProgramName || !form.University || !form.WebsiteURL) {
         toast.error("⚠️ Please fill required fields!");
         return;
       }
 
-      let res;
-
       if (ele && ele._id) {
-        // ✅ Update course
-        const res = await dispatch(
-          updateMbbsCourse({ id: ele._id, data: form })
-        );
-       
-          toast.success("✅ Course updated!");
-          // await dispatch(fetchMbbsCourse())
-          loadCourse()
-       
+        const res = await dispatch(updateMbbsCourse({ id: ele._id, data: form }));
+        if(res?.meta?.requestStatus === "fulfilled"){
+          toast.success("Updated Successfully!")
+          loadCourse();
+        }else{
+          console.log(res)
+          toast.error("Network Issue!")
+        }
       } else {
-        
         const res = await dispatch(createMbbsCourse(form));
-  
-
         if (createMbbsCourse.fulfilled.match(res)) {
           toast.success("✅ Course created!");
-          // dispatch(fetchMbbsCourse())
-          loadCourse()
-        }
-        else {
+          loadCourse();
+        } else {
           toast.error(
             res.payload?.message ||
             res.error?.message ||
@@ -209,9 +201,9 @@ const storage = getStorage(app);
           );
         }
       }
-      handleClose();
+      // handleClose();
     } catch (err) {
-      console.error("Unexpected error:", err);
+      console.error(err);
       toast.error("Something went wrong!");
     }
   };
@@ -219,12 +211,10 @@ const storage = getStorage(app);
   const loadUniversity = async (selectedCountries) => {
     setLoading(true);
     try {
-      console.log(selectedCountries, "------------------");
       const res = await dispatch(fetchMbbsUniversity());
       const filtered = (res.payload || []).filter(
         (u) => u.Country._id === selectedCountries
       );
-      console.log(filtered);
       setUniversity(filtered);
     } finally {
       setLoading(false);
@@ -246,6 +236,7 @@ const storage = getStorage(app);
       </Modal.Header>
       <Modal.Body>
         <Form>
+          {/* Program Name */}
           <Form.Group>
             <Form.Label>Program Name</Form.Label>
             <Form.Control
@@ -257,33 +248,33 @@ const storage = getStorage(app);
             />
           </Form.Group>
 
+          {/* Country */}
           <Form.Group className="mt-3">
             <Form.Label>Country</Form.Label>
             <Form.Select
               name="Country"
-              value={form?.Country}
+              value={form.Country}
               onChange={(e) => {
-                console.log(e.target.value);
-                // stores the selected country ID
-                handleChange(e); // updates form.Country
-                loadUniversity(e.target.value); // load universities for selected country
+                handleChange(e);
+                loadUniversity(e.target.value);
               }}
               required
             >
               <option value="">Select Country</option>
               {studyMbbs?.map((u) => (
-                <option key={u.name} value={u._id}>
+                <option key={u._id} value={u._id}>
                   {u.name}
                 </option>
               ))}
             </Form.Select>
           </Form.Group>
 
+          {/* University */}
           <Form.Group className="mt-3">
             <Form.Label>University</Form.Label>
             <Form.Select
               name="University"
-              value={form?.University}
+              value={form.University}
               onChange={handleChange}
               required
             >
@@ -296,6 +287,7 @@ const storage = getStorage(app);
             </Form.Select>
           </Form.Group>
 
+          {/* Website URL */}
           <Form.Group className="mt-3">
             <Form.Label>Website URL</Form.Label>
             <Form.Control
@@ -307,6 +299,7 @@ const storage = getStorage(app);
             />
           </Form.Group>
 
+          {/* Location */}
           <Form.Group className="mt-3">
             <Form.Label>Location</Form.Label>
             <Form.Control
@@ -318,6 +311,7 @@ const storage = getStorage(app);
             />
           </Form.Group>
 
+          {/* Duration */}
           <Form.Group className="mt-3">
             <Form.Label>Duration</Form.Label>
             <Form.Control
@@ -329,42 +323,38 @@ const storage = getStorage(app);
             />
           </Form.Group>
 
+          {/* Broucher */}
           <Form.Group className="mt-3">
-            <Form.Label>Broucher URL</Form.Label>
+            <Form.Label>Broucher</Form.Label>
             <Form.Control
               type="file"
               name="broucherURL"
-              // value={form.broucherURL}
-              onChange={(e) => {
-                handleChange(e, "banner")
-              }}
+              onChange={handleChange}
             />
-            {broucherPreview && <img src={broucherPreview} alt="broucher" className="mt-2 img-fluid rounded" />}
+            {broucherPreview && (
+              <img
+                src={broucherPreview}
+                alt="broucher"
+                className="mt-2 img-fluid rounded"
+              />
+            )}
           </Form.Group>
 
+          {/* Category */}
           <Form.Group className="mt-3">
             <Form.Label>Category</Form.Label>
-            {/* <Form.Control
-              type="text"
-              name="Category"
-              value={form.Category}
-              onChange={handleChange}
-              required
-            /> */}
             <Form.Select
               name="Category"
               value={form.Category}
               onChange={handleChange}
               required
             >
-                <option value={""} disabled>Select</option>
-              {categories?.map((ele) => {
-                return (
-                  <option key={ele} value={ele}>
-                    {ele}
-                  </option>
-                );
-              })}
+              <option value="">Select</option>
+              {categories.map((ele) => (
+                <option key={ele} value={ele}>
+                  {ele}
+                </option>
+              ))}
             </Form.Select>
           </Form.Group>
 
@@ -372,69 +362,46 @@ const storage = getStorage(app);
           <div className="mt-3">
             <Form.Label className="fw-bold">Intakes</Form.Label>
             {form.Intake.map((intake, idx) => (
-              <div
-                key={idx}
-                className="d-flex flex-column gap-2 border rounded p-2 mb-2 bg-light"
-              >
-                {/* Active Checkbox */}
-                {/* <Form.Check
-                                    type="checkbox"
-                                    label="Active"
-                                    checked={intake.status}
-                                    onChange={(e) => handleIntakeChange(idx, "status", e.target.checked)}
-                                    className="mb-0"
-                                /> */}
-
+              <div key={idx} className="border rounded p-2 mb-2">
                 <Form.Select
-                  name="status"
-                  value={form?.status}
-                  onChange={handleChange}
-                  required
+                  value={intake.status ? "active" : "notActive"}
+                  onChange={(e) =>
+                    handleIntakeChange(idx, "status", e.target.value === "active")
+                  }
                 >
-                  <option value={ele?.status || ""} disabled>
-                    Select Status
-                  </option>
                   <option value="active">Active</option>
                   <option value="notActive">Not Active</option>
                 </Form.Select>
-                {/* Intake Date */}
+                <Form.Label className="fw-bold">Start Intake</Form.Label>
+
                 <Form.Control
-                  type="date"
+                  type="text"
                   value={intake.date}
                   onChange={(e) =>
                     handleIntakeChange(idx, "date", e.target.value)
                   }
-                  className="w-auto"
+                  className="mt-2"
                 />
+                <Form.Label className="fw-bold">End Intake</Form.Label>
 
-                {/* Expiry Date */}
                 <Form.Control
                   type="date"
-                  value={intake.expiresAt}
+                  value={intake.end_date}
                   onChange={(e) =>
-                    handleIntakeChange(idx, "expiresAt", e.target.value)
+                    handleIntakeChange(idx, "end_date", e.target.value)
                   }
-                  className="w-auto"
+                  className="mt-2"
                 />
 
-                {/* Action Buttons */}
-                <div className="ms-auto d-flex gap-2">
+                <div className="ms-auto d-flex gap-2 mt-2">
                   <Button
                     variant="danger"
-                    size="md"
-                    className="px-2 py-0"
-                    style={{ fontSize: "12px", lineHeight: "1" }}
+                    size="sm"
                     onClick={() => removeIntake(idx)}
                   >
                     ×
                   </Button>
-                  <Button
-                    variant="success"
-                    size="md"
-                    className="px-2 py-0"
-                    style={{ fontSize: "12px", lineHeight: "1" }}
-                    onClick={() => addIntake(idx)}
-                  >
+                  <Button variant="success" size="sm" onClick={addIntake}>
                     +
                   </Button>
                 </div>
@@ -442,13 +409,17 @@ const storage = getStorage(app);
             ))}
           </div>
 
+          {/* Scholarships */}
           <Form.Group className="mt-3 d-flex align-items-center gap-2">
             <Form.Check
               type="checkbox"
               id="scholarships"
               checked={form.Scholarships}
               onChange={(e) =>
-                setForm((prev) => ({ ...prev, Scholarships: e.target.checked }))
+                setForm((prev) => ({
+                  ...prev,
+                  Scholarships: e.target.checked,
+                }))
               }
             />
             <Form.Label htmlFor="scholarships" className="mb-0 fw-semibold">
@@ -456,6 +427,7 @@ const storage = getStorage(app);
             </Form.Label>
           </Form.Group>
 
+          {/* Program Level */}
           <Form.Group className="mt-3">
             <Form.Label>Program Level</Form.Label>
             <Form.Select
@@ -464,87 +436,107 @@ const storage = getStorage(app);
               onChange={handleChange}
               required
             >
-              <option value={""} disabled>
-                Select
-              </option>
-              {level?.map((ele) => {
-                return (
-                  <option key={ele} value={ele}>
-                    {ele}
-                  </option>
-                );
-              })}
+              <option value="">Select</option>
+              {level.map((ele) => (
+                <option key={ele} value={ele}>
+                  {ele}
+                </option>
+              ))}
             </Form.Select>
           </Form.Group>
 
-          <div className="mt-3 p-3 border rounded bg-light">
+          {/* Language Requirement */}
+          <div className="mt-3 p-3 border rounded">
             <Form.Label className="fw-bold d-block mb-2">
               Language Requirement
             </Form.Label>
-           <div className="d-flex mt-20">
-                                    <div>
-                                      <Form.Check
-                                        type="checkbox"
-                                        label="English Required"
-                                        name="english"
-                                        checked={form.languageRequire.english}
-                                        onChange={handleChange}
-                                    />
-                                    </div>
-                                   <div className="mx-64">
-                                     <Form.Check
-                                        type="checkbox"
-                                        label="No Preference"
-                                        name="no_any_preference"
-                                        checked={form.languageRequire.no_any_preference}
-                                        onChange={handleChange}
-                                    />
-                                   </div>
-                                    <div>
-                                      <Form.Check
-                                        type="checkbox"
-                                        label="Mother Tongue"
-                                        name="motherTongue"
-                                        checked={form.languageRequire.motherTongue}
-                                        onChange={handleChange}
-                                    />
-                                    </div>
-                                </div>
+            <div className="d-flex gap-4">
+              <Form.Check
+                type="checkbox"
+                label="English Required"
+                name="english"
+                checked={form.languageRequire.english}
+                onChange={handleChange}
+              />
+
+              <Form.Check
+                type="checkbox"
+                label="Mother Tongue"
+                name="motherTongue"
+                checked={form.languageRequire.motherTongue}
+                onChange={handleChange}
+              />
+            </div>
           </div>
 
-          {/* <Form.Group className="mt-3">
-                        <Form.Label>Eligibility</Form.Label>
-                        <Form.Control
-                            as="textarea"
-                            rows={3}
-                            name="Eligibility"
-                            value={form.Eligibility}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group> */}
-
-          {/* <Form.Group className="mt-3">
-                        <Form.Label>Description</Form.Label>
-                        <TextEditor content={form.Eligibility} setContent={handleContentChange} />
-                    </Form.Group> */}
-
-                    <Form.Group className="mt-3">
-                                            <Form.Label>Eligibility</Form.Label>
-                                            <TextEditor content={form.Eligibility} setContent={handleContentChange} />
-                                        </Form.Group>
-
+          {/* Eligibility */}
           <Form.Group className="mt-3">
-            <Form.Label>Fees</Form.Label>
-            <Form.Control
-              type="number"
-              name="Fees"
-              value={form.Fees}
-              onChange={handleChange}
+            <Form.Label>Eligibility</Form.Label>
+            <TextEditor
+              content={form.Eligibility}
+              setContent={handleContentChange}
             />
+          </Form.Group>
+
+          {/* Fees Section */}
+          <Form.Group className="mt-3">
+            <Row>
+              <Col>
+                <Form.Label>Amount</Form.Label>
+                <Form.Control
+                  type="number"
+                  value={form.Fees.amount}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      Fees: { ...prev.Fees, amount: e.target.value },
+                    }))
+                  }
+                />
+              </Col>
+              <Col>
+                <Form.Label>Currency</Form.Label>
+                <Form.Select
+                  value={form.Fees.currency}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      Fees: { ...prev.Fees, currency: e.target.value },
+                    }))
+                  }
+                >
+                  <option value="">Select</option>
+                  {currencies.map((ele) => (
+                    <option key={ele} value={ele}>
+                      {ele}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Col>
+              <Col>
+                <Form.Label>Mode</Form.Label>
+                <Form.Select
+                  value={form.Fees.mode}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      Fees: { ...prev.Fees, mode: e.target.value },
+                    }))
+                  }
+                >
+                  <option value="">Select</option>
+                  {mode.map((ele) => (
+                    <option key={ele} value={ele}>
+                      {ele}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Col>
+            </Row>
           </Form.Group>
         </Form>
       </Modal.Body>
+
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
           Cancel

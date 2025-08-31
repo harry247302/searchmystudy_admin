@@ -181,22 +181,22 @@ const MbbsCountryManager = () => {
                   </div>
                 </td>
                 <td>{ele?.name}</td>
-                <td>
-                  <div
-                      className="custom-scrollbar"
-                      style={{
-                        width: "300px",
-                        height: "50px",
-                        overflowY: "auto",
-                        overflowX: "hidden",
-                        whiteSpace: "normal",
-                      }}
-                    >
-                      <h6 className="text-md mb-0 fw-medium flex-grow-1">
-                        {ele?.description.slice(0, 300)}
-                      </h6>
-                    </div>
-                </td>
+                  <td>
+                    <div
+                        className="custom-scrollbar"
+                        style={{
+                          width: "300px",
+                          height: "50px",
+                          overflowY: "auto",
+                          overflowX: "hidden",
+                          whiteSpace: "normal",
+                        }}
+                      >
+                        <h6 className="text-md mb-0 fw-medium flex-grow-1">
+                          {ele?.description.slice(0, 300)}
+                        </h6>
+                      </div>
+                  </td>
                 <td>{ele?.mbbsAbroad == true? "Yes": "No"}</td>
                 <td>
                   <a

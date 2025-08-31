@@ -2,14 +2,14 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { createSlice } from '@reduxjs/toolkit';
 
+
 export const fetchMbbsCourse = createAsyncThunk(
   'mbbs/fetchMbbsCourse',
     async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get("https://searchmystudy.com/api/admin/course");
-      // console.log(response?.data,"++++++++++++==");
-      
-      return response.data
+      const filter = response.data.filter(item => item?.University?.Country?.mbbsAbroad === true)
+      return filter
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || 'Something went wrong'
@@ -17,6 +17,7 @@ export const fetchMbbsCourse = createAsyncThunk(
     }
     }
 );
+
 
 export const createMbbsCourse = createAsyncThunk(
     "mbbs/createMbbsCourse",
