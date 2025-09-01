@@ -41,7 +41,7 @@ const categories = [
     'Artificial Intelligence'
 ]
 const level = ['High School', 'UG Diploma/Cerificate/Associate Degree', 'UG', 'PG Diploma', 'PG', 'UG+PG(Accelerated)Degree', 'PhD', 'Foundation', 'Short Term Program', 'Pathway Program', 'Twiming Program(UG)', 'Twiming Program(PG)', 'Online Programe/Distance Learning']
-const mode = ["Yearly", "Quaterly", "Semester"];
+const mode = ["Yearly", "Complete", "Semester"];
 
 const CreateAbroadCourse = ({ ele, handleClose, loadCourse }) => {
     const dispatch = useDispatch();

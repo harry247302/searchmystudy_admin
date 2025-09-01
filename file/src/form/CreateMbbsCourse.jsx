@@ -60,7 +60,7 @@ const level = [
   "Online Programe/Distance Learning",
 ];
 
-const mode = ["Yearly", "Quaterly", "Semester"];
+const mode = ["Yearly", "Complete", "Semester"];
 
 const CreateMbbsCourse = ({ ele, handleClose, loadCourse }) => {
   const dispatch = useDispatch();
