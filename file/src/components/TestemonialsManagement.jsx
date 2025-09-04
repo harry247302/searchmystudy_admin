@@ -140,7 +140,10 @@ const CounsellorManager = () => {
                       <label className="form-check-label">S.L</label>
                     </div>
                 </th>
-                <th scope="col">Title</th>
+                <th scope="col">Name</th>
+                <th scope="col">Experience</th>
+                <th scope="col">Degree</th>
+                <th scope="col">Location</th>
                 <th scope="col">Rating</th>
                 <th scope="col">Description</th>
                 <th scope="col">Click to View</th>
@@ -163,7 +166,16 @@ const CounsellorManager = () => {
                       </div>
                   </td>
                   <td>
-                    {ele?.title}
+                    {ele?.name}
+                  </td>
+                    <td>
+                    {ele?.experience}
+                  </td>
+                    <td>
+                    {ele?.degree}
+                  </td>
+                    <td>
+                    {ele?.location}
                   </td>
                   <td>
                     {ele?.rating}

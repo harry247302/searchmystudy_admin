@@ -22,6 +22,29 @@ export const fetchCounsellorLead = createAsyncThunk(
   }
 );
 
+
+export const fetchCounsellorSingleLead = createAsyncThunk(
+  'lead/fetchCounsellorSingleLead',
+  async (id, { rejectWithValue }) => {
+    try {
+      console.log(id,":::::::::::::::::::::::::::::::");
+      
+      const response = await axios.get(`https://searchmystudy.com/api/admin/leadByCounsellor/${id}`);
+      console.log(response);
+      
+      // toast.success("Fetch Lead Successfully")
+      return response.data; // returned data will be available in fulfilled reducer
+      
+    } catch (error) {
+        toast.error("Failed to fetch lead")
+      return rejectWithValue(
+        error.response?.data?.message || 'Something went wrong'
+      );
+    }
+  }
+);
+
+
 export const deleteCounsellorLead = createAsyncThunk(
     "lead/deleteCounsellorLead",
     async(ids,{rejectWithValue})=>{

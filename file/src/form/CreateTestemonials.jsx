@@ -62,6 +62,7 @@ const Createtestemonial = ({ ele, handleClose, loadCounsellors }) => {
       } else {
         setImageValid(false);
         toast.error("Image dimensions must be 300x250 pixels.");
+        toast.error("Image dimensions must be 300x250 pixels.");
       }
     };
 

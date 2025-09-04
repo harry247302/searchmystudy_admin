@@ -114,6 +114,7 @@ import ContactUsLeadPage from "./pages/ContactUsLeadPage";
 import CounsellorLeadPage from "./pages/CounsellorLeadPage";
 import QueryPage from "./pages/QueryPage";
 import CounselorManagerPage from "./pages/CounselorManagerPage";
+import CounselorSingleLeadManager from "./pages/CounselorSingleLeadManager";
 
 function App() {
   return (
@@ -273,6 +274,7 @@ function App() {
         <Route exact path='/abroad-university' element={<AbroadUniversityPage />} />
         <Route exact path='/abroad-course-manager' element={<AbroadCoursePage />} />
         <Route exact path='/contactus-lead' element={<ContactUsLeadPage />} />
+         <Route exact path='/counsellor-lead/:id' element={<CounselorSingleLeadManager />} />
         <Route exact path='/counsellor-lead' element={<CounsellorLeadPage />} />
         <Route exact path='/query' element={<QueryPage />} />
         <Route exact path='/counselor-manager' element={<CounsellorPage  />} />
