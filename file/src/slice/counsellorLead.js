@@ -7,7 +7,7 @@ export const fetchCounsellorLead = createAsyncThunk(
   'lead/fetchCounsellorLead',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("https://searchmystudy.com/api/admin/lead");
+      const response = await axios.get("http://localhost:3000/api/admin/lead");
       console.log(response);
       
       // toast.success("Fetch Lead Successfully")
@@ -29,8 +29,8 @@ export const deleteCounsellorLead = createAsyncThunk(
       return rejectWithValue({ message: "No blog IDs provided" });
     }
     try {
-        const response = await axios.delete("https://searchmystudy.com/api/admin/lead",{data:{ids}});
-        toast.success("Delete lead Successfully");
+        const response = await axios.delete("http://localhost:3000/api/admin/lead",{data:{ids}});
+        // toast.success("Delete lead Successfully");
         return response?.data;
     } catch (error) {
         toast.error("Failed to delete lead")

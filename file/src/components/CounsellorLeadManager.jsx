@@ -20,11 +20,13 @@ const CounsellorLeadManager = () => {
 
   const fetchData = async ()=>{
       const res1 = await dispatch(fetchCounsellorLead());
+      console.log(res1);
     }
-  useEffect(() => {    
-    fetchData()
-    
-  }, [dispatch]);
+
+    useEffect(() => {    
+      fetchData()
+      
+    }, [dispatch]);
 
   const handleCheckboxChange = (id) => {
     setSelectedIds((prevSelected) => {
@@ -43,8 +45,10 @@ const handleDelete = async () => {
     const confirmed = window.confirm("Are you sure you want to delete this webinar?");
     if (!confirmed) return; // stop if user clicks Cancel
 
-    await dispatch(deleteCounsellorLead(selectedIds));
-    fetchData()
+   const res =  await dispatch(deleteCounsellorLead(selectedIds));
+    console.log(res);
+    
+   fetchData()
     toast.success("lead deleted successfully");
   } catch (error) {
     console.log(error);
