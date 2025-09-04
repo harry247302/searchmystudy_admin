@@ -29,7 +29,7 @@ export const fetchCounsellorSingleLead = createAsyncThunk(
     try {
       console.log(id,":::::::::::::::::::::::::::::::");
       
-      const response = await axios.get(`http://localhost:3000/api/admin/leadByCounsellor/${id}`);
+      const response = await axios.get(`https://searchmystudy.com/api/admin/leadByCounsellor/${id}`);
       console.log(response);
       
       // toast.success("Fetch Lead Successfully")
@@ -52,7 +52,7 @@ export const deleteCounsellorLead = createAsyncThunk(
       return rejectWithValue({ message: "No blog IDs provided" });
     }
     try {
-        const response = await axios.delete("http://localhost:3000/api/admin/lead",{data:{ids}});
+        const response = await axios.delete("https://searchmystudy.com/api/admin/lead",{data:{ids}});
         toast.success("Delete lead Successfully");
         return response?.data;
     } catch (error) {
