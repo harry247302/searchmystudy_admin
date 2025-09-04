@@ -3,11 +3,28 @@ import { useEffect, useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import ThemeToggleButton from "../helper/ThemeToggleButton";
+import { fetchCounselor } from "../slice/CounselorManagerSlice";
+import { useDispatch } from "react-redux";
+import { fetchTestemonial } from "../slice/testemonialsManagementSlice";
 
 const MasterLayout = ({ children }) => {
   let [sidebarActive, seSidebarActive] = useState(false);
   let [mobileMenu, setMobileMenu] = useState(false);
-  const location = useLocation(); // Hook to get the current route
+  const dispatch = useDispatch()
+  const [counsellor, setCounsellor] = useState()
+  const location = useLocation(); 
+
+  const loadCounsellors = async () => {
+    const res = await dispatch(fetchTestemonial());
+    console.log(res.payload, "}}}}}}}}}}}}}}}}}}}}}}}}]");
+    if (res?.meta?.requestStatus === "fulfilled") {
+      setCounsellor(res.payload);
+    }
+  };
+
+  useEffect(()=>{
+    loadCounsellors()
+  },[])
 
   useEffect(() => {
     const handleDropdownClick = (event) => {
@@ -487,17 +504,39 @@ const MasterLayout = ({ children }) => {
                 Contact Us Lead
               </NavLink>
             </li>
-            <li>
-              <NavLink
-                to='/counsellor-lead'
-                className={(navData) =>
-                  navData.isActive ? "active-page" : ""
-                }
-              >
-                <i className="ri-customer-service-2-line  w-auto" />
-                Counsellor Lead
-              </NavLink>
+
+
+              <li className='dropdown'>
+              <Link to='#'>
+               <i className="ri-phone-line w-auto" />
+                <span>Counselor Lead</span>
+              </Link>
+              <ul className='sidebar-submenu'>
+           <li>
+              {
+                counsellor?.map((ele) => {
+                  return (
+                    <NavLink
+                      to={`/counsellor-lead/${ele?._id}`}
+                      className={(navData) =>
+                        navData.isActive ? "active-page" : ""
+                      }
+                    >
+                      <i className="ri-customer-service-2-line  w-auto" />
+                      {ele?.title}
+                    </NavLink>
+                  )
+                })
+              }
+
             </li>
+              </ul>
+            </li>
+
+
+
+            
+            
             <li>
               <NavLink
                 to='/home-page-lead'

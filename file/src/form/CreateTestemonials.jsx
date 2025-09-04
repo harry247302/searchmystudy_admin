@@ -52,12 +52,12 @@ const Createtestemonial = ({ ele, handleClose, loadCounsellors }) => {
     };
 
     img.onload = () => {
-      if (img.width === 1200 && img.height === 600) {
+      if (img.width === 300  && img.height === 250) {
         setImageValid(true);
         toast.success("Valid image uploaded!");
       } else {
         setImageValid(false);
-        toast.error("Image dimensions must be 1200x600 pixels.");
+        toast.error("Image dimensions must be 300x250 pixels.");
       }
     };
 
@@ -169,9 +169,7 @@ const Createtestemonial = ({ ele, handleClose, loadCounsellors }) => {
 
 
   const handleSubmit = async () => {
-    console.log(form);
-    console.log("budhau");
-    console.log(ele);
+
 
     let formData = {};
     if (form?.imageFile) {

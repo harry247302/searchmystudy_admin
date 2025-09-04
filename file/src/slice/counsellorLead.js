@@ -22,6 +22,29 @@ export const fetchCounsellorLead = createAsyncThunk(
   }
 );
 
+
+export const fetchCounsellorSingleLead = createAsyncThunk(
+  'lead/fetchCounsellorSingleLead',
+  async (id, { rejectWithValue }) => {
+    try {
+      console.log(id,":::::::::::::::::::::::::::::::");
+      
+      const response = await axios.get(`http://localhost:3000/api/admin/leadByCounsellor/${id}`);
+      console.log(response);
+      
+      // toast.success("Fetch Lead Successfully")
+      return response.data; // returned data will be available in fulfilled reducer
+      
+    } catch (error) {
+        toast.error("Failed to fetch lead")
+      return rejectWithValue(
+        error.response?.data?.message || 'Something went wrong'
+      );
+    }
+  }
+);
+
+
 export const deleteCounsellorLead = createAsyncThunk(
     "lead/deleteCounsellorLead",
     async(ids,{rejectWithValue})=>{
@@ -29,7 +52,7 @@ export const deleteCounsellorLead = createAsyncThunk(
       return rejectWithValue({ message: "No blog IDs provided" });
     }
     try {
-        const response = await axios.delete("https://searchmystudy.com/api/admin/lead",{data:{ids}});
+        const response = await axios.delete("http://localhost:3000/api/admin/lead",{data:{ids}});
         toast.success("Delete lead Successfully");
         return response?.data;
     } catch (error) {

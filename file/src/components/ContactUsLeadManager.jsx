@@ -18,7 +18,6 @@ const ContactUsLeadManager = () => {
   const [selectedIds, setSelectedIds] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingLead, setEditingLead] = useState(null);
-
   const fetchData = async ()=>{
       const res1 = await dispatch(fetchContactUsLead());
     }
